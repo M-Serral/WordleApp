@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set up JDK 17
@@ -22,29 +22,18 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Cache SonarQube packages
+      - name: Cache Maven dependencies
         uses: actions/cache@v3
         with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+          path: ~/.m2
+          key: maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: maven-
 
-      - name: Build and Analyze with SonarQube
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: "http://localhost:9000"
+      - name: Build and analyze with SonarCloud
         run: |
           mvn clean verify sonar:sonar \
-            -Dsonar.projectKey=WordleApp \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN
+            -Dsonar.projectKey=M-Serral_WordleApp \
+            -Dsonar.organization=M-Serral \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.SONARCLOUD_TOKEN }}
 
-      - name: Capture Sonar Dashboard
-        run: |
-          curl -u ${{ secrets.SONAR_TOKEN }} "http://localhost:9000/api/cnesreport/report?key=WordleApp&format=pdf" -o sonar_report.pdf
-
-      - name: Upload Sonar Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: SonarQube Report
-          path: sonar_report.pdf
