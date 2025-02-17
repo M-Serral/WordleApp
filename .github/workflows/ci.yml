@@ -32,32 +32,38 @@ jobs:
       - name: Install Chrome & ChromeDriver
         run: |
           sudo apt update
-          sudo apt install -y google-chrome-stable unzip
-          
-          # Obtener la versión principal de Chrome
+          sudo apt install -y google-chrome-stable unzip curl
+
+          # Obtener la versión de Chrome instalada
           CHROME_VERSION=$(google-chrome --version | grep -oP '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-          CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-          
-          # Verificar si se obtuvo una versión válida
+          echo "Chrome version: $CHROME_VERSION"
+
+          # Obtener la versión de ChromeDriver compatible
+          CHROMEDRIVER_VERSION=$(curl -sS "https://googlechromelabs.github.io/chrome-for-testing/latest-patch-versions-per-build-with-downloads.json" | jq -r ".builds[\"$CHROME_VERSION\"].version")
+
           if [[ -z "$CHROMEDRIVER_VERSION" ]]; then
-            echo "Error: No se pudo obtener la versión correcta de ChromeDriver"
+            echo "Error: No se encontró una versión de ChromeDriver compatible para $CHROME_VERSION"
             exit 1
           fi
-          
+
+          echo "ChromeDriver version: $CHROMEDRIVER_VERSION"
+
           # Descargar ChromeDriver
-          curl -sS -o chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver-linux64.zip"
-          
-          # Verificar si el archivo ZIP es válido
+          curl -sS -o chromedriver.zip "https://storage.googleapis.com/chrome-for-testing-public/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip"
+
+          # Verificar si la descarga fue exitosa
           if ! unzip -tq chromedriver.zip; then
             echo "Error: El archivo descargado no es un ZIP válido"
             exit 1
           fi
-          
-          # Extraer y limpiar
+
+          # Extraer y mover ChromeDriver
           sudo unzip chromedriver.zip -d /usr/local/bin/
-          rm chromedriver.zip
-          
-          # Mostrar versión instalada
+          sudo mv /usr/local/bin/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
+          sudo chmod +x /usr/local/bin/chromedriver
+          rm -r chromedriver.zip /usr/local/bin/chromedriver-linux64
+
+          # Verificar la instalación
           chromedriver --version
 
       - name: Run tests
