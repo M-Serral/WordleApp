@@ -29,6 +29,19 @@ jobs:
           key: maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-
 
+      - name: Install Chrome & ChromeDriver
+        run: |
+          sudo apt update
+          sudo apt install -y google-chrome-stable
+          CHROME_VERSION=$(google-chrome --version | grep -oP '[0-9]+\.[0-9]+\.[0-9]+')
+          curl -sS -o chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROME_VERSION/chromedriver_linux64.zip"
+          sudo unzip chromedriver.zip -d /usr/local/bin/
+          rm chromedriver.zip
+          chromedriver --version
+
+      - name: Run tests
+        run: mvn test
+
       - name: Build and analyze with SonarCloud
         run: |
           mvn clean verify sonar:sonar \
