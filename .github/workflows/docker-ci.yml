@@ -22,7 +22,7 @@ jobs:
         run: mvn clean package -DskipTests
 
       - name: Construir imagen Docker
-        run: docker build -t TU_USUARIO/wordleapp:${{ github.sha }} .
+        run: docker build -t mserral/wordleapp:${{ github.sha }} .
 
       - name: Login en DockerHub
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
