@@ -44,7 +44,7 @@ jobs:
           curl -u ${{ secrets.SONAR_TOKEN }} "http://localhost:9000/api/cnesreport/report?key=WordleApp&format=pdf" -o sonar_report.pdf
 
       - name: Upload Sonar Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: SonarQube Report
           path: sonar_report.pdf
