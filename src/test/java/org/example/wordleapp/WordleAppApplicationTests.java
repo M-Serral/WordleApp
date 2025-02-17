@@ -8,6 +8,7 @@ class WordleAppApplicationTests {
 
     @Test
     void contextLoads() {
+        //Not implemented yet
     }
 
 }
