@@ -32,11 +32,32 @@ jobs:
       - name: Install Chrome & ChromeDriver
         run: |
           sudo apt update
-          sudo apt install -y google-chrome-stable
-          CHROME_VERSION=$(google-chrome --version | grep -oP '[0-9]+\.[0-9]+\.[0-9]+')
-          curl -sS -o chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROME_VERSION/chromedriver_linux64.zip"
+          sudo apt install -y google-chrome-stable unzip
+          
+          # Obtener la versión principal de Chrome
+          CHROME_VERSION=$(google-chrome --version | grep -oP '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+          
+          # Verificar si se obtuvo una versión válida
+          if [[ -z "$CHROMEDRIVER_VERSION" ]]; then
+            echo "Error: No se pudo obtener la versión correcta de ChromeDriver"
+            exit 1
+          fi
+          
+          # Descargar ChromeDriver
+          curl -sS -o chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver-linux64.zip"
+          
+          # Verificar si el archivo ZIP es válido
+          if ! unzip -tq chromedriver.zip; then
+            echo "Error: El archivo descargado no es un ZIP válido"
+            exit 1
+          fi
+          
+          # Extraer y limpiar
           sudo unzip chromedriver.zip -d /usr/local/bin/
           rm chromedriver.zip
+          
+          # Mostrar versión instalada
           chromedriver --version
 
       - name: Run tests
@@ -52,7 +73,8 @@ jobs:
 
       - name: Download SonarCloud Report
         run: |
-          curl -s -u ${{ secrets.SONARCLOUD_TOKEN }} "https://sonarcloud.io/api/measures/component?component=M-Serral_WordleApp&metricKeys=coverage,bugs,vulnerabilities,code_smells" -o sonar_report.json
+          curl -s -u ${{ secrets.SONARCLOUD_TOKEN }} \
+          "https://sonarcloud.io/api/measures/component?component=M-Serral_WordleApp&metricKeys=coverage,bugs,vulnerabilities,code_smells" -o sonar_report.json
 
       - name: Upload Sonar Report
         uses: actions/upload-artifact@v4
