@@ -33,7 +33,7 @@ jobs:
         run: |
           mvn clean verify sonar:sonar \
             -Dsonar.projectKey=M-Serral_WordleApp \
-            -Dsonar.organization=m-Serral \
+            -Dsonar.organization=m-serral \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=${{ secrets.SONARCLOUD_TOKEN }}
 
