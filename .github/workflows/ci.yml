@@ -39,7 +39,7 @@ jobs:
 
       - name: Download SonarCloud Report
         run: |
-          curl -s -u ${{ secrets.SONAR_TOKEN }} "https://sonarcloud.io/api/measures/component?component=M-Serral_WordleApp&metricKeys=coverage,bugs,vulnerabilities,code_smells" -o sonar_report.json
+          curl -s -u ${{ secrets.SONARCLOUD_TOKEN }} "https://sonarcloud.io/api/measures/component?component=M-Serral_WordleApp&metricKeys=coverage,bugs,vulnerabilities,code_smells" -o sonar_report.json
 
       - name: Upload Sonar Report
         uses: actions/upload-artifact@v4
