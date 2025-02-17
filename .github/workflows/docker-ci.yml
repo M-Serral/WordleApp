@@ -21,11 +21,14 @@ jobs:
       - name: Build con Maven
         run: mvn clean package -DskipTests
 
+      - name: Obtener versión del proyecto desde pom.xml
+        run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+
       - name: Construir imagen Docker
-        run: docker build -t mserral/wordleapp:${{ github.sha }} .
+        run: docker build -t mserral/wordleapp:${{ env.VERSION }} .
 
       - name: Login en DockerHub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Push a DockerHub
-        run: docker push mserral/wordleapp:${{ github.sha }}
+        run: docker push mserral/wordleapp:${{ env.VERSION }}
