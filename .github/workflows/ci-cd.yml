@@ -116,4 +116,3 @@ jobs:
 
       - name: Push Docker Image
         run: docker push mserral/wordleapp:${{ env.VERSION }}
-
