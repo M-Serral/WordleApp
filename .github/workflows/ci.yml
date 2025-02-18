@@ -49,21 +49,34 @@ jobs:
 
           echo "ChromeDriver version: $CHROMEDRIVER_VERSION"
 
-          # Download and install ChromeDriver
+          # Download ChromeDriver
           curl -sS -o chromedriver.zip "https://storage.googleapis.com/chrome-for-testing-public/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip"
-          sudo unzip chromedriver.zip -d /usr/local/bin/
 
-          # Fix permissions and remove unnecessary files
-          sudo chmod -R u+w /usr/local/bin/chromedriver-linux64
-          sudo rm -rf /usr/local/bin/chromedriver-linux64
+          # Check if the download was successful
+          if ! unzip -tq chromedriver.zip; then
+            echo "Error: The downloaded file is not a valid ZIP"
+            exit 1
+          fi
 
-          # Move executable and set permissions
-          sudo mv /usr/local/bin/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
-          sudo chmod +x /usr/local/bin/chromedriver
-          rm -r chromedriver.zip
+          # Extract ChromeDriver
+          sudo unzip -o chromedriver.zip -d /usr/local/bin/
+
+          # Verify extracted structure
+          if [ -f "/usr/local/bin/chromedriver-linux64/chromedriver" ]; then
+            sudo mv /usr/local/bin/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
+            sudo chmod +x /usr/local/bin/chromedriver
+            echo "ChromeDriver installed successfully."
+          else
+            echo "Error: ChromeDriver binary not found after extraction!"
+            exit 1
+          fi
+
+          # Clean up unnecessary files
+          sudo rm -rf chromedriver.zip /usr/local/bin/chromedriver-linux64
 
           # Verify the installation
           chromedriver --version
+      
 
       - name: Run tests
         run: mvn test
