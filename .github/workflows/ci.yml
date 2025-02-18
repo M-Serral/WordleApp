@@ -43,7 +43,7 @@ jobs:
           CHROMEDRIVER_VERSION=$(curl -sS "https://googlechromelabs.github.io/chrome-for-testing/latest-patch-versions-per-build-with-downloads.json" | jq -r ".builds[\"$CHROME_VERSION\"].version")
 
           if [[ -z "$CHROMEDRIVER_VERSION" ]]; then
-            echo "No compatible ChromeDriver version found for $CHROME_VERSION"
+            echo "No compatible ChromeDriver version was found for $CHROME_VERSION"
             exit 1
           fi
 
@@ -52,11 +52,17 @@ jobs:
           # Download and install ChromeDriver
           curl -sS -o chromedriver.zip "https://storage.googleapis.com/chrome-for-testing-public/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip"
           sudo unzip chromedriver.zip -d /usr/local/bin/
+
+          # Fix permissions and remove unnecessary files
+          sudo chmod -R u+w /usr/local/bin/chromedriver-linux64
+          sudo rm -rf /usr/local/bin/chromedriver-linux64
+
+          # Move executable and set permissions
           sudo mv /usr/local/bin/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
           sudo chmod +x /usr/local/bin/chromedriver
-          rm -r chromedriver.zip /usr/local/bin/chromedriver-linux64
+          rm -r chromedriver.zip
 
-          # Verify ChromeDriver installation
+          # Verify the installation
           chromedriver --version
 
       - name: Run tests
