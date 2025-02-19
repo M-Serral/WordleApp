@@ -122,12 +122,26 @@ jobs:
           key: maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-
 
-      - name: Run tests and generate JaCoCo report
-        run: |
-          mvn clean verify jacoco:report -Dserver.port=${{ env.SERVER_PORT }}
+      - name: Start application in background
+        run: mvn spring-boot:run -Dserver.port=8081 &
         env:
           SPRING_PROFILES_ACTIVE: test
-          SERVER_PORT: 8081
+
+      - name: Wait for application to start
+        run: |
+          echo "Esperando a que la aplicación inicie..."
+          for i in {1..10}; do
+            if curl --silent --fail http://localhost:8081; then
+              echo "La aplicación está en funcionamiento."
+              break
+            fi
+            echo "Esperando 3 segundos más..."
+            sleep 3
+          done
+
+      - name: Run tests and generate JaCoCo report
+        run: mvn verify jacoco:report -Dserver.port=8081
+
 
 
       - name: Verify JaCoCo report
