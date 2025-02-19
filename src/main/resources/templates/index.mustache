@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WORDLE GAME</title>
+</head>
+<body>
+<h1>Welcome to Wordle</h1>
+<form id="wordleForm">
+    <input type="text" id="guessInput" maxlength="5" placeholder="Enter a 5-letter word">
+    <button type="submit">Submit</button>
+</form>
+<p id="result"></p>
+
+<script>
+    document.getElementById("wordleForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        let guess = document.getElementById("guessInput").value;
+        fetch("/api/wordle/guess?guess=" + guess, { method: "POST" })
+                .then(response => response.text())
+                .then(data => document.getElementById("result").innerText = data);
+    });
+</script>
+</body>
+</html>
+

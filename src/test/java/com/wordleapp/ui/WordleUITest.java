@@ -1,0 +1,52 @@
+package com.wordleapp.ui;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+ class WordleUITest {
+
+    private WebDriver driver;
+
+    @BeforeAll
+    void setUp() {
+        WebDriverManager.chromedriver().setup();
+        driver = new ChromeDriver();
+        driver.get("http://localhost:8080/");
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "APPLE, Correct!",
+            "PEACH, Try again!",
+            "APP, Invalid input. The word must be 5 letters long."
+    })
+    void testWordleUI(String guess, String expectedMessage) {
+        WebElement inputField = driver.findElement(By.id("guessInput"));
+        WebElement submitButton = driver.findElement(By.tagName("button"));
+
+        inputField.clear();
+        inputField.sendKeys(guess);
+        submitButton.click();
+
+        WebElement result = driver.findElement(By.id("result"));
+        assertEquals(expectedMessage, result.getText());
+    }
+
+    @AfterAll
+    void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+}
