@@ -30,16 +30,6 @@ jobs:
           key: maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-
 
-      - name: Kill existing ChromeDriver
-        run: |
-          pkill -f chromedriver || true
-
-      - name: Kill process on port 8080
-        run: |
-          if lsof -ti:8080; then
-            kill -9 $(lsof -ti:8080)
-          fi
-
       - name: Install Chrome & ChromeDriver
         run: |
           sudo apt update
