@@ -30,16 +30,6 @@ jobs:
           key: maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-
 
-      - name: Kill existing ChromeDriver
-        run: |
-          pkill -f chromedriver || true
-
-      - name: Kill process on port 8080
-        run: |
-          if lsof -ti:8080; then
-            kill -9 $(lsof -ti:8080)
-          fi
-
       - name: Install Chrome & ChromeDriver
         run: |
           sudo apt update
@@ -86,15 +76,27 @@ jobs:
 
           # Verify the installation
           chromedriver --version
-      
+
+      - name: Start application in background
+        run: mvn spring-boot:run &
+        env:
+          SPRING_PROFILES_ACTIVE: test
+
+      - name: Wait for application to start
+        run: |
+          echo "Waiting for the application to start..."
+          sleep 5
+          curl --retry 5 --retry-delay 5 --retry-connrefused -s http://localhost:8080 || (echo "Application did not start" && exit 1)
 
       - name: Run tests
         run: mvn test
 
+      - name: Stop application
+        run: pkill -f "java.*spring-boot"
+
   sonar:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
-    needs: ci  # only execute if ci pass
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -112,13 +114,18 @@ jobs:
           key: maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-
 
-      - name: Run SonarCloud Analysis
+      - name: Run Tests and Generate Coverage Report
+        run: mvn clean verify
+
+      - name: Compile and Run SonarCloud Analysis
         run: |
-          mvn clean verify sonar:sonar \
-            -Dsonar.projectKey=M-Serral_WordleApp \
-            -Dsonar.organization=m-serral \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=${{ secrets.SONARCLOUD_TOKEN }}
+          mvn clean package -DskipTests
+          mvn sonar:sonar -Dsonar.projectKey=M-Serral_WordleApp \
+                          -Dsonar.organization=m-serral \
+                          -Dsonar.host.url=https://sonarcloud.io \
+                          -Dsonar.login=${{ secrets.SONARCLOUD_TOKEN }} \
+                          -Dsonar.java.binaries=target/classes
+                          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
       - name: Upload Sonar Report
         uses: actions/upload-artifact@v4
@@ -130,7 +137,6 @@ jobs:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
     needs: ci  # only execute if ci pass
-    if: github.event_name == 'push'  # only execute in push to master
 
     steps:
       - name: Checkout repository
