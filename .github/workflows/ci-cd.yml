@@ -127,6 +127,8 @@ jobs:
           mvn clean verify jacoco:report -Dserver.port=${{ env.SERVER_PORT }}
         env:
           SPRING_PROFILES_ACTIVE: test
+          SERVER_PORT: 8081
+
 
       - name: Verify JaCoCo report
         run: find target/ -name "jacoco.xml" -print || echo "JaCoCo report not found"
