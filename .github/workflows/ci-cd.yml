@@ -114,6 +114,9 @@ jobs:
           key: maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-
 
+      - name: Run Tests and Generate Coverage Report
+        run: mvn clean verify
+
       - name: Compile and Run SonarCloud Analysis
         run: |
           mvn clean package -DskipTests
@@ -122,6 +125,7 @@ jobs:
                           -Dsonar.host.url=https://sonarcloud.io \
                           -Dsonar.login=${{ secrets.SONARCLOUD_TOKEN }} \
                           -Dsonar.java.binaries=target/classes
+                          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
       - name: Upload Sonar Report
         uses: actions/upload-artifact@v4
