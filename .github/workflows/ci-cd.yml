@@ -91,7 +91,7 @@ jobs:
             echo "Waiting for app to be ready..."
             sleep 3
           done
-      
+
 
       - name: Run tests
         run: mvn test -Dserver.port=${{ env.SERVER_PORT }}
@@ -156,8 +156,8 @@ jobs:
                           -Dsonar.token=${{ secrets.SONARCLOUD_TOKEN }} \
                           -Dsonar.java.binaries=target/classes \
                           -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-          
-          
+
+
       - name: Download Sonar Report
         run: |
           curl -s -u ${{ secrets.SONARCLOUD_TOKEN }} \
