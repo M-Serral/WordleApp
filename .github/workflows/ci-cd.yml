@@ -123,7 +123,7 @@ jobs:
           restore-keys: maven-
 
       - name: Start application in background
-        run: mvn spring-boot:run -Dserver.port=8081 &
+        run: mvn spring-boot:run -Dserver.port=${{ env.SERVER_PORT }} &
         env:
           SPRING_PROFILES_ACTIVE: test
 
@@ -140,7 +140,7 @@ jobs:
           done
 
       - name: Run tests and generate JaCoCo report
-        run: mvn verify jacoco:report -Dserver.port=8081
+        run: mvn clean verify -Dserver.port=${{ env.SERVER_PORT }}
 
       - name: Verify JaCoCo report
         run: find target/ -name "jacoco.xml" -print || echo "JaCoCo report not found"
@@ -170,7 +170,7 @@ jobs:
           path: sonar_report.json
 
       - name: Upload JaCoCo Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: JaCoCo Report
           path: target/site/jacoco/
