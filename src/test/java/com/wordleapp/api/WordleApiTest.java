@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
-public class WordleApiTest {
+class WordleApiTest {
 
     @BeforeAll
-    public static void setup() {
+    static void setup() {
         RestAssured.baseURI = "http://localhost:8080/api/wordle";
     }
 
