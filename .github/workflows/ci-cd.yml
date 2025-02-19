@@ -140,7 +140,7 @@ jobs:
           done
 
       - name: Run tests and generate JaCoCo report
-        run: mvn clean verify -Dserver.port=${{ env.SERVER_PORT }}
+        run: mvn verify jacoco:report -Dserver.port=8081
 
       - name: Verify JaCoCo report
         run: find target/ -name "jacoco.xml" -print || echo "JaCoCo report not found"
