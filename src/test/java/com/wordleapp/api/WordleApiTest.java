@@ -12,7 +12,8 @@ class WordleApiTest {
 
     @BeforeAll
     static void setup() {
-        RestAssured.baseURI = "http://localhost:8080/api/wordle";
+        String port = System.getProperty("server.port", "8080");
+        RestAssured.baseURI = "http://localhost:" + port + "/api/wordle";
     }
 
     @Test
