@@ -123,12 +123,16 @@ jobs:
           restore-keys: maven-
 
       - name: Run tests and generate JaCoCo report
-        run: mvn clean verify -Dserver.port=${{ env.SERVER_PORT }} &
+        run: |
+          mvn clean verify jacoco:report -Dserver.port=${{ env.SERVER_PORT }}
         env:
           SPRING_PROFILES_ACTIVE: test
 
       - name: Verify JaCoCo report
-        run: ls -l target/site/jacoco/
+        run: find target/ -name "jacoco.xml" -print || echo "JaCoCo report not found"
+
+      - name: Wait for JaCoCo report
+        run: sleep 5
 
       - name: Compile and Run SonarCloud Analysis
         run: |
