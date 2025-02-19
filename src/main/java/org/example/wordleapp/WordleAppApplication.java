@@ -1,4 +1,4 @@
-package com.wordleapp;
+package org.example.wordleapp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
