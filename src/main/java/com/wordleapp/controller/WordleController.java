@@ -10,6 +10,9 @@ public class WordleController {
 
     @PostMapping("/guess")
     public String checkWord(@RequestParam String guess) {
+        if (guess.length() != 5) {
+            return "Invalid input. The word must be 5 letters long."; // Ensure correct message
+        }
         return guess.equalsIgnoreCase(SECRET_WORD) ? "Correct!" : "Try again!";
     }
 }
