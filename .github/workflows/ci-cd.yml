@@ -140,9 +140,7 @@ jobs:
           done
 
       - name: Run tests and generate JaCoCo report
-        run: mvn verify jacoco:report -Dserver.port=8081
-
-
+        run: mvn clean verify -Dserver.port=${{ env.SERVER_PORT }}
 
       - name: Verify JaCoCo report
         run: find target/ -name "jacoco.xml" -print || echo "JaCoCo report not found"
@@ -170,6 +168,12 @@ jobs:
         with:
           name: SonarCloud Report
           path: sonar_report.json
+
+      - name: Upload JaCoCo Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: JaCoCo Report
+          path: target/site/jacoco/
 
   cd:
     name: Build and Push Docker Image
