@@ -16,7 +16,7 @@ class WordleApiTest {
     }
 
     @Test
-     void testCorrectGuess() {
+    void testCorrectGuess() {
         given()
                 .contentType(ContentType.JSON)
                 .when()
@@ -27,7 +27,7 @@ class WordleApiTest {
     }
 
     @Test
-     void testIncorrectGuess() {
+    void testIncorrectGuess() {
         given()
                 .contentType(ContentType.JSON)
                 .when()
