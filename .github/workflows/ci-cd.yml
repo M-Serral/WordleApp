@@ -114,6 +114,9 @@ jobs:
           key: maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-
 
+      - name: Run tests and generate JaCoCo report
+        run: mvn clean verify
+
       - name: Compile and Run SonarCloud Analysis
         run: |
           mvn clean package -DskipTests
@@ -123,6 +126,9 @@ jobs:
                           -Dsonar.login=${{ secrets.SONARCLOUD_TOKEN }} \
                           -Dsonar.java.binaries=target/classes
                           -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                          env:
+                            SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+          
           
       - name: Download Sonar Report
         run: |
