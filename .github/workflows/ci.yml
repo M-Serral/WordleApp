@@ -115,14 +115,14 @@ jobs:
           key: maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-
 
-      - name: Run SonarCloud Analysis without tests
+      - name: Compile and Run SonarCloud Analysis
         run: |
+          mvn clean package -DskipTests
           mvn sonar:sonar -Dsonar.projectKey=M-Serral_WordleApp \
                           -Dsonar.organization=m-serral \
                           -Dsonar.host.url=https://sonarcloud.io \
                           -Dsonar.login=${{ secrets.SONARCLOUD_TOKEN }} \
-                          -DskipTests
-      
+                          -Dsonar.java.binaries=target/classes
 
       - name: Upload Sonar Report
         uses: actions/upload-artifact@v4
