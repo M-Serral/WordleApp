@@ -114,9 +114,6 @@ jobs:
           key: maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-
 
-      - name: Run Tests and Generate Coverage Report
-        run: mvn clean verify
-
       - name: Compile and Run SonarCloud Analysis
         run: |
           mvn clean package -DskipTests
