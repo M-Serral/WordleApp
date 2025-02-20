@@ -194,7 +194,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ***/wordleapp:${{ env.VERSION }}-${{ env.GIT_SHA }} .
+          docker build -t mserral/wordleapp:${{ env.VERSION }}-${{ env.GIT_SHA }} .
 
       - name: Login to DockerHub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
