@@ -93,14 +93,14 @@ jobs:
             sleep 3
           done
 
-      - name: Save target directory
+      - name: Run tests
+        run: mvn clean verify -Dserver.port=${{ env.SERVER_PORT }} jacoco:report jacoco:report-aggregate
+
+      - name: Save JaCoCo Report
         uses: actions/upload-artifact@v4
         with:
-         name: target-directory
-         path: target/
-
-      - name: Run tests
-        run: mvn clean verify -Dserver.port=${{ env.SERVER_PORT }} jacoco:report
+          name: JaCoCo Report
+          path: target/site/jacoco/
 
   sonar:
     name: SonarCloud Analysis
@@ -127,17 +127,11 @@ jobs:
           key: maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-
 
-      - name: Upload JaCoCo Report
-        uses: actions/upload-artifact@v4
+      - name: Download JaCoCo Report
+        uses: actions/download-artifact@v4
         with:
           name: JaCoCo Report
           path: target/site/jacoco/
-
-      - name: Download target directory
-        uses: actions/download-artifact@v4
-        with:
-          name: target-directory
-          path: target/
 
       - name: Compile and Run SonarCloud Analysis
         run: |
