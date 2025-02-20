@@ -8,15 +8,16 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
-public class WordleApiTest {
+class WordleApiTest {
 
     @BeforeAll
-    public static void setup() {
-        RestAssured.baseURI = "http://localhost:8080/api/wordle";
+    static void setup() {
+        String port = System.getProperty("server.port", "8080");
+        RestAssured.baseURI = "http://localhost:" + port + "/api/wordle";
     }
 
     @Test
-     void testCorrectGuess() {
+    void testCorrectGuess() {
         given()
                 .contentType(ContentType.JSON)
                 .when()
@@ -27,7 +28,7 @@ public class WordleApiTest {
     }
 
     @Test
-     void testIncorrectGuess() {
+    void testIncorrectGuess() {
         given()
                 .contentType(ContentType.JSON)
                 .when()

@@ -29,7 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
         options.addArguments("--disable-dev-shm-usage");
 
         driver = new ChromeDriver(options);
-        driver.get("http://localhost:8080/");
+
+        String port = System.getProperty("server.port", "8080");
+        driver.get("http://localhost:" + port + "/");
     }
 
     @ParameterizedTest
