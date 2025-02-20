@@ -33,9 +33,6 @@ jobs:
           key: maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-
 
-      - name: Compile project
-        run: mvn clean compile
-
       - name: Install Chrome & ChromeDriver
         run: |
           sudo apt update
@@ -82,19 +79,6 @@ jobs:
 
           # Verify the installation
           chromedriver --version
-
-      - name: Start application in background
-        run: mvn spring-boot:run &
-        env:
-          SPRING_PROFILES_ACTIVE: test
-
-      - name: Wait for application to start
-        run: |
-          for i in {1..30}; do
-            nc -z localhost 8080 && echo "App is up!" && break
-            echo "Waiting for app to be ready..."
-            sleep 3
-          done
 
       - name: Run tests
         run: mvn clean verify -Dserver.port=${{ env.SERVER_PORT }} jacoco:report jacoco:report-aggregate
@@ -156,6 +140,11 @@ jobs:
                           -Dsonar.token=${{ secrets.SONARCLOUD_TOKEN }} \
                           -Dsonar.java.binaries=target/classes \
                           -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+          
+
+      - name: Clean up compiled classes
+        run: rm -rf target/classes
+
 
       - name: Download Sonar Report
         run: |
