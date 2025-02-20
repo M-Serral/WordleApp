@@ -81,14 +81,14 @@ jobs:
           chromedriver --version
 
       - name: Start application in background
-        run: mvn spring-boot:run -Dserver.port=${{ env.SERVER_PORT }} &
+        run: mvn spring-boot:run -Dspring-boot.run.jvmArguments="-XX:+TieredCompilation -XX:TieredStopAtLevel=1" &
         env:
           SPRING_PROFILES_ACTIVE: test
 
       - name: Wait for application to start
         run: |
           echo "Wait for application to start..."
-          timeout 30s bash -c 'until nc -z localhost 8080; do sleep 2; done' || (echo "App does not start in time" && exit 1)
+          timeout 30 sh -c 'until nc -z localhost 8080; do sleep 2; done'
 
 
       - name: Run tests
@@ -152,11 +152,6 @@ jobs:
                           -Dsonar.token=${{ secrets.SONARCLOUD_TOKEN }} \
                           -Dsonar.java.binaries=target/classes \
                           -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-          
-
-      - name: Clean up compiled classes
-        run: rm -rf target/classes
-
 
       - name: Download Sonar Report
         run: |
