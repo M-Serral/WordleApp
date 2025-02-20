@@ -134,7 +134,6 @@ jobs:
                           -Dsonar.organization=m-serral \
                           -Dsonar.host.url=https://sonarcloud.io \
                           -Dsonar.token=${{ secrets.SONARCLOUD_TOKEN }} \
-                          -Dsonar.java.binaries=target/classes \
                           -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
       - name: Download Sonar Report
