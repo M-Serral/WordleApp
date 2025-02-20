@@ -80,6 +80,17 @@ jobs:
           # Verify the installation
           chromedriver --version
 
+      - name: Start application in background
+        run: mvn spring-boot:run -Dserver.port=${{ env.SERVER_PORT }} &
+        env:
+          SPRING_PROFILES_ACTIVE: test
+
+      - name: Wait for application to start
+        run: |
+          echo "Wait for application to start..."
+          timeout 30s bash -c 'until nc -z localhost 8080; do sleep 2; done' || (echo "App does not start in time" && exit 1)
+
+
       - name: Run tests
         run: mvn clean verify -Dserver.port=${{ env.SERVER_PORT }} jacoco:report jacoco:report-aggregate
 
