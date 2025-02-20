@@ -105,6 +105,7 @@ jobs:
         with:
           name: Compiled Classes
           path: target/classes/
+          retention-days: 1
 
   sonar:
     name: SonarCloud Analysis
