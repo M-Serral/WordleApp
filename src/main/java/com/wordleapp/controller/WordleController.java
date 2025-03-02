@@ -12,16 +12,24 @@ public class WordleController {
 
     @PostMapping("/guess")
     public String checkWord(@RequestParam String guess) {
-
-        // Validación de caracteres: Solo letras del alfabeto inglés + "ñ"
-        if (!guess.matches("[A-Za-zñÑ]{5}")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input: Only characters from alphabet are allowed.");
-        }
-
-        if (guess.length() != 5) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input: The word must be 5 letters long.");
-        }
-
+        validateGuess(guess);
         return guess.equalsIgnoreCase(SECRET_WORD) ? "Correct!" : "Try again!";
     }
+
+    /**
+     * Validates the guess, ensuring it is exactly 5 letters and contains only allowed characters.
+     * @param guess The input word to validate.
+     */
+    private void validateGuess(String guess) {
+        String errorMessage = !guess.matches("[A-Za-zñÑ]+")
+                ? "Invalid input: Only characters from alphabet are allowed."
+                : (guess.length() != 5)
+                ? "Invalid input: The word must be 5 letters long."
+                : null;
+
+        if (errorMessage != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+        }
+    }
+
 }
