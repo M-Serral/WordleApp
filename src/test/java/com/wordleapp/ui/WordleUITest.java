@@ -3,6 +3,7 @@ package com.wordleapp.ui;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -38,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
     @CsvSource({
             "APPLE, Correct!",
             "PEACH, Try again!",
-            "APP, Invalid input. The word must be 5 letters long."
+            "APP, Invalid input. The word must be 5 letters long.",
+            "H3LLO, Invalid input: only characters from alphabet are allowed."
     })
     void testWordleUI(String guess, String expectedMessage) {
         WebElement inputField = driver.findElement(By.id("guessInput"));
@@ -58,4 +60,5 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
             driver.quit();
         }
     }
+
 }
