@@ -12,9 +12,6 @@ public class WordleController {
 
     @PostMapping("/guess")
     public String checkWord(@RequestParam String guess) {
-        if (guess.length() != 5) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input: The word must be 5 letters long.");
-        }
 
         // Código duplicado: validación en dos lugares diferentes
         boolean isValid = true;
@@ -26,8 +23,11 @@ public class WordleController {
 
         // Complejidad innecesaria: condicional anidado
         if (!isValid) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input: only characters from alphabet are allowed.");        }
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input: Only characters from alphabet are allowed.");        }
 
+        if (guess.length() != 5) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input: The word must be 5 letters long.");
+        }
 
 
         return guess.equalsIgnoreCase(SECRET_WORD) ? "Correct!" : "Try again!";
