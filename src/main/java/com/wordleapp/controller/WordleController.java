@@ -17,7 +17,7 @@ public class WordleController {
         }
 
         // Código duplicado: validación en dos lugares diferentes
-        boolean isValid = false;
+        boolean isValid = true;
         for (char c : guess.toCharArray()) {
             if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == 'ñ' || c == 'Ñ')) {
                 isValid = false;
