@@ -20,12 +20,13 @@ class GlobalExceptionHandlerTest {
 
     @ParameterizedTest
     @CsvSource({
-            "12345, Invalid input: Only characters from alphabet are allowed.",
+            "12+, Invalid input: Only characters from the alphabet are allowed.",
+            "12345, Invalid input: Only characters from the alphabet are allowed.",
             "APP, Invalid input: The word must be 5 letters long.",
-            "H3LLO, Invalid input: Only characters from alphabet are allowed.",
-            "<apa, Invalid input: Only characters from alphabet are allowed.",
-            "Tabl?, Invalid input: Only characters from alphabet are allowed.",
-            "'fuel,', Invalid input: Only characters from alphabet are allowed.",
+            "H3LLO, Invalid input: Only characters from the alphabet are allowed.",
+            "<apa, Invalid input: Only characters from the alphabet are allowed.",
+            "Tbl?, Invalid input: Only characters from the alphabet are allowed.",
+            "'fuel,', Invalid input: Only characters from the alphabet are allowed.",
 
     })
     void shouldHandleResponseStatusException(String guess, String expectedMessage) throws Exception {
