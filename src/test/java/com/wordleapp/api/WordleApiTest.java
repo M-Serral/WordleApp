@@ -39,13 +39,30 @@ class WordleApiTest {
     }
 
     @Test
-     void testInvalidInput() {
+    void testInvalidInput() {
         given()
                 .contentType(ContentType.JSON)
                 .when()
                 .post("/guess?guess=APP")
                 .then()
-                .statusCode(200)
-                .body(equalTo("Invalid input. The word must be 5 letters long."));
+                .statusCode(400)
+                .body("status", equalTo(400))
+                .body("error", equalTo("Bad Request"))
+                .body("message", equalTo("Invalid input: The word must be 5 letters long."));
     }
+
+    @Test
+    void shouldRejectInvalidCharactersInGuess() {
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/guess?guess=H3LLO")
+                .then()
+                .statusCode(400)
+                .body("status", equalTo(400))
+                .body("error", equalTo("Bad Request"))
+                .body("message", equalTo("Invalid input: Only characters from alphabet are allowed."));
+    }
+
+
 }

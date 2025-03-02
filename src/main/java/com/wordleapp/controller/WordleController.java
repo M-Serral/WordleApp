@@ -1,6 +1,8 @@
 package com.wordleapp.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/wordle")
@@ -10,9 +12,24 @@ public class WordleController {
 
     @PostMapping("/guess")
     public String checkWord(@RequestParam String guess) {
-        if (guess.length() != 5) {
-            return "Invalid input. The word must be 5 letters long."; // Ensure correct message
+
+        // Código duplicado: validación en dos lugares diferentes
+        boolean isValid = true;
+        for (char c : guess.toCharArray()) {
+            if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == 'ñ' || c == 'Ñ')) {
+                isValid = false;
+            }
         }
+
+        // Complejidad innecesaria: condicional anidado
+        if (!isValid) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input: Only characters from alphabet are allowed.");        }
+
+        if (guess.length() != 5) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input: The word must be 5 letters long.");
+        }
+
+
         return guess.equalsIgnoreCase(SECRET_WORD) ? "Correct!" : "Try again!";
     }
 }
