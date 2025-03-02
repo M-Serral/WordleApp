@@ -21,11 +21,13 @@ public class WordleController {
      * @param guess The input word to validate.
      */
     private void validateGuess(String guess) {
-        String errorMessage = !guess.matches("[A-Za-zñÑ]+")
-                ? "Invalid input: Only characters from alphabet are allowed."
-                : (guess.length() != 5)
-                ? "Invalid input: The word must be 5 letters long."
-                : null;
+        String errorMessage = null;
+
+        if (!guess.matches("[A-Za-zñÑ]+")) {
+            errorMessage = "Invalid input: Only characters from the alphabet are allowed.";
+        } else if (guess.length() != 5) {
+            errorMessage = "Invalid input: The word must be 5 letters long.";
+        }
 
         if (errorMessage != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
