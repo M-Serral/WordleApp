@@ -61,7 +61,7 @@ class WordleApiTest {
                 .statusCode(400)
                 .body("status", equalTo(400))
                 .body("error", equalTo("Bad Request"))
-                .body("message", equalTo("Invalid input: Only characters from alphabet are allowed."));
+                .body("message", equalTo("Invalid input: Only characters from the alphabet are allowed."));
     }
 
 
