@@ -21,9 +21,9 @@ class WordleControllerTest {
     private MockMvc mockMvc;
 
     @ParameterizedTest
-    @ValueSource(strings = {"APPLE", "apple", "GRAPE", "MANGO", "BERRY"})
+    @ValueSource(strings = {"PLANE", "plane", "GRAPE", "MANGO", "BERRY"})
     void testWordGuess(String word) throws Exception {
-        boolean isCorrect = word.equalsIgnoreCase("APPLE");
+        boolean isCorrect = word.equalsIgnoreCase("PLANE");
 
         mockMvc.perform(post("/api/wordle/guess").param("guess", word))
                 .andExpect(status().isOk())
