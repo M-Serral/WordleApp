@@ -17,8 +17,17 @@ public class GlobalExceptionHandler {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", ex.getStatusCode().value());
-        body.put("error", "Bad Request");
+
+        // Fix: The error message now matches the status code.
+        String errorType = switch (ex.getStatusCode().value()) {
+            case 400 -> "Bad Request";
+            case 429 -> "Too Many Requests";
+            default -> "Error";
+        };
+
+        body.put("error", errorType);
         body.put("message", ex.getReason() != null ? ex.getReason() : "Invalid request");
+
         return ResponseEntity.status(ex.getStatusCode()).body(body);
     }
 }
