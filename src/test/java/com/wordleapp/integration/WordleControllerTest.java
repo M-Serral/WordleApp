@@ -1,13 +1,11 @@
 package com.wordleapp.integration;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -21,9 +19,9 @@ class WordleControllerTest {
     private MockMvc mockMvc;
 
     @ParameterizedTest
-    @ValueSource(strings = {"APPLE", "apple", "GRAPE", "MANGO", "BERRY"})
+    @ValueSource(strings = {"PLANE", "plane", "plano"})
     void testWordGuess(String word) throws Exception {
-        boolean isCorrect = word.equalsIgnoreCase("APPLE");
+        boolean isCorrect = word.equalsIgnoreCase("PLANE");
 
         mockMvc.perform(post("/api/wordle/guess").param("guess", word))
                 .andExpect(status().isOk())

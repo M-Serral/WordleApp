@@ -21,7 +21,7 @@ class WordleApiTest {
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/guess?guess=APPLE")
+                .post("/guess?guess=PLANE")
                 .then()
                 .statusCode(200)
                 .body(equalTo("Correct!"));

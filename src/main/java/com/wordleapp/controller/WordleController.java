@@ -8,7 +8,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/wordle")
 public class WordleController {
 
-    private static final String SECRET_WORD = "APPLE"; // Hardcoded for now
+    private static final String SECRET_WORD = "PLANE"; // Hardcoded for now
 
     @PostMapping("/guess")
     public String checkWord(@RequestParam String guess) {

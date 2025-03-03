@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
     @ParameterizedTest
     @CsvSource({
-            "APPLE, Correct!",
+            "PLANE, Correct!",
             "PEACH, Try again!",
             "APP, Invalid input: The word must be 5 letters long.",
             "H3LLO, Invalid input: Only characters from the alphabet are allowed."
