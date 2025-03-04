@@ -1,5 +1,6 @@
 package com.wordleapp.integration;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -20,6 +21,13 @@ public class WordleControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @BeforeEach
+    public void resetGame() throws Exception {
+        mockMvc.perform(post("/api/wordle/reset")
+                        .param("user", "testUser"))
+                .andExpect(status().isOk());
+    }
+
     @Test
     public void testUserWinsGameAndCannotKeepPlaying() throws Exception {
         mockMvc.perform(post("/api/wordle/guess")
@@ -32,8 +40,9 @@ public class WordleControllerTest {
                         .param("user", "testUser"))
                 .andExpect(status().isTooManyRequests())
                 .andExpect(content().string("Game over! You've already won."));
-
     }
+
+
 
     @Test
     public void testUserAttemptsAndFails() throws Exception {
