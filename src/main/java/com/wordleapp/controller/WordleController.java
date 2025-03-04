@@ -1,6 +1,7 @@
 package com.wordleapp.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -69,9 +70,6 @@ public class WordleController {
 
     @PostMapping("/reset")
     public String resetGame(@RequestParam String user) {
-        if (!attemptsMap.containsKey(user)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found.");
-        }
         attemptsMap.put(user, 0);
         gameWonMap.put(user, false); // reset user victory
         return "Game reset! You have 6 attempts.";

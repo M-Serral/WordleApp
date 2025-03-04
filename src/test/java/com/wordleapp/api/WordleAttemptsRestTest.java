@@ -2,7 +2,9 @@ package com.wordleapp.api;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,15 +23,39 @@ class WordleAttemptsRestTest {
         RestAssured.baseURI = "http://localhost:" + port + "/api/wordle";
     }
 
+    private static final String TEST_USER = "testUser";
+
+    @BeforeEach
+    void resetBeforeEachTest() {
+        given()
+                .contentType("application/json")
+                .when()
+                .post("/reset?user=" + TEST_USER)
+                .then()
+                .statusCode(200)
+                .body(equalTo("Game reset! You have 6 attempts."));
+    }
+
+    @AfterEach
+    void resetAfterEachTest() {
+        given()
+                .contentType("application/json")
+                .when()
+                .post("/reset?user=" + TEST_USER)
+                .then()
+                .statusCode(200)
+                .body(equalTo("Game reset! You have 6 attempts."));
+    }
+
     @Test
     void testInvalidInput() {
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/guess?guess=APP&user=testUser")
+                .post("/guess?guess=APP&user=" + TEST_USER)
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .body("message", equalTo("Invalid input: The word must be 5 letters long."));
+                .body(equalTo("Invalid input: The word must be 5 letters long."));
     }
 
     @Test
@@ -37,10 +63,10 @@ class WordleAttemptsRestTest {
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/guess?guess=H3LLO&user=testUser")
+                .post("/guess?guess=H3LLO&user=" + TEST_USER)
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .body("message", equalTo("Invalid input: Only characters from the alphabet are allowed."));
+                .body(equalTo("Invalid input: Only characters from the alphabet are allowed."));
     }
     @Test
     void shouldAllowUpToFiveIncorrectAttempts() {
@@ -48,10 +74,11 @@ class WordleAttemptsRestTest {
             given()
                     .contentType("application/json")
                     .when()
-                    .post("/guess?guess=WRONG&user=testUser")
+                    .post("/guess?guess=WRONG&user=" + TEST_USER)
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body(equalTo("Try again! Attempts left: " + (6 - i)));
+
         }
     }
 
@@ -61,7 +88,7 @@ class WordleAttemptsRestTest {
             given()
                     .contentType("application/json")
                     .when()
-                    .post("/guess?guess=WRONG&user=testUser")
+                    .post("/guess?guess=WRONG&user=" + TEST_USER)
                     .then()
                     .statusCode(HttpStatus.OK.value());
         }
@@ -69,10 +96,10 @@ class WordleAttemptsRestTest {
         given()
                 .contentType("application/json")
                 .when()
-                .post("/guess?guess=WRONG&user=testUser")
+                .post("/guess?guess=WRONG&user=" + TEST_USER)
                 .then()
                 .statusCode(HttpStatus.TOO_MANY_REQUESTS.value())
-                .body("message", equalTo("Game over! You've used all attempts."));
+                .body(equalTo("Game over! You've used all attempts."));
     }
 
     @Test
@@ -82,17 +109,17 @@ class WordleAttemptsRestTest {
             given()
                     .contentType("application/json")
                     .when()
-                    .post("/guess?guess=WRONG&user=testUser")
+                    .post("/guess?guess=WRONG&user=" + TEST_USER)
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body(equalTo("Try again! Attempts left: " + (6 - i)));
+                    .body( equalTo("Try again! Attempts left: " + (6 - i)));
         }
 
         // Ahora introduce la palabra correcta
         given()
                 .contentType("application/json")
                 .when()
-                .post("/guess?guess=PLANE&user=testUser")
+                .post("/guess?guess=PLANE&user=" + TEST_USER)
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body(equalTo("Correct!"));
@@ -101,10 +128,10 @@ class WordleAttemptsRestTest {
         given()
                 .contentType("application/json")
                 .when()
-                .post("/guess?guess=WRONG&user=testUser")
+                .post("/guess?guess=WRONG&user=" + TEST_USER)
                 .then()
                 .statusCode(HttpStatus.TOO_MANY_REQUESTS.value())
-                .body("message", equalTo("Game over! You've already won."));
+                .body(equalTo("Game over! You've already won."));
     }
 
 
@@ -114,13 +141,13 @@ class WordleAttemptsRestTest {
             given()
                     .contentType("application/json")
                     .when()
-                    .post("/guess?guess=WRONG&user=testUser");
+                    .post("/guess?guess=WRONG&user=" + TEST_USER);
         }
 
         given()
                 .contentType("application/json")
                 .when()
-                .post("/reset?user=testUser")
+                .post("/reset?user=" + TEST_USER)
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body(equalTo("Game reset! You have 6 attempts."));
@@ -128,7 +155,7 @@ class WordleAttemptsRestTest {
         given()
                 .contentType("application/json")
                 .when()
-                .post("/guess?guess=WRONG&user=testUser")
+                .post("/guess?guess=WRONG&user=" + TEST_USER)
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body(equalTo("Try again! Attempts left: 5"));
