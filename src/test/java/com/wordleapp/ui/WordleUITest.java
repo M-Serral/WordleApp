@@ -34,7 +34,7 @@ class WordleUITest {
     }
 
     @BeforeEach
-    void resetBeforeTest() throws InterruptedException {
+    void resetBeforeTest() {
         ((JavascriptExecutor) driver).executeScript("fetch('/api/wordle/reset?user=testuser', { method: 'POST' });");
     }
 
