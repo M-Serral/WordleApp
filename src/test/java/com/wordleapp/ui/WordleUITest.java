@@ -14,6 +14,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
  class WordleUITest {
 
