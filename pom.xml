@@ -108,6 +108,8 @@
                 <configuration>
                     <excludes>
                         <exclude>com/wordleapp/WordleAppApplication</exclude>
+                        <exclude>com/wordleapp/WordleControllerTest</exclude>
+                        <exclude>com/wordleapp/WordleUITest</exclude>
                         <excludedGroups>excluded</excludedGroups>
                     </excludes>
                 </configuration>
