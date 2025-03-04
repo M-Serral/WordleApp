@@ -32,7 +32,7 @@ class WordleAttemptsRestTest {
                 .when()
                 .post("/reset?user=" + TEST_USER)
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.OK.value())
                 .body(equalTo("Game reset! You have 6 attempts."));
     }
 
@@ -43,7 +43,7 @@ class WordleAttemptsRestTest {
                 .when()
                 .post("/reset?user=" + TEST_USER)
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.OK.value())
                 .body(equalTo("Game reset! You have 6 attempts."));
     }
 
