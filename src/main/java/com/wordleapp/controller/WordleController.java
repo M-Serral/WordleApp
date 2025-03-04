@@ -21,13 +21,11 @@ public class WordleController {
         validateGuess(guess);
 
         // If user already won, he cannot keep playing
-        if (gameWonMap.getOrDefault(user, false)) {
+        if (Boolean.TRUE.equals(gameWonMap.get(user))) {
             throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Game over! You've already won.");
         }
 
-        if (!attemptsMap.containsKey(user)) {
-            attemptsMap.put(user, 0);
-        }
+        attemptsMap.putIfAbsent(user, 0);
 
         int attempts = attemptsMap.get(user);
 

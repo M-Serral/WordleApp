@@ -47,6 +47,73 @@ class WordleAttemptsRestTest {
                 .body(equalTo("Game reset! You have 6 attempts."));
     }
 
+    //GUESS ENDPOINT SONAR CLOUD TEST COVERAGE
+    @Test
+    void shouldNotAllowGuessAfterWinning() {
+        // Simular victoria
+        given()
+                .contentType("application/json")
+                .when()
+                .post("/guess?guess=PLANE&user=testUser")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body(equalTo("Correct!"));
+
+        // Intentar seguir jugando después de ganar
+        given()
+                .contentType("application/json")
+                .when()
+                .post("/guess?guess=WRONG&user=testUser")
+                .then()
+                .statusCode(HttpStatus.TOO_MANY_REQUESTS.value())  // Esperamos 429
+                .body(equalTo("Game over! You've already won."));
+    }
+
+    @Test
+    void shouldInitializeAttemptsForNewUser() {
+        given()
+                .contentType("application/json")
+                .when()
+                .post("/guess?guess=WRONG&user=testUser")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body(equalTo("Try again! Attempts left: 5"));
+    }
+    //
+
+    // RESET ENDPOINT SONAR CLOUD TEST COVERAGE
+    @Test
+    void shouldResetGameForUser() {
+        // Simular que el usuario ha perdido
+        for (int i = 1; i <= 6; i++) {
+            given()
+                    .contentType("application/json")
+                    .when()
+                    .post("/guess?guess=WRONG&user=testUser");
+        }
+
+        // Resetear el juego
+        given()
+                .contentType("application/json")
+                .when()
+                .post("/reset?user=testUser")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body(equalTo("Game reset! You have 6 attempts."));
+
+        // Verificar que los intentos han sido reiniciados
+        given()
+                .contentType("application/json")
+                .when()
+                .post("/guess?guess=WRONG&user=testUser")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body(equalTo("Try again! Attempts left: 5"));
+    }
+
+    //
+
+
     @Test
     void testInvalidInput() {
         given()
