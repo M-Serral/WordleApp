@@ -35,19 +35,22 @@ public class WordleControllerTest {
 
     }
 
-    @ParameterizedTest
-    @CsvSource({
-            "WRONa, Try again! Attempts left: 5",
-            "WRONb, Try again! Attempts left: 4",
-            "WRONc, Try again! Attempts left: 3",
-            "WRONd, Try again! Attempts left: 2",
-            "WRONe, Try again! Attempts left: 1",
-    })
-    public void testUserAttemptsAndFails(String guess, String expectedMessage) throws Exception {
+    @Test
+    public void testUserAttemptsAndFails() throws Exception {
+        for (int i = 1; i <= 5; i++) {
+            String guess = "WRON" + (char) ('A' + i);
+            mockMvc.perform(post("/api/wordle/guess")
+                            .param("guess", guess)
+                            .param("user", "testUser"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().string("Try again! Attempts left: " + (6 - i)));
+        }
         mockMvc.perform(post("/api/wordle/guess")
-                        .param("guess", guess)
-                        .param("user", "testUserFails"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(expectedMessage));
+                        .param("guess", "WRONG")
+                        .param("user", "testUser"))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(content().string("Game over! You've used all attempts."));
+
+
     }
 }
