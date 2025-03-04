@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -21,17 +20,19 @@ public class WordleControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-
-    @ParameterizedTest
-    @CsvSource({
-            "PLANE, Correct!",
-    })
-    public void testUserWinsGame(String guess, String expectedMessage) throws Exception {
+    @Test
+    public void testUserWinsGameAndCannotKeepPlaying() throws Exception {
         mockMvc.perform(post("/api/wordle/guess")
-                        .param("guess", guess)
+                        .param("guess", "PLANE")
                         .param("user", "testUser"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(expectedMessage));
+                .andExpect(content().string("Correct!"));
+        mockMvc.perform(post("/api/wordle/guess")
+                        .param("guess", "plane")
+                        .param("user", "testUser"))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(content().string("Game over! You've already won."));
+
     }
 
     @ParameterizedTest
