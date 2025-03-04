@@ -41,10 +41,6 @@ public class WordleController {
         attempts++;
         attemptsMap.put(user, attempts);
 
-        if (attempts >= 6) {
-            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Game over! You've used all attempts.");
-        }
-
         return "Try again! Attempts left: " + (6 - attempts);    }
 
     /**

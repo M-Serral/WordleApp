@@ -70,7 +70,7 @@ class WordleAttemptsRestTest {
     }
     @Test
     void shouldAllowUpToFiveIncorrectAttempts() {
-        for (int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 6; i++) {
             given()
                     .contentType("application/json")
                     .when()
@@ -84,7 +84,7 @@ class WordleAttemptsRestTest {
 
     @Test
     void shouldBlockUserAfterSixIncorrectAttempts() {
-        for (int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 6; i++) {
             given()
                     .contentType("application/json")
                     .when()

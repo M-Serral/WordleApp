@@ -2,12 +2,9 @@ package com.wordleapp.integration;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -16,20 +13,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class WordleControllerTest {
+class WordleControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @BeforeEach
-    public void resetGame() throws Exception {
+    void resetGame() throws Exception {
         mockMvc.perform(post("/api/wordle/reset")
                         .param("user", "testUser"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void testUserWinsGameAndCannotKeepPlaying() throws Exception {
+    void testUserWinsGameAndCannotKeepPlaying() throws Exception {
         mockMvc.perform(post("/api/wordle/guess")
                         .param("guess", "PLANE")
                         .param("user", "testUser"))
@@ -45,8 +42,8 @@ public class WordleControllerTest {
 
 
     @Test
-    public void testUserAttemptsAndFails() throws Exception {
-        for (int i = 1; i <= 5; i++) {
+    void testUserAttemptsAndFails() throws Exception {
+        for (int i = 1; i <= 6; i++) {
             String guess = "WRON" + (char) ('A' + i);
             mockMvc.perform(post("/api/wordle/guess")
                             .param("guess", guess)
