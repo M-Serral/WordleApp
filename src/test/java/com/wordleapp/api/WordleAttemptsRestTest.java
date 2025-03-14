@@ -70,7 +70,7 @@ class WordleAttemptsRestTest {
     }
     @Test
     void shouldAllowUpToFiveIncorrectAttempts() {
-        for (int i = 1; i <= 6; i++) {
+        for (int i = 1; i <= 5; i++) {
             given()
                     .contentType("application/json")
                     .when()
@@ -80,11 +80,19 @@ class WordleAttemptsRestTest {
                     .body(equalTo("Try again! Attempts left: " + (6 - i)));
 
         }
+        given()
+                .contentType("application/json")
+                .when()
+                .post("/guess?guess=WRONG&user=" + TEST_USER)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body(equalTo("Game over! You've used all attempts."));
+
     }
 
     @Test
     void shouldBlockUserAfterSixIncorrectAttempts() {
-        for (int i = 1; i <= 6; i++) {
+        for (int i = 1; i <= 5; i++) {
             given()
                     .contentType("application/json")
                     .when()
@@ -98,8 +106,17 @@ class WordleAttemptsRestTest {
                 .when()
                 .post("/guess?guess=WRONG&user=" + TEST_USER)
                 .then()
-                .statusCode(HttpStatus.TOO_MANY_REQUESTS.value())
+                .statusCode(HttpStatus.OK.value())
                 .body(equalTo("Game over! You've used all attempts."));
+
+        given()
+                .contentType("application/json")
+                .when()
+                .post("/guess?guess=PLANE&user=" + TEST_USER)
+                .then()
+                .statusCode(HttpStatus.TOO_MANY_REQUESTS.value())
+                .body(equalTo("You have reached the maximum number of attempts."));
+
     }
 
     @Test

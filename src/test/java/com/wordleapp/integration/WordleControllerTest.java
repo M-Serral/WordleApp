@@ -43,7 +43,7 @@ class WordleControllerTest {
 
     @Test
     void testUserAttemptsAndFails() throws Exception {
-        for (int i = 1; i <= 6; i++) {
+        for (int i = 1; i <= 5; i++) {
             String guess = "WRON" + (char) ('A' + i);
             mockMvc.perform(post("/api/wordle/guess")
                             .param("guess", guess)
@@ -54,7 +54,7 @@ class WordleControllerTest {
         mockMvc.perform(post("/api/wordle/guess")
                         .param("guess", "WRONG")
                         .param("user", "testUser"))
-                .andExpect(status().isTooManyRequests())
+                .andExpect(status().isOk())
                 .andExpect(content().string("Game over! You've used all attempts."));
 
 

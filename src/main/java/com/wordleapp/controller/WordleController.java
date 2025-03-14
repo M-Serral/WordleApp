@@ -30,7 +30,8 @@ public class WordleController {
         int attempts = attemptsMap.get(user);
 
         if (attempts >= 6) {
-            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Game over! You've used all attempts.");
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS,
+                    "You have reached the maximum number of attempts.");
         }
 
         if (guess.equalsIgnoreCase(SECRET_WORD)) {
@@ -41,7 +42,10 @@ public class WordleController {
         attempts++;
         attemptsMap.put(user, attempts);
 
-        return "Try again! Attempts left: " + (6 - attempts);    }
+        return (attempts == 6)
+                ? "Game over! You've used all attempts."
+                : "Try again! Attempts left: " + (6 - attempts);
+    }
 
     /**
      * Validates the guess, ensuring it is exactly 5 letters and contains only allowed characters.
@@ -63,8 +67,8 @@ public class WordleController {
 
     @PostMapping("/reset")
     public String resetGame(@RequestParam String user) {
-        attemptsMap.put(user, 0);
-        gameWonMap.put(user, false); // reset user victory
+        attemptsMap.remove(user);  // 🔹 Eliminamos completamente los intentos
+        gameWonMap.remove(user); // reset user victory
         return "Game reset! You have 6 attempts.";
     }
 
