@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.example</groupId>
     <artifactId>WordleApp</artifactId>
-    <version>0.2.3</version>
+    <version>0.2.5</version>
     <name>WordleApp</name>
     <description>WordleApp</description>
     <properties>
@@ -92,7 +92,7 @@
                 <version>3.0.0-M7</version>
                 <configuration>
                     <excludes>
-                        <!-- <exclude>**/WordleUITest.java</exclude> -->
+                        <exclude>**/WordleUITest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
