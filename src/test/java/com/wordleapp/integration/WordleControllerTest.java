@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -20,21 +21,23 @@ class WordleControllerTest {
 
     @BeforeEach
     void resetGame() throws Exception {
-        mockMvc.perform(post("/api/wordle/reset")
-                        .param("user", "testUser"))
-                .andExpect(status().isOk());
+        mockMvc.perform(post("/api/wordle/reset"))
+                        .andExpect(status().isOk());
     }
 
     @Test
     void testUserWinsGameAndCannotKeepPlaying() throws Exception {
+
+        MockHttpSession session = new MockHttpSession();
+
         mockMvc.perform(post("/api/wordle/guess")
                         .param("guess", "PLANE")
-                        .param("user", "testUser"))
+                        .session(session))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Correct!"));
         mockMvc.perform(post("/api/wordle/guess")
                         .param("guess", "plane")
-                        .param("user", "testUser"))
+                        .session(session))
                 .andExpect(status().isTooManyRequests())
                 .andExpect(content().string("Game over! You've already won."));
     }
@@ -43,19 +46,22 @@ class WordleControllerTest {
 
     @Test
     void testUserAttemptsAndFails() throws Exception {
+
+        MockHttpSession session = new MockHttpSession();
+
         for (int i = 1; i <= 5; i++) {
             String guess = "WRON" + (char) ('A' + i);
             mockMvc.perform(post("/api/wordle/guess")
                             .param("guess", guess)
-                            .param("user", "testUser"))
+                            .session(session))
                     .andExpect(status().isOk())
                     .andExpect(content().string("Try again! Attempts left: " + (6 - i)));
         }
         mockMvc.perform(post("/api/wordle/guess")
                         .param("guess", "WRONG")
-                        .param("user", "testUser"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Game over! You've used all attempts."));
+                        .session(session))
+                    .andExpect(status().isOk())
+                    .andExpect(content().string("Game over! You've used all attempts."));
 
 
     }

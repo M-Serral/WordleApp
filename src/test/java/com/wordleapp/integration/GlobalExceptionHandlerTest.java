@@ -36,8 +36,7 @@ class GlobalExceptionHandlerTest {
             String expectedMessage = testCase.getValue();
 
             mockMvc.perform(post("/api/wordle/guess")
-                            .param("guess", guess)
-                            .param("user", "testUser"))
+                            .param("guess", guess))
                     .andExpect(status().isBadRequest())
                     .andExpect(content().string(expectedMessage));
         }

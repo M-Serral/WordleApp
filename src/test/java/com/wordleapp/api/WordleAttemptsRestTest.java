@@ -1,6 +1,7 @@
 package com.wordleapp.api;
 
 import io.restassured.RestAssured;
+import io.restassured.filter.session.SessionFilter;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,7 +31,7 @@ class WordleAttemptsRestTest {
         given()
                 .contentType("application/json")
                 .when()
-                .post("/reset?user=" + TEST_USER)
+                .post("/reset")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body(equalTo("Game reset! You have 6 attempts."));
@@ -41,7 +42,7 @@ class WordleAttemptsRestTest {
         given()
                 .contentType("application/json")
                 .when()
-                .post("/reset?user=" + TEST_USER)
+                .post("/reset")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body(equalTo("Game reset! You have 6 attempts."));
@@ -52,7 +53,7 @@ class WordleAttemptsRestTest {
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/guess?guess=APP&user=" + TEST_USER)
+                .post("/guess?guess=APP")
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .body(equalTo("Invalid input: The word must be 5 letters long."));
@@ -63,18 +64,22 @@ class WordleAttemptsRestTest {
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/guess?guess=H3LLO&user=" + TEST_USER)
+                .post("/guess?guess=H3LLO")
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .body(equalTo("Invalid input: Only characters from the alphabet are allowed."));
     }
     @Test
     void shouldAllowUpToFiveIncorrectAttempts() {
+
+        SessionFilter sessionFilter = new SessionFilter();
+
         for (int i = 1; i <= 5; i++) {
             given()
                     .contentType("application/json")
+                    .filter(sessionFilter)
                     .when()
-                    .post("/guess?guess=WRONG&user=" + TEST_USER)
+                    .post("/guess?guess=WRONG")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body(equalTo("Try again! Attempts left: " + (6 - i)));
@@ -82,8 +87,9 @@ class WordleAttemptsRestTest {
         }
         given()
                 .contentType("application/json")
+                .filter(sessionFilter)
                 .when()
-                .post("/guess?guess=WRONG&user=" + TEST_USER)
+                .post("/guess?guess=WRONG")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body(equalTo("Game over! You've used all attempts."));
@@ -92,27 +98,33 @@ class WordleAttemptsRestTest {
 
     @Test
     void shouldBlockUserAfterSixIncorrectAttempts() {
+
+        SessionFilter sessionFilter = new SessionFilter();
+
         for (int i = 1; i <= 5; i++) {
             given()
                     .contentType("application/json")
+                    .filter(sessionFilter)
                     .when()
-                    .post("/guess?guess=WRONG&user=" + TEST_USER)
+                    .post("/guess?guess=WRONG")
                     .then()
                     .statusCode(HttpStatus.OK.value());
         }
 
         given()
                 .contentType("application/json")
+                .filter(sessionFilter)
                 .when()
-                .post("/guess?guess=WRONG&user=" + TEST_USER)
+                .post("/guess?guess=WRONG")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body(equalTo("Game over! You've used all attempts."));
 
         given()
                 .contentType("application/json")
+                .filter(sessionFilter)
                 .when()
-                .post("/guess?guess=PLANE&user=" + TEST_USER)
+                .post("/guess?guess=PLANE")
                 .then()
                 .statusCode(HttpStatus.TOO_MANY_REQUESTS.value())
                 .body(equalTo("You have reached the maximum number of attempts."));
@@ -122,11 +134,15 @@ class WordleAttemptsRestTest {
     @Test
     void shouldAllowWinBeforeSixAttempts() {
         // Simula tres intentos fallidos antes de acertar
+
+        SessionFilter sessionFilter = new SessionFilter();
+
         for (int i = 1; i <= 3; i++) {
             given()
                     .contentType("application/json")
+                    .filter(sessionFilter)
                     .when()
-                    .post("/guess?guess=WRONG&user=" + TEST_USER)
+                    .post("/guess?guess=WRONG")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body( equalTo("Try again! Attempts left: " + (6 - i)));
@@ -135,8 +151,9 @@ class WordleAttemptsRestTest {
         // Ahora introduce la palabra correcta
         given()
                 .contentType("application/json")
+                .filter(sessionFilter)
                 .when()
-                .post("/guess?guess=PLANE&user=" + TEST_USER)
+                .post("/guess?guess=PLANE")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body(equalTo("Correct!"));
@@ -144,8 +161,9 @@ class WordleAttemptsRestTest {
         // Asegura que después de ganar, ya no puede seguir intentando
         given()
                 .contentType("application/json")
+                .filter(sessionFilter)
                 .when()
-                .post("/guess?guess=WRONG&user=" + TEST_USER)
+                .post("/guess?guess=WRONG")
                 .then()
                 .statusCode(HttpStatus.TOO_MANY_REQUESTS.value())
                 .body(equalTo("Game over! You've already won."));
@@ -154,25 +172,31 @@ class WordleAttemptsRestTest {
 
     @Test
     void shouldResetAttemptsOnNewGame() {
+
+        SessionFilter sessionFilter = new SessionFilter();
+
         for (int i = 1; i <= 6; i++) {
             given()
                     .contentType("application/json")
+                    .filter(sessionFilter)
                     .when()
-                    .post("/guess?guess=WRONG&user=" + TEST_USER);
+                    .post("/guess?guess=WRONG");
         }
 
         given()
                 .contentType("application/json")
+                .filter(sessionFilter)
                 .when()
-                .post("/reset?user=" + TEST_USER)
+                .post("/reset")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body(equalTo("Game reset! You have 6 attempts."));
 
         given()
                 .contentType("application/json")
+                .filter(sessionFilter)
                 .when()
-                .post("/guess?guess=WRONG&user=" + TEST_USER)
+                .post("/guess?guess=WRONG")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body(equalTo("Try again! Attempts left: 5"));
