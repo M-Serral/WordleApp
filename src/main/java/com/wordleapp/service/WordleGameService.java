@@ -18,7 +18,6 @@ public class WordleGameService {
 
 
     public ResponseEntity<String> checkWord(@RequestParam String guess, @RequestParam String user) {
-        validateGuess(guess);
 
         // If user already won, he cannot keep playing
         if (Boolean.TRUE.equals(gameWonMap.get(user))) {
@@ -39,13 +38,14 @@ public class WordleGameService {
             return ResponseEntity.ok("Correct!");
         }
 
+        validateGuess(guess);
+
         attempts++;
         attemptsMap.put(user, attempts);
 
         return (attempts == 6)
                 ? ResponseEntity.ok(("Game over! You've used all attempts."))
                 : ResponseEntity.ok("Try again! Attempts left: " + (6 - attempts));
-
     }
 
     /**
