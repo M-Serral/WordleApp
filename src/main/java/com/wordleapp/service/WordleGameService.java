@@ -1,74 +1,74 @@
 package com.wordleapp.service;
 
-import org.springframework.http.HttpStatus;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.http.HttpStatus;
 
 @Service
 public class WordleGameService {
 
-    private static final String SECRET_WORD = "PLANE"; // Hardcoded for now
-    private final Map<String, Integer> attemptsMap = new HashMap<>();
-    private final Map<String, Boolean> gameWonMap = new HashMap<>(); //  New map to manage if user won
+    private static final String SECRET_WORD = "PLANE";
+    private static final String ATTEMPTS_KEY = "attempts";
+    private static final String GAME_WON_KEY = "gameWon";
+    private static final int MAX_ATTEMPTS = 6;
+    private static final int MAX_LONG = 5;
 
 
-    public ResponseEntity<String> checkWord(@RequestParam String guess, @RequestParam String user) {
+    public ResponseEntity<String> checkWord(String guess, HttpSession session) {
 
-        // If user already won, he cannot keep playing
-        if (Boolean.TRUE.equals(gameWonMap.get(user))) {
+        if (isGameOver(session)) {
             throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Game over! You've already won.");
         }
 
-        attemptsMap.putIfAbsent(user, 0);
+        int attempts = getAttempts(session);
 
-        int attempts = attemptsMap.get(user);
-
-        if (attempts >= 6) {
+        if (attempts >= MAX_ATTEMPTS) {
             throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS,
-                    "You have reached the maximum number of attempts.");
-        }
+                    "You have reached the maximum number of attempts.");        }
 
         if (guess.equalsIgnoreCase(SECRET_WORD)) {
-            gameWonMap.put(user, true); // Mark user as winner
+            session.setAttribute(GAME_WON_KEY, true);
             return ResponseEntity.ok("Correct!");
         }
 
         validateGuess(guess);
 
-        attempts++;
-        attemptsMap.put(user, attempts);
+        attempts = updateAttempts(session, attempts);
 
-        return (attempts == 6)
+        return (attempts == MAX_ATTEMPTS)
                 ? ResponseEntity.ok(("Game over! You've used all attempts."))
-                : ResponseEntity.ok("Try again! Attempts left: " + (6 - attempts));
+                : ResponseEntity.ok("Try again! Attempts left: " + (MAX_ATTEMPTS - attempts));
     }
 
-    /**
-     * Validates the guess, ensuring it is exactly 5 letters and contains only allowed characters.
-     * @param guess The input word to validate.
-     */
+    public void resetGame(HttpSession session) {
+        session.removeAttribute(ATTEMPTS_KEY);
+        session.removeAttribute(GAME_WON_KEY);
+    }
+
     private void validateGuess(String guess) {
-        String errorMessage = null;
-
         if (!guess.matches("[A-Za-zñÑ]+")) {
-            errorMessage = "Invalid input: Only characters from the alphabet are allowed.";
-        } else if (guess.length() != 5) {
-            errorMessage = "Invalid input: The word must be 5 letters long.";
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input: Only characters from the alphabet are allowed.");
         }
 
-        if (errorMessage != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+        else if (guess.length() != MAX_LONG) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input: The word must be 5 letters long.");
         }
     }
 
-    public void resetGame(String user) {
-        attemptsMap.remove(user);
-        gameWonMap.remove(user);
+    private int getAttempts(HttpSession session) {
+        return (session.getAttribute(ATTEMPTS_KEY) != null) ? (Integer) session.getAttribute(ATTEMPTS_KEY) : 0;
     }
 
+    private boolean isGameOver(HttpSession session) {
+        Boolean gameWon = (Boolean) session.getAttribute(GAME_WON_KEY);
+        return gameWon != null && gameWon;
+    }
+
+    private int updateAttempts(HttpSession session, int attempts) {
+        int newAttempts = attempts + 1;
+        session.setAttribute(ATTEMPTS_KEY, newAttempts);
+        return newAttempts;
+    }
 }
