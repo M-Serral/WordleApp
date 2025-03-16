@@ -24,8 +24,6 @@ class WordleAttemptsRestTest {
         RestAssured.baseURI = "http://localhost:" + port + "/api/wordle";
     }
 
-    private static final String TEST_USER = "testUser";
-
     @BeforeEach
     void resetBeforeEachTest() {
         given()
