@@ -24,7 +24,7 @@ class WordleUITest {
     private static final String TEST_USER = "testUser";
 
     @BeforeEach
-    void setUp() throws InterruptedException {
+    void setUp() {
 
         if (driver != null) {
             driver.quit();
