@@ -41,8 +41,6 @@ class WordleUITest {
         resetGameState();
 
         driver.get("http://localhost:8080/");
-
-        Thread.sleep(1000);
     }
 
     /**
@@ -84,7 +82,6 @@ class WordleUITest {
 
             wordlePage.makeGuess(guess);
             String actualMessage = wordlePage.getResultMessage();
-            System.out.println("Actual message: " + actualMessage);
 
             assertEquals(expectedMessage, actualMessage, "Failed for guess: " + guess);
         }

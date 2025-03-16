@@ -3,7 +3,6 @@ package com.wordleapp.service;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,7 +17,6 @@ public class WordleGameService {
     private final Map<String, Boolean> gameWonMap = new HashMap<>(); //  New map to manage if user won
 
 
-    @PostMapping("/guess")
     public ResponseEntity<String> checkWord(@RequestParam String guess, @RequestParam String user) {
         validateGuess(guess);
 

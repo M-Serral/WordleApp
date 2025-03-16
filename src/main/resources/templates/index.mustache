@@ -15,24 +15,26 @@
 <script>
     document.getElementById("wordleForm").addEventListener("submit", function(event) {
         event.preventDefault();
-        let guess = document.getElementById("guessInput").value;
+        let guessInput = document.getElementById("guessInput");
+        let guess = guessInput.value;
 
-        fetch(`/api/wordle/guess?guess=${guess}&user=player1`, { method: "POST" }) // Includes a fixed user “player1”.
+        fetch(`/api/wordle/guess?guess=${guess}&user=player1`, { method: "POST" })
                 .then(response => {
-                    if (!response.ok) { // If the HTTP code is not 200, throw an error
+                    if (!response.ok) {
                         return response.text().then(text => { throw new Error(text); });
                     }
-                    return response.text(); // Returns text if the answer is 200 OK
+                    return response.text();
                 })
                 .then(data => {
-                    document.getElementById("result").innerText = data; // Display the message in the frontend
+                    document.getElementById("result").innerText = data;
+                    guessInput.value = "";
                 })
                 .catch(error => {
-                    document.getElementById("result").innerText = error.message; // Display errors such as 429 on the screen
+                    document.getElementById("result").innerText = error.message;
+                    guessInput.value = "";
                 });
     });
 </script>
 
 </body>
 </html>
-
