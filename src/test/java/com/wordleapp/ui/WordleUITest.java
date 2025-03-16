@@ -1,27 +1,27 @@
 package com.wordleapp.ui;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.openqa.selenium.By;
+import org.junit.jupiter.api.*;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
- class WordleUITest {
+class WordleUITest {
 
     private WebDriver driver;
+    private WordlePage wordlePage;
 
-    @BeforeAll
-    void setUp() {
-        WebDriverManager.chromedriver().setup();
+    @BeforeEach
+    void setUp() throws InterruptedException {
+        if (driver != null) {
+            driver.quit();
+        }
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
@@ -29,35 +29,61 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
         options.addArguments("--disable-dev-shm-usage");
 
         driver = new ChromeDriver(options);
+        wordlePage = new WordlePage(driver);
 
-        String port = System.getProperty("server.port", "8080");
-        driver.get("http://localhost:" + port + "/");
+        driver.get("http://localhost:8080/");
+
+        resetGameState();
+
+        Thread.sleep(1000);
     }
 
-    @ParameterizedTest
-    @CsvSource({
-            "PLANE, Correct!",
-            "PEACH, Try again!",
-            "APP, Invalid input: The word must be 5 letters long.",
-            "H3LLO, Invalid input: Only characters from the alphabet are allowed."
-    })
-    void testWordleUI(String guess, String expectedMessage) {
-        WebElement inputField = driver.findElement(By.id("guessInput"));
-        WebElement submitButton = driver.findElement(By.tagName("button"));
+    void resetGameState() {
+        try {
+            ((JavascriptExecutor) driver).executeScript("fetch('/api/wordle/reset?user=testuser', { method: 'POST' });");
 
-        inputField.clear();
-        inputField.sendKeys(guess);
-        submitButton.click();
+            driver.manage().deleteAllCookies();
+            ((JavascriptExecutor) driver).executeScript("window.sessionStorage.clear();");
+            ((JavascriptExecutor) driver).executeScript("window.localStorage.clear();");
 
-        WebElement result = driver.findElement(By.id("result"));
-        assertEquals(expectedMessage, result.getText());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    @AfterAll
+
+
+    @AfterEach
     void tearDown() {
         if (driver != null) {
             driver.quit();
         }
     }
+
+
+    @Test
+    void testValidationsAndResponses() {
+        List<Map.Entry<String, String>> testCases = List.of(
+                Map.entry("PELON", "Try again! Attempts left: 5"),
+                Map.entry("APP", "Invalid input: The word must be 5 letters long."),
+                Map.entry("CATAN", "Try again! Attempts left: 4"),
+                Map.entry("H3LLO", "Invalid input: Only characters from the alphabet are allowed."),
+                Map.entry("ARBOLES", "Try again! Attempts left: 3"), // we are controlling number of characters from front end, the word typed is ARBOL
+                Map.entry("PALOS", "Try again! Attempts left: 2"),
+                Map.entry("PLANE", "Correct!"),
+                Map.entry("CASAS", "Game over! You've already won.")
+        );
+
+        for (Map.Entry<String, String> testCase : testCases) {
+            String guess = testCase.getKey();
+            String expectedMessage = testCase.getValue();
+
+            wordlePage.makeGuess(guess);
+            String actualMessage = wordlePage.getResultMessage();
+
+            assertEquals(expectedMessage, actualMessage, "Failed for guess: " + guess);
+        }
+    }
+
 
 }

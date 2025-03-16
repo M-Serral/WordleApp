@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -31,8 +29,10 @@ class GlobalExceptionHandlerTest {
 
     })
     void shouldHandleResponseStatusException(String guess, String expectedMessage) throws Exception {
-        mockMvc.perform(post("/api/wordle/guess").param("guess", guess))
+        mockMvc.perform(post("/api/wordle/guess")
+                        .param("guess", guess)
+                        .param("user", "testUser"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", is(expectedMessage)));
+                .andExpect(content().string(expectedMessage));
     }
 }

@@ -12,25 +12,27 @@
     <button type="submit">Submit</button>
 </form>
 <p id="result"></p>
-
 <script>
     document.getElementById("wordleForm").addEventListener("submit", function(event) {
         event.preventDefault();
         let guess = document.getElementById("guessInput").value;
 
-        fetch("/api/wordle/guess?guess=" + guess, { method: "POST" })
-                .then(response => response.text()) // 💡 We always get the answer as text
-                .then(data => {
-                    try {
-                        let json = JSON.parse(data); // 💡 We try to parse as JSON
-                        document.getElementById("result").innerText = json.message; //  We extract the message
-                    } catch (error) {
-                        document.getElementById("result").innerText = data; // 💡If it is not JSON, we show the normal text
+        fetch(`/api/wordle/guess?guess=${guess}&user=player1`, { method: "POST" }) // Includes a fixed user “player1”.
+                .then(response => {
+                    if (!response.ok) { // If the HTTP code is not 200, throw an error
+                        return response.text().then(text => { throw new Error(text); });
                     }
+                    return response.text(); // Returns text if the answer is 200 OK
                 })
-                .catch(error => console.error("Error:", error));
+                .then(data => {
+                    document.getElementById("result").innerText = data; // Display the message in the frontend
+                })
+                .catch(error => {
+                    document.getElementById("result").innerText = error.message; // Display errors such as 429 on the screen
+                });
     });
 </script>
+
 </body>
 </html>
 
