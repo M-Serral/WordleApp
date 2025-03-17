@@ -49,19 +49,19 @@
                     let resultElement = document.getElementById("result");
                     let hintContainer = document.getElementById("hintContainer");
 
-                    // Separar el mensaje de error y la pista
+                    // Separate the error message and the hint
                     let parts = data.split("Hint:");
                     let message = parts[0].trim();
                     let hint = parts.length > 1 ? parts[1].trim() : "";
 
-                    // Detectar si el juego ha terminado ANTES de actualizar la UI
+                    // Detect if the game is over BEFORE updating the UI
                     let gameOver = data.includes("Game over!") || data.includes("Correct!");
                     if (gameOver) {
                         guessInput.disabled = true;
                         document.querySelector("button[type='submit']").disabled = true;
                     }
 
-                    // Actualizar UI con el mensaje y la pista
+                    // Update UI with the message and the hint
                     resultElement.innerText = message;
                     hintContainer.innerText = hint;
 
@@ -71,16 +71,16 @@
                     let resultElement = document.getElementById("result");
                     let hintContainer = document.getElementById("hintContainer");
 
-                    // Separar mensaje de error y pista
+                    // Separate error message and hint
                     let parts = error.message.split("Hint:");
                     let errorMessage = parts[0].trim();
                     let hint = parts.length > 1 ? parts[1].trim() : "";
 
 
-                    // Mostrar solo el error a la derecha del botón
+                    // Display only the error to the right of the button
                     resultElement.innerText = errorMessage;
 
-                    // Mostrar la pista debajo del input
+                    // Display the hint below the input
                     hintContainer.innerText = hint;
 
                     guessInput.value = "";

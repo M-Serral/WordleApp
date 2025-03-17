@@ -34,20 +34,16 @@ public class WordlePage {
     }
 
     public String getResultMessage() {
-        // Esperar hasta que el mensaje esté presente en el DOM
+
         wait.until(ExpectedConditions.presenceOfElementLocated(resultMessage));
-
-        // Esperar hasta que sea visible
         WebElement resultElement = wait.until(ExpectedConditions.visibilityOfElementLocated(resultMessage));
-
-        // Obtener y devolver el texto
         return resultElement.getText();
     }
 
 
     public void makeGuess(String guess) {
         if (isGameOver()) {
-            return; // Si el juego terminó, no intentar escribir en el input
+            return; // If the game is over, do not try to type in the input
         }
         enterGuess(guess);
         submitGuess();
@@ -56,12 +52,12 @@ public class WordlePage {
     public boolean isGameOver() {
         try {
             if (driver.findElements(resultMessage).isEmpty()) {
-                return false; // Si el resultado aún no ha aparecido, no ha terminado el juego.
+                return false; // If the result has not yet appeared, the game is not over.
             }
             String resultText = getResultMessage();
             return resultText.contains("Game over!") || resultText.contains("Correct!");
         } catch (Exception e) {
-            return false; // Si hay algún error, asumimos que el juego sigue en curso.
+            return false; // If there are any errors, we assume that the game is still in progress.
         }
     }
 
