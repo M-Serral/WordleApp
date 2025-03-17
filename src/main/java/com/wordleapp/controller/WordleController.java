@@ -20,14 +20,18 @@ public class WordleController {
 
     @PostMapping("/guess")
     public ResponseEntity<String> checkWord(@RequestParam String guess, HttpSession session) {
-        return wordleGameService.checkWord(guess,session);
+        return wordleGameService.checkWord(guess, session);
     }
 
     @PostMapping("/guessWithHint")
     public ResponseEntity<Map<String, String>> checkWordWithHint(@RequestParam String guess) {
-        String hint = wordleGameService.checkGuess(guess);
+        // Obtener la pista generada desde el servicio
+        String hint = wordleGameService.generateHint(guess);
+
+        // Construir la respuesta con la pista
         Map<String, String> response = new HashMap<>();
         response.put("hint", hint);
+
         return ResponseEntity.ok(response);
     }
 
