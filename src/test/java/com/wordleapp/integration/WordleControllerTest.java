@@ -7,11 +7,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -63,8 +65,17 @@ class WordleControllerTest {
                         .session(session))
                     .andExpect(status().isOk())
                     .andExpect(content().string(containsString("Game over! You've used all attempts.")));
-
-
-
     }
+
+    @Test
+    void testGuessWithHint() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+
+        mockMvc.perform(post("/api/wordle/guessWithHint")
+                        .param("guess", "sexta")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.hint").value("S E X T _"));
+    }
+
 }
