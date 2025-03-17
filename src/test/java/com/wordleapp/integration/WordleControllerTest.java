@@ -76,6 +76,12 @@ class WordleControllerTest {
                         .session(session))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.hint").value("S E X T _"));
+        mockMvc.perform(post("/api/wordle/guessWithHint")
+                        .param("guess", "S3XTO")
+                        .session(session))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.hint").value("S E X T _"));
+
     }
 
 }
