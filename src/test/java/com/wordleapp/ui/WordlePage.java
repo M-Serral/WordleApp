@@ -2,6 +2,7 @@ package com.wordleapp.ui;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -33,11 +34,36 @@ public class WordlePage {
     }
 
     public String getResultMessage() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(resultMessage)).getText();
+        // Esperar hasta que el mensaje esté presente en el DOM
+        wait.until(ExpectedConditions.presenceOfElementLocated(resultMessage));
+
+        // Esperar hasta que sea visible
+        WebElement resultElement = wait.until(ExpectedConditions.visibilityOfElementLocated(resultMessage));
+
+        // Obtener y devolver el texto
+        return resultElement.getText();
     }
 
+
     public void makeGuess(String guess) {
+        if (isGameOver()) {
+            return; // Si el juego terminó, no intentar escribir en el input
+        }
         enterGuess(guess);
         submitGuess();
     }
+
+    public boolean isGameOver() {
+        try {
+            if (driver.findElements(resultMessage).isEmpty()) {
+                return false; // Si el resultado aún no ha aparecido, no ha terminado el juego.
+            }
+            String resultText = getResultMessage();
+            return resultText.contains("Game over!") || resultText.contains("Correct!");
+        } catch (Exception e) {
+            return false; // Si hay algún error, asumimos que el juego sigue en curso.
+        }
+    }
+
+
 }
