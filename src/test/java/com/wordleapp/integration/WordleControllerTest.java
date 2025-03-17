@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,12 +32,12 @@ class WordleControllerTest {
         MockHttpSession session = new MockHttpSession();
 
         mockMvc.perform(post("/api/wordle/guess")
-                        .param("guess", "PLANE")
+                        .param("guess", "SEXTO")
                         .session(session))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Correct!"));
+                .andExpect(content().string("Correct! The word was: SEXTO"));
         mockMvc.perform(post("/api/wordle/guess")
-                        .param("guess", "plane")
+                        .param("guess", "sexto")
                         .session(session))
                 .andExpect(status().isTooManyRequests())
                 .andExpect(content().string("Game over! You've already won."));
@@ -55,13 +56,14 @@ class WordleControllerTest {
                             .param("guess", guess)
                             .session(session))
                     .andExpect(status().isOk())
-                    .andExpect(content().string("Try again! Attempts left: " + (6 - i)));
+                    .andExpect(content().string(containsString("Try again! Attempts left: " + (6 - i))));
         }
         mockMvc.perform(post("/api/wordle/guess")
                         .param("guess", "WRONG")
                         .session(session))
                     .andExpect(status().isOk())
-                    .andExpect(content().string("Game over! You've used all attempts."));
+                    .andExpect(content().string(containsString("Game over! You've used all attempts.")));
+
 
 
     }

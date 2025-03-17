@@ -4,21 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WORDLE GAME</title>
+    <style>
+        #container {
+            display: flex;
+            align-items: center;
+        }
+
+        #result {
+            margin-left: 30px;
+        }
+
+        #hintContainer {
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
 <h1>Welcome to Wordle</h1>
-<form id="wordleForm">
-    <label for="guessInput"></label><input type="text" id="guessInput" maxlength="5" placeholder="Enter a 5-letter word">
-    <button type="submit">Submit</button>
-</form>
-<p id="result"></p>
+<div id="container">
+    <form id="wordleForm">
+        <label for="guessInput"></label>
+        <input type="text" id="guessInput" maxlength="5" placeholder="Enter a 5-letter word">
+        <button type="submit">Submit</button>
+    </form>
+    <p id="result"></p>
+</div>
+<div id="hintContainer"></div>
+
 <script>
     document.getElementById("wordleForm").addEventListener("submit", function(event) {
         event.preventDefault();
         let guessInput = document.getElementById("guessInput");
         let guess = guessInput.value;
 
-        fetch(`/api/wordle/guess?guess=${guess}&user=player1`, { method: "POST" })
+        fetch(`/api/wordle/guess?guess=${guess}`, { method: "POST" })
                 .then(response => {
                     if (!response.ok) {
                         return response.text().then(text => { throw new Error(text); });
@@ -26,11 +45,43 @@
                     return response.text();
                 })
                 .then(data => {
-                    document.getElementById("result").innerText = data;
+                    let resultElement = document.getElementById("result");
+                    let hintContainer = document.getElementById("hintContainer");
+
+                    // Separar el mensaje de error y la pista
+                    let parts = data.split("Hint:");
+                    let message = parts[0].trim();
+                    let hint = parts.length > 1 ? parts[1].trim() : "";
+
+                    // Detectar si el juego ha terminado ANTES de actualizar la UI
+                    let gameOver = data.includes("Game over!") || data.includes("Correct!");
+                    if (gameOver) {
+                        guessInput.disabled = true;
+                        document.querySelector("button[type='submit']").disabled = true;
+                    }
+
+                    // Actualizar UI con el mensaje y la pista
+                    resultElement.innerText = message;
+                    hintContainer.innerText = hint;
+
                     guessInput.value = "";
                 })
                 .catch(error => {
-                    document.getElementById("result").innerText = error.message;
+                    let resultElement = document.getElementById("result");
+                    let hintContainer = document.getElementById("hintContainer");
+
+                    // Separar mensaje de error y pista
+                    let parts = error.message.split("Hint:");
+                    let errorMessage = parts[0].trim();
+                    let hint = parts.length > 1 ? parts[1].trim() : "";
+
+
+                    // Mostrar solo el error a la derecha del botón
+                    resultElement.innerText = errorMessage;
+
+                    // Mostrar la pista debajo del input
+                    hintContainer.innerText = hint;
+
                     guessInput.value = "";
                 });
     });

@@ -7,15 +7,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest
-@AutoConfigureMockMvc
 class WordleAttemptsRestTest {
 
     @BeforeAll
@@ -80,7 +79,7 @@ class WordleAttemptsRestTest {
                     .post("/guess?guess=WRONG")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body(equalTo("Try again! Attempts left: " + (6 - i)));
+                    .body(containsString("Try again! Attempts left: " + (6 - i)));
 
         }
         given()
@@ -90,7 +89,8 @@ class WordleAttemptsRestTest {
                 .post("/guess?guess=WRONG")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(equalTo("Game over! You've used all attempts."));
+                .body(containsString("Game over! You've used all attempts."));
+
 
     }
 
@@ -116,13 +116,13 @@ class WordleAttemptsRestTest {
                 .post("/guess?guess=WRONG")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(equalTo("Game over! You've used all attempts."));
+                .body(containsString("Game over! You've used all attempts."));
 
         given()
                 .contentType("application/json")
                 .filter(sessionFilter)
                 .when()
-                .post("/guess?guess=PLANE")
+                .post("/guess?guess=SEXTO")
                 .then()
                 .statusCode(HttpStatus.TOO_MANY_REQUESTS.value())
                 .body(equalTo("You have reached the maximum number of attempts."));
@@ -143,7 +143,7 @@ class WordleAttemptsRestTest {
                     .post("/guess?guess=WRONG")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body( equalTo("Try again! Attempts left: " + (6 - i)));
+                    .body(containsString("Try again! Attempts left: " + (6 - i)));
         }
 
         // Ahora introduce la palabra correcta
@@ -151,10 +151,10 @@ class WordleAttemptsRestTest {
                 .contentType("application/json")
                 .filter(sessionFilter)
                 .when()
-                .post("/guess?guess=PLANE")
+                .post("/guess?guess=SEXTO")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(equalTo("Correct!"));
+                .body(equalTo("Correct! The word was: SEXTO"));
 
         // Asegura que después de ganar, ya no puede seguir intentando
         given()
@@ -197,6 +197,6 @@ class WordleAttemptsRestTest {
                 .post("/guess?guess=WRONG")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(equalTo("Try again! Attempts left: 5"));
+                .body(containsString("Try again! Attempts left: 5"));
     }
 }
