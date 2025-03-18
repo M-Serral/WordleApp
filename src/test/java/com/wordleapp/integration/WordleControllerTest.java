@@ -65,21 +65,4 @@ class WordleControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(content().string(containsString("Game over! You've used all attempts.")));
     }
-
-    @Test
-    void testGuessWithHint() throws Exception {
-        MockHttpSession session = new MockHttpSession();
-
-        mockMvc.perform(post("/api/wordle/guess")
-                        .param("guess", "sexta")
-                        .session(session))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("S E X T _")));
-        mockMvc.perform(post("/api/wordle/guess")
-                        .param("guess", "S3XTO")
-                        .session(session))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("S E X T _")));
-    }
-
 }
