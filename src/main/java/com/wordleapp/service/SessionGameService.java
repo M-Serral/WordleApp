@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SessionService {
+public class SessionGameService {
 
     public void resetGame(HttpSession session) {
         session.removeAttribute(Constants.ATTEMPTS_KEY);

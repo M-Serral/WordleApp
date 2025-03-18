@@ -1,6 +1,6 @@
 package com.wordleapp.controller;
 
-import com.wordleapp.service.SessionService;
+import com.wordleapp.service.SessionGameService;
 import com.wordleapp.service.WordleGameService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.*;
 public class WordleController {
 
     private final WordleGameService wordleGameService;
-    private final SessionService sessionService;
+    private final SessionGameService sessionGameService;
 
-    public WordleController(WordleGameService wordleGameService, SessionService sessionService) {
+    public WordleController(WordleGameService wordleGameService, SessionGameService sessionGameService) {
         this.wordleGameService = wordleGameService;
-        this.sessionService = sessionService;
+        this.sessionGameService = sessionGameService;
     }
 
     @PostMapping("/guess")
@@ -26,7 +26,7 @@ public class WordleController {
 
     @PostMapping("/reset")
     public ResponseEntity<String> resetGame(HttpSession session) {
-        sessionService.resetGame(session);
+        sessionGameService.resetGame(session);
         return ResponseEntity.ok("Game reset! You have 6 attempts.");
     }
 }
