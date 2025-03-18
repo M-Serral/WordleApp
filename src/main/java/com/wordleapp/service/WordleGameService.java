@@ -7,6 +7,8 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class WordleGameService {
@@ -16,9 +18,8 @@ public class WordleGameService {
     private static final String GAME_WON_KEY = "gameWon";
     private static final int MAX_ATTEMPTS = 6;
     private static final int WORD_LENGTH = 5;
-    public static final String LAST_HINT_KEY = "lastHint";
+    private static final String LAST_HINT_KEY = "lastHint";
     private static final String HINT_SESSION_KEY = "wordle_hint";
-
 
 
     public ResponseEntity<String> checkWord(String guess, HttpSession session) {
@@ -46,11 +47,41 @@ public class WordleGameService {
         return buildResponse(attempts, hint);
     }
 
+    public ResponseEntity<Map<String, String>> checkWordWithHint(String guess, HttpSession session) {
+        try {
+            checkWord(guess, session); // We call checkWord to validate the attempt and handle error states
+            String hint = generateHint(guess, session); // If the validation is successful, we generate the hint
+            return buildHintResponse(hint);
+        } catch (ResponseStatusException e) {
+            return handleInvalidGuessWithHint(session, e);
+        }
+    }
+
     public void resetGame(HttpSession session) {
         session.removeAttribute(ATTEMPTS_KEY);
         session.removeAttribute(GAME_WON_KEY);
         session.removeAttribute(LAST_HINT_KEY);
     }
+
+    private ResponseEntity<Map<String, String>> handleInvalidGuessWithHint(HttpSession session, ResponseStatusException e) {
+
+        String lastHint = (String) session.getAttribute(LAST_HINT_KEY); // We obtain the last hint stored in the session (if it exists).
+
+        Map<String, String> errorResponse = new HashMap<>(); // We construct the response with the error and the last available hint
+        errorResponse.put("error", e.getReason());
+
+        if (lastHint != null) {
+            errorResponse.put("hint", lastHint);
+        }
+
+        return ResponseEntity.status(e.getStatusCode()).body(errorResponse);
+    }
+
+
+    private ResponseEntity<Map<String, String>> buildHintResponse(String hint) {
+        return ResponseEntity.ok(Map.of("hint", hint)); // We build the answer
+    }
+
 
     private void validateGameState(HttpSession session) {
         if (Boolean.TRUE.equals(session.getAttribute(GAME_WON_KEY))) {
@@ -71,7 +102,7 @@ public class WordleGameService {
         }
     }
 
-    public String generateHint(String guess, HttpSession session) {
+    private String generateHint(String guess, HttpSession session) {
         // Get the hint stored in the session or initialize it with “_”.
         char[] hint = (char[]) session.getAttribute(HINT_SESSION_KEY);
         if (hint == null) {
@@ -85,7 +116,7 @@ public class WordleGameService {
         // Compare the attempt with the secret word and update the hint
         for (int i = 0; i < WORD_LENGTH; i++) {
             if (upperGuess.charAt(i) == SECRET_WORD.charAt(i)) {
-                hint[i] = upperGuess.charAt(i); // Mantener la letra correcta
+                hint[i] = upperGuess.charAt(i); // Letter is in the correct position
             }
         }
 
