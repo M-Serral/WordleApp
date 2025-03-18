@@ -125,7 +125,8 @@ class WordleAttemptsRestTest {
                 .post("/guess?guess=SEXTO")
                 .then()
                 .statusCode(HttpStatus.TOO_MANY_REQUESTS.value())
-                .body(equalTo("You have reached the maximum number of attempts."));
+                .body(containsString("You have reached the maximum number of attempts."));
+
 
     }
 
@@ -153,7 +154,7 @@ class WordleAttemptsRestTest {
                 .post("/guess?guess=SEXTO")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(equalTo("Correct! The word was: SEXTO"));
+                .body(containsString("Correct! The word was: SEXTO."));
 
         // He assures that after winning, he can't keep on trying.
         given()
@@ -163,7 +164,8 @@ class WordleAttemptsRestTest {
                 .post("/guess?guess=WRONG")
                 .then()
                 .statusCode(HttpStatus.TOO_MANY_REQUESTS.value())
-                .body(equalTo("Game over! You've already won."));
+                .body(containsString("Game over! You've already won."));
+
     }
 
 

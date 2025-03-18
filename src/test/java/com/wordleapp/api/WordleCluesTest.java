@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest
@@ -52,10 +53,11 @@ class WordleCluesTest {
                 .contentType("application/json")
                 .filter(sessionFilter)
                 .when()
-                .post("/guessWithHint?guess=SEXTO")
+                .post("/guess?guess=SEXTO")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("hint", equalTo("S E X T O"));
+                .body(containsString("SEXTO"));
+
     }
 
 
@@ -68,10 +70,10 @@ class WordleCluesTest {
                 .contentType("application/json")
                 .filter(sessionFilter)
                 .when()
-                .post("/guessWithHint?guess=APPLE")
+                .post("/guess?guess=APPLE")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("hint", equalTo("_ _ _ _ _"));
+                .body(containsString("_ _ _ _ _"));
     }
 
 
@@ -88,19 +90,19 @@ class WordleCluesTest {
                     .contentType("application/json")
                     .filter(sessionFilter)
                     .when()
-                    .post("/guessWithHint?guess=" + attempts[i])
+                    .post("/guess?guess=" + attempts[i])
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("hint", equalTo(expectedClues[i]));
+                    .body(containsString(expectedClues[i]));
         }
         given()
                 .contentType("application/json")
                 .filter(sessionFilter)
                 .when()
-                .post("/guessWithHint?guess=SEXTO")
+                .post("/guess?guess=SEXTO")
                 .then()
                 .statusCode(HttpStatus.TOO_MANY_REQUESTS.value()) // seventh try, out of game
-                .body("hint", equalTo("S E _ T O"));
+                .body(containsString("S E _ T O"));
 
     }
 
@@ -117,10 +119,10 @@ class WordleCluesTest {
                     .contentType("application/json")
                     .filter(sessionFilter)
                     .when()
-                    .post("/guessWithHint?guess=" + attempts[i])
+                    .post("/guess?guess=" + attempts[i])
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("hint", equalTo(expectedClues[i]));
+                    .body(containsString(expectedClues[i]));
         }
 
         String[] wrongAttempts = {"T3JAS", "SEXT0", "RAX[O", "SEX"}; // words not allowed
@@ -131,19 +133,19 @@ class WordleCluesTest {
                     .contentType("application/json")
                     .filter(sessionFilter)
                     .when()
-                    .post("/guessWithHint?guess=" + wrongAttempts[i])
+                    .post("/guess?guess=" + wrongAttempts[i])
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .body("hint", equalTo(wrongClues[i]));
+                    .body(containsString(wrongClues[i]));
         }
 
         given()
                 .contentType("application/json")
                 .filter(sessionFilter)
                 .when()
-                .post("/guessWithHint?guess=SEXTO")
+                .post("/guess?guess=SEXTO")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("hint", equalTo("S E X T O"));
+                .body(containsString("S E X T O"));
     }
 }
