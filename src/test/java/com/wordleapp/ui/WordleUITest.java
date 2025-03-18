@@ -40,7 +40,7 @@ class WordleUITest {
 
         driver.manage().deleteAllCookies();
 
-        // Verificar si sessionStorage está disponible antes de borrarlo
+        // Check if sessionStorage is available before deletion
         try {
             Boolean isStorageAvailable = (Boolean) ((JavascriptExecutor) driver).executeScript("return typeof window.sessionStorage !== 'undefined';");
             if (Boolean.TRUE.equals(isStorageAvailable)) {

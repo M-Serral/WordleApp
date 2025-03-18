@@ -52,14 +52,15 @@ class WordleCluesTest {
                 .contentType("application/json")
                 .filter(sessionFilter)
                 .when()
-                .post("/guessWithHint?guess=SESGO")
+                .post("/guessWithHint?guess=SEXTO")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("hint", equalTo("S E _ _ O"));
+                .body("hint", equalTo("S E X T O"));
     }
 
+
     @Test
-    void testIncorrectLetters() {
+    void testAllIncorrectLetters() {
 
         SessionFilter sessionFilter = new SessionFilter();
 
@@ -67,33 +68,82 @@ class WordleCluesTest {
                 .contentType("application/json")
                 .filter(sessionFilter)
                 .when()
-                .post("/guessWithHint?guess=MUNDO")
+                .post("/guessWithHint?guess=APPLE")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("hint", equalTo("_ _ _ _ O"));
+                .body("hint", equalTo("_ _ _ _ _"));
     }
 
+
     @Test
-    void testNoMemoryOfPreviousAttempts() {
+    void testUpdatedMemoryOfPreviousAttemptsAndLoose() {
 
         SessionFilter sessionFilter = new SessionFilter();
 
+        String[] attempts = {"SIEME", "MARIO", "CERRO", "BULOS", "SERTO", "CIETO"};
+        String[] expectedClues = {"S _ _ _ _", "S _ _ _ O", "S E _ _ O", "S E _ _ O", "S E _ T O", "S E _ T O"};
+
+        for (int i = 0; i < attempts.length; i++) {
+            given()
+                    .contentType("application/json")
+                    .filter(sessionFilter)
+                    .when()
+                    .post("/guessWithHint?guess=" + attempts[i])
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("hint", equalTo(expectedClues[i]));
+        }
         given()
                 .contentType("application/json")
                 .filter(sessionFilter)
                 .when()
-                .post("/guessWithHint?guess=SESGo")
+                .post("/guessWithHint?guess=SEXTO")
                 .then()
-                .statusCode(HttpStatus.OK.value())
-                .body("hint", equalTo("S E _ _ O"));
+                .statusCode(HttpStatus.TOO_MANY_REQUESTS.value()) // seventh try, out of game
+                .body("hint", equalTo("S E _ T O"));
+
+    }
+
+    @Test
+    void testUpdatedMemoryOfPreviousAttemptsAndWin() {
+
+        SessionFilter sessionFilter = new SessionFilter();
+
+        String[] attempts = {"TEJAS", "EXTRA", "CESTO"};
+        String[] expectedClues = {"_ E _ _ _", "_ E _ _ _", "_ E _ T O"};
+
+        for (int i = 0; i < attempts.length; i++) {
+            given()
+                    .contentType("application/json")
+                    .filter(sessionFilter)
+                    .when()
+                    .post("/guessWithHint?guess=" + attempts[i])
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("hint", equalTo(expectedClues[i]));
+        }
+
+        String[] wrongAttempts = {"T3JAS", "SEXT0", "RAX[O", "SEX"}; // words not allowed
+        String[] wrongClues = {"_ E _ T O", "_ E _ T O", "_ E _ T O", "_ E _ T O"}; // We validate that the hint is the same
+
+        for (int i = 0; i < attempts.length; i++) {
+            given()
+                    .contentType("application/json")
+                    .filter(sessionFilter)
+                    .when()
+                    .post("/guessWithHint?guess=" + wrongAttempts[i])
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("hint", equalTo(wrongClues[i]));
+        }
 
         given()
                 .contentType("application/json")
                 .filter(sessionFilter)
                 .when()
-                .post("/guessWithHint?guess=siete")
+                .post("/guessWithHint?guess=SEXTO")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("hint", equalTo("S _ _ T _"));
+                .body("hint", equalTo("S E X T O"));
     }
 }

@@ -131,7 +131,7 @@ class WordleAttemptsRestTest {
 
     @Test
     void shouldAllowWinBeforeSixAttempts() {
-        // Simula tres intentos fallidos antes de acertar
+        // Simulates three unsuccessful attempts before hitting the mark
 
         SessionFilter sessionFilter = new SessionFilter();
 
@@ -146,7 +146,6 @@ class WordleAttemptsRestTest {
                     .body(containsString("Try again! Attempts left: " + (6 - i)));
         }
 
-        // Ahora introduce la palabra correcta
         given()
                 .contentType("application/json")
                 .filter(sessionFilter)
@@ -156,7 +155,7 @@ class WordleAttemptsRestTest {
                 .statusCode(HttpStatus.OK.value())
                 .body(equalTo("Correct! The word was: SEXTO"));
 
-        // Asegura que después de ganar, ya no puede seguir intentando
+        // He assures that after winning, he can't keep on trying.
         given()
                 .contentType("application/json")
                 .filter(sessionFilter)

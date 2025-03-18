@@ -5,8 +5,8 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/wordle")
@@ -24,16 +24,10 @@ public class WordleController {
     }
 
     @PostMapping("/guessWithHint")
-    public ResponseEntity<Map<String, String>> checkWordWithHint(@RequestParam String guess) {
-        // Obtener la pista generada desde el servicio
-        String hint = wordleGameService.generateHint(guess);
-
-        // Construir la respuesta con la pista
-        Map<String, String> response = new HashMap<>();
-        response.put("hint", hint);
-
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Map<String, String>> checkWordWithHint(@RequestParam String guess, HttpSession session) {
+        return wordleGameService.checkWordWithHint(guess, session);
     }
+
 
     @PostMapping("/reset")
     public ResponseEntity<String> resetGame(HttpSession session) {
