@@ -81,12 +81,10 @@ class WordleUITest {
                 Map.entry("PELON", "Try again! Attempts left: 5."),
                 Map.entry("app", "Invalid input: The word must be 5 letters long."),
                 Map.entry("GAÑAN", "Try again! Attempts left: 4."),
-                Map.entry("H3LLO", "Invalid input: Only characters from the alphabet are allowed."),
                 Map.entry("ARbOL", "Try again! Attempts left: 3."),
                 Map.entry("pALoS", "Try again! Attempts left: 2."),
                 Map.entry("sexto", "Correct! The word was: SEXTO."),
-                Map.entry("CASAS", "Game over! You've already won."),
-                Map.entry("P0T4S", "Game over! You've already won.")
+                Map.entry("CASAS", "Game over! You've already won.")
                 );
 
         for (Map.Entry<String, String> testCase : testCases) {
@@ -109,7 +107,6 @@ class WordleUITest {
                 Map.entry("MATAS", "Try again! Attempts left: 5."),
                 Map.entry("APP", "Invalid input: The word must be 5 letters long."),
                 Map.entry("CATAN", "Try again! Attempts left: 4."),
-                Map.entry("H3LLO", "Invalid input: Only characters from the alphabet are allowed."),
                 Map.entry("ARBOL", "Try again! Attempts left: 3."),
                 Map.entry("palos", "Try again! Attempts left: 2."),
                 Map.entry("PELOS", "Try again! Attempts left: 1."),

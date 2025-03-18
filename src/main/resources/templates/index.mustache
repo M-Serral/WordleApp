@@ -45,48 +45,43 @@
                     }
                     return response.text();
                 })
-                .then(data => {
-                    let resultElement = document.getElementById("result");
-                    let hintContainer = document.getElementById("hintContainer");
-
-                    // Separate the error message and the hint
-                    let parts = data.split("Hint:");
-                    let message = parts[0].trim();
-                    let hint = parts.length > 1 ? parts[1].trim() : "";
-
-                    // Detect if the game is over BEFORE updating the UI
-                    let gameOver = data.includes("Game over!") || data.includes("Correct!");
-                    if (gameOver) {
-                        guessInput.disabled = true;
-                        document.querySelector("button[type='submit']").disabled = true;
-                    }
-
-                    // Update UI with the message and the hint
-                    resultElement.innerText = message;
-                    hintContainer.innerText = hint;
-
-                    guessInput.value = "";
-                })
-                .catch(error => {
-                    let resultElement = document.getElementById("result");
-                    let hintContainer = document.getElementById("hintContainer");
-
-                    // Separate error message and hint
-                    let parts = error.message.split("Hint:");
-                    let errorMessage = parts[0].trim();
-                    let hint = parts.length > 1 ? parts[1].trim() : "";
-
-
-                    // Display only the error to the right of the button
-                    resultElement.innerText = errorMessage;
-
-                    // Display the hint below the input
-                    hintContainer.innerText = hint;
-
-                    guessInput.value = "";
-                });
+                .then(data => updateUI(data, false))
+                .catch(error => updateUI(error.message, true));
     });
+
+    // Restrict input to only letters (A-Z, a-z, ñ, Ñ)
+    document.getElementById("guessInput").addEventListener("input", function(event) {
+        this.value = this.value.replace(/[^A-Za-zñÑ]/g, '');
+    });
+
+    function updateUI(responseText, isError) {
+        let resultElement = document.getElementById("result");
+        let hintContainer = document.getElementById("hintContainer");
+
+        let parts = responseText.split("Hint:");
+        let message = parts[0].trim();
+        let hint = parts.length > 1 ? parts[1].trim() : "";
+
+        resultElement.innerText = message;
+
+        if (!isError) {
+            if (hint) {
+                let newHintElement = document.createElement("p");
+                newHintElement.innerText = hint;
+                hintContainer.appendChild(newHintElement);
+            }
+
+            let gameOver = responseText.includes("Game over!") || responseText.includes("Correct!");
+            if (gameOver) {
+                document.getElementById("guessInput").disabled = true;
+                document.querySelector("button[type='submit']").disabled = true;
+            }
+        }
+
+        document.getElementById("guessInput").value = "";
+    }
 </script>
+
 
 </body>
 </html>
