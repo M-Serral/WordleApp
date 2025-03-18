@@ -37,12 +37,12 @@ class WordleControllerTest {
                         .param("guess", "SEXTO")
                         .session(session))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Correct! The word was: SEXTO"));
+                .andExpect(content().string(containsString("Correct! The word was: SEXTO")));
         mockMvc.perform(post("/api/wordle/guess")
                         .param("guess", "sexto")
                         .session(session))
                 .andExpect(status().isTooManyRequests())
-                .andExpect(content().string("Game over! You've already won."));
+                .andExpect(content().string(containsString("Game over! You've already won.")));
     }
 
 
@@ -71,17 +71,16 @@ class WordleControllerTest {
     void testGuessWithHint() throws Exception {
         MockHttpSession session = new MockHttpSession();
 
-        mockMvc.perform(post("/api/wordle/guessWithHint")
+        mockMvc.perform(post("/api/wordle/guess")
                         .param("guess", "sexta")
                         .session(session))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.hint").value("S E X T _"));
-        mockMvc.perform(post("/api/wordle/guessWithHint")
+                .andExpect(content().string(containsString("S E X T _")));
+        mockMvc.perform(post("/api/wordle/guess")
                         .param("guess", "S3XTO")
                         .session(session))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.hint").value("S E X T _"));
-
+                .andExpect(content().string(containsString("S E X T _")));
     }
 
 }

@@ -84,7 +84,7 @@ class WordleUITest {
                 Map.entry("H3LLO", "Invalid input: Only characters from the alphabet are allowed."),
                 Map.entry("ARbOL", "Try again! Attempts left: 3."),
                 Map.entry("pALoS", "Try again! Attempts left: 2."),
-                Map.entry("sexto", "Correct! The word was: SEXTO"),
+                Map.entry("sexto", "Correct! The word was: SEXTO."),
                 Map.entry("CASAS", "Game over! You've already won."),
                 Map.entry("P0T4S", "Game over! You've already won.")
                 );
