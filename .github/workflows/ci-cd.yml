@@ -25,6 +25,13 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+            path: ~/.m2
+            key: maven-${{ hashFiles('**/pom.xml') }}
+            restore-keys: maven-
+
       - name: Run tests
         run: mvn clean verify -Dserver.port=${{ env.SERVER_PORT }} jacoco:report jacoco:report-aggregate
 
