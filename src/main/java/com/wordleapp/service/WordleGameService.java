@@ -63,65 +63,51 @@ public class WordleGameService {
     }
 
     public String generateHint(String upperGuess, HttpSession session) {
-        char[] hint = new char[Constants.WORD_LENGTH];
-        Arrays.fill(hint, '_');
-
+        char[] hint = initializeHint();
         boolean[] matched = new boolean[Constants.WORD_LENGTH];
         boolean[] used = new boolean[Constants.WORD_LENGTH];
 
-        int x = 0;
-        int y = 1;
+        markCorrectPositions(upperGuess, hint, matched, used);
+        markMisplacedLetters(upperGuess, hint, matched, used);
 
+        session.setAttribute(Constants.HINT_SESSION_KEY, hint);
+        return formatHint(hint);
+    }
+
+    private char[] initializeHint() {
+        char[] hint = new char[Constants.WORD_LENGTH];
+        Arrays.fill(hint, '_');
+        return hint;
+    }
+
+    private void markCorrectPositions(String guess, char[] hint, boolean[] matched, boolean[] used) {
         for (int i = 0; i < Constants.WORD_LENGTH; i++) {
-            if (upperGuess.charAt(i) == Constants.SECRET_WORD.charAt(i)) {
-                hint[i] = upperGuess.charAt(i);
+            if (guess.charAt(i) == Constants.SECRET_WORD.charAt(i)) {
+                hint[i] = guess.charAt(i);
                 matched[i] = true;
                 used[i] = true;
-            } else {
-                if (upperGuess.charAt(i) != Constants.SECRET_WORD.charAt(i)) {
-                    if (upperGuess.charAt(i) != Constants.SECRET_WORD.charAt(i)) {
-                        hint[i] = '_';
-                    }
-                }
             }
         }
+    }
 
+    private void markMisplacedLetters(String guess, char[] hint, boolean[] matched, boolean[] used) {
         for (int i = 0; i < Constants.WORD_LENGTH; i++) {
             if (hint[i] == '_') {
                 for (int j = 0; j < Constants.WORD_LENGTH; j++) {
-                    if (!matched[j]) {
-                        if (upperGuess.charAt(i) == Constants.SECRET_WORD.charAt(j)) {
-                            if (!used[j]) {
-                                hint[i] = '?';
-                                used[j] = true;
-                                break;
-                            }
-                        }
+                    if (!matched[j] && !used[j] && guess.charAt(i) == Constants.SECRET_WORD.charAt(j)) {
+                        hint[i] = '?';
+                        used[j] = true;
+                        break;
                     }
                 }
             }
         }
-
-        session.setAttribute(Constants.HINT_SESSION_KEY, hint);
-
-        StringBuilder bld = new StringBuilder();
-        for (char c : hint) {
-            bld.append(c);
-        }
-        return new String(bld).replace("", " ").trim();
-
     }
 
-    private char[] getStoredHint(HttpSession session) {
-        char[] hint = (char[]) session.getAttribute(Constants.HINT_SESSION_KEY);
-        if (hint == null) {
-            hint = new char[Constants.WORD_LENGTH];
-            for (int i = 0; i < Constants.WORD_LENGTH; i++) {
-                hint[i] = '_';
-            }
-        }
-        return hint;
+    private String formatHint(char[] hint) {
+        return new String(hint).replace("", " ").trim();
     }
+
 
 
     private int getAttempts(HttpSession session) {
