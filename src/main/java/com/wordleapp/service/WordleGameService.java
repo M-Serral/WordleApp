@@ -28,16 +28,18 @@ public class WordleGameService {
                     e.getReason() + (lastHint != null ? " Hint: " + lastHint : ""));
         }
 
-        String hint = generateHint(guess, session);
+        String upperGuess = guess.toUpperCase();
+        String hint = generateHint(upperGuess, session);
         session.setAttribute(Constants.LAST_HINT_KEY, hint);
 
         if (guess.equalsIgnoreCase(Constants.SECRET_WORD)) {
             session.setAttribute(Constants.GAME_WON_KEY, true);
-            return ResponseEntity.ok("Correct! The word was: " + Constants.SECRET_WORD + ". Hint: " + hint);
+            return ResponseEntity.ok("Correct! The word was: " + Constants.SECRET_WORD + ". Hint: " + guess + Constants.ARROW + hint);
         }
 
         int attempts = updateAttempts(session);
-        return buildResponse(attempts, hint);
+
+        return buildResponse(attempts, hint, upperGuess);
 
     }
 
@@ -60,30 +62,52 @@ public class WordleGameService {
         }
     }
 
-    private String generateHint(String guess, HttpSession session) {
-        // Get the hint stored in the session or initialize it with “_”.
-        char[] hint = (char[]) session.getAttribute(Constants.HINT_SESSION_KEY);
-        if (hint == null) {
-            hint = new char[Constants.WORD_LENGTH];
-            Arrays.fill(hint, '_'); // Initially the whole word is “_”.
-        }
+    public String generateHint(String upperGuess, HttpSession session) {
+        char[] hint = initializeHint();
+        boolean[] matched = new boolean[Constants.WORD_LENGTH];
+        boolean[] used = new boolean[Constants.WORD_LENGTH];
 
-        // Convert input to uppercase
-        String upperGuess = guess.toUpperCase();
+        markCorrectPositions(upperGuess, hint, matched, used);
+        markMisplacedLetters(upperGuess, hint, matched, used);
 
-        // Compare the attempt with the secret word and update the hint
+        session.setAttribute(Constants.HINT_SESSION_KEY, hint);
+        return formatHint(hint);
+    }
+
+    private char[] initializeHint() {
+        char[] hint = new char[Constants.WORD_LENGTH];
+        Arrays.fill(hint, '_');
+        return hint;
+    }
+
+    private void markCorrectPositions(String guess, char[] hint, boolean[] matched, boolean[] used) {
         for (int i = 0; i < Constants.WORD_LENGTH; i++) {
-            if (upperGuess.charAt(i) == Constants.SECRET_WORD.charAt(i)) {
-                hint[i] = upperGuess.charAt(i); // Letter is in the correct position
+            if (guess.charAt(i) == Constants.SECRET_WORD.charAt(i)) {
+                hint[i] = guess.charAt(i);
+                matched[i] = true;
+                used[i] = true;
             }
         }
+    }
 
-        // Save the updated hint in the session
-        session.setAttribute(Constants.HINT_SESSION_KEY, hint);
+    private void markMisplacedLetters(String guess, char[] hint, boolean[] matched, boolean[] used) {
+        for (int i = 0; i < Constants.WORD_LENGTH; i++) {
+            if (hint[i] == '_') {
+                for (int j = 0; j < Constants.WORD_LENGTH; j++) {
+                    if (!matched[j] && !used[j] && guess.charAt(i) == Constants.SECRET_WORD.charAt(j)) {
+                        hint[i] = '?';
+                        used[j] = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
-        // Convert hint to space-separated string format
+    private String formatHint(char[] hint) {
         return new String(hint).replace("", " ").trim();
     }
+
 
 
     private int getAttempts(HttpSession session) {
@@ -96,11 +120,11 @@ public class WordleGameService {
         return attempts;
     }
 
-    private ResponseEntity<String> buildResponse(int attempts, String hint) {
+    private ResponseEntity<String> buildResponse(int attempts, String hint, String guess) {
         return ResponseEntity.ok(
                 attempts == Constants.MAX_ATTEMPTS
-                        ? "Game over! You've used all attempts. Hint: " + hint
-                        : "Try again! Attempts left: " + (Constants.MAX_ATTEMPTS - attempts) + ". Hint: " + hint
+                        ? "Game over! You've used all attempts. Hint: " + guess + Constants.ARROW + hint
+                        : "Try again! Attempts left: " + (Constants.MAX_ATTEMPTS - attempts) + ". Hint: " + guess + Constants.ARROW + hint
         );
     }
 }
