@@ -2,12 +2,11 @@ package com.wordleapp.ui;
 
 import com.wordleapp.WordleAppApplication;
 import org.junit.jupiter.api.*;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 
 import java.util.List;
 import java.util.Map;
@@ -15,49 +14,39 @@ import java.util.Map;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = WordleAppApplication.class)
-@AutoConfigureMockMvc
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@SpringBootTest(classes = WordleAppApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WordleUITest {
+
+    @LocalServerPort
+    int port;
 
     private WebDriver driver;
     private WordlePage wordlePage;
 
-    @BeforeAll
-    void setUpAll() {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-
-        driver = new ChromeDriver(options);
-        wordlePage = new WordlePage(driver);
-    }
 
     @BeforeEach
     void setUp() {
         resetGameState();
 
-        driver.manage().deleteAllCookies();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
+        driver = new ChromeDriver(options);
 
-        // Check if sessionStorage is available before deletion
-        try {
-            Boolean isStorageAvailable = (Boolean) ((JavascriptExecutor) driver).executeScript("return typeof window.sessionStorage !== 'undefined';");
-            if (Boolean.TRUE.equals(isStorageAvailable)) {
-                ((JavascriptExecutor) driver).executeScript("window.sessionStorage.clear();");
-                ((JavascriptExecutor) driver).executeScript("window.localStorage.clear();");
-            }
-        } catch (Exception e) {
-            System.out.println("sessionStorage is not available in this environment.");
+        driver.get("http://localhost:"+this.port+"/");
+        wordlePage = new WordlePage(driver);
+
+    }
+
+    @AfterEach
+    void teardown() {
+        if(driver != null) {
+            driver.quit();
         }
-
-        driver.get("http://localhost:8080/");
     }
 
 
-
     /**
-     * Método para resetear el estado del usuario antes de cada test.
+     * Method to reset the user status before each test.
      */
     void resetGameState() {
         given()
@@ -68,15 +57,10 @@ class WordleUITest {
                 .statusCode(200);
     }
 
-    @AfterAll
-    void tearDownAll() {
-        if (driver != null) {
-            driver.quit();
-        }
-    }
 
     @Test
     void testTryAttemptsAndWin() {
+
         List<Map.Entry<String, String>> testCases = List.of(
                 Map.entry("PELON", "Try again! Attempts left: 5."),
                 Map.entry("app", "Invalid input: The word must be 5 letters long."),

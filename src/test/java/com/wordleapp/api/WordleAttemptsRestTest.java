@@ -3,27 +3,29 @@ package com.wordleapp.api;
 import io.restassured.RestAssured;
 import io.restassured.filter.session.SessionFilter;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WordleAttemptsRestTest {
 
-    @BeforeAll
-    static void setup() {
-        String port = System.getProperty("server.port", "8080");
-        RestAssured.baseURI = "http://localhost:" + port + "/api/wordle";
-    }
+    @LocalServerPort
+    int port;
 
     @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+        RestAssured.baseURI = "http://localhost:" + port + "/api/wordle";
+        resetBeforeEachTest();
+    }
+
     void resetBeforeEachTest() {
         given()
                 .contentType("application/json")
@@ -34,16 +36,6 @@ class WordleAttemptsRestTest {
                 .body(equalTo("Game reset! You have 6 attempts."));
     }
 
-    @AfterEach
-    void resetAfterEachTest() {
-        given()
-                .contentType("application/json")
-                .when()
-                .post("/reset")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .body(equalTo("Game reset! You have 6 attempts."));
-    }
 
     @Test
     void testInvalidInput() {

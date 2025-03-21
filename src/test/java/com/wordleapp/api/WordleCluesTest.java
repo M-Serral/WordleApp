@@ -2,27 +2,29 @@ package com.wordleapp.api;
 
 import io.restassured.RestAssured;
 import io.restassured.filter.session.SessionFilter;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WordleCluesTest {
 
-    @BeforeAll
-    static void setup() {
-        String port = System.getProperty("server.port", "8080");
-        RestAssured.baseURI = "http://localhost:" + port + "/api/wordle";
-    }
+        @LocalServerPort
+        int port;
 
     @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+        RestAssured.baseURI = "http://localhost:" + port + "/api/wordle";
+        resetBeforeEachTest();
+    }
+
     void resetBeforeEachTest() {
         given()
                 .contentType("application/json")
@@ -33,16 +35,7 @@ class WordleCluesTest {
                 .body(equalTo("Game reset! You have 6 attempts."));
     }
 
-    @AfterEach
-    void resetAfterEachTest() {
-        given()
-                .contentType("application/json")
-                .when()
-                .post("/reset")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .body(equalTo("Game reset! You have 6 attempts."));
-    }
+
 
     @Test
     void testCorrectLetterPositions() {
@@ -56,7 +49,7 @@ class WordleCluesTest {
                 .post("/guess?guess=SEXTO")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(containsString("SEXTO"));
+                .body(containsString("S E X T O"));
 
     }
 
@@ -70,11 +63,38 @@ class WordleCluesTest {
                 .contentType("application/json")
                 .filter(sessionFilter)
                 .when()
-                .post("/guess?guess=APPLE")
+                .post("/guess?guess=CLIMA")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body(containsString("_ _ _ _ _"));
     }
+
+    @Test
+    void testMixedCorrectAndIncorrectPositions() {
+        SessionFilter sessionFilter = new SessionFilter();
+        given()
+                .contentType("application/json")
+                .filter(sessionFilter)
+                .when()
+                .post("/guess?guess=SESGO")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body(containsString("S E _ _ O"));
+    }
+
+    @Test
+    void testFirstWordPositions() {
+        SessionFilter sessionFilter = new SessionFilter();
+        given()
+                .contentType("application/json")
+                .filter(sessionFilter)
+                .when()
+                .post("/guess?guess=EUROS")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body(containsString("? _ _ ? ?"));
+    }
+
 
 
     @Test
@@ -82,8 +102,8 @@ class WordleCluesTest {
 
         SessionFilter sessionFilter = new SessionFilter();
 
-        String[] attempts = {"SIEME", "MARIO", "CERRO", "BULOS", "SERTO", "CIETO"};
-        String[] expectedClues = {"S _ _ _ _", "S _ _ _ O", "S E _ _ O", "S E _ _ O", "S E _ T O", "S E _ T O"};
+        String[] attempts = {"EUROS", "SESGO", "SIETE", "TEXTA", "TEXTO", "RESTO"};
+        String[] expectedClues = {"? _ _ ? ?", "S E _ _ O", "S _ ? T _", "_ E X T _", "_ E X T O", "_ E ? T O"};
 
         for (int i = 0; i < attempts.length; i++) {
             given()
@@ -102,7 +122,7 @@ class WordleCluesTest {
                 .post("/guess?guess=SEXTO")
                 .then()
                 .statusCode(HttpStatus.TOO_MANY_REQUESTS.value()) // seventh try, out of game
-                .body(containsString("S E _ T O"));
+                .body(containsString("_ E ? T O"));
 
     }
 
@@ -112,7 +132,7 @@ class WordleCluesTest {
         SessionFilter sessionFilter = new SessionFilter();
 
         String[] attempts = {"TEJAS", "EXTRA", "CESTO"};
-        String[] expectedClues = {"_ E _ _ _", "_ E _ _ _", "_ E _ T O"};
+        String[] expectedClues = {"? E _ _ ?", "? ? ? _ _", "_ E ? T O"};
 
         for (int i = 0; i < attempts.length; i++) {
             given()
@@ -126,7 +146,7 @@ class WordleCluesTest {
         }
 
         String[] wrongAttempts = {"T3JAS", "SEXT0", "RAX[O", "SEX"}; // words not allowed
-        String[] wrongClues = {"_ E _ T O", "_ E _ T O", "_ E _ T O", "_ E _ T O"}; // We validate that the hint is the same
+        String[] wrongClues = {"_ E ? T O", "_ E ? T O", "_ E ? T O", "_ E ? T O"}; // We validate that the hint is the same
 
         for (int i = 0; i < attempts.length; i++) {
             given()

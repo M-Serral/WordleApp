@@ -24,7 +24,7 @@ class WordleControllerTest {
     @BeforeEach
     void resetGame() throws Exception {
         mockMvc.perform(post("/api/wordle/reset"))
-                        .andExpect(status().isOk());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -62,7 +62,7 @@ class WordleControllerTest {
         mockMvc.perform(post("/api/wordle/guess")
                         .param("guess", "WRONG")
                         .session(session))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string(containsString("Game over! You've used all attempts.")));
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Game over! You've used all attempts.")));
     }
 }
