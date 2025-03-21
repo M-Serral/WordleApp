@@ -52,7 +52,7 @@ class WordleUITest {
         given()
                 .contentType("application/json")
                 .when()
-                .post("http://localhost:8080/api/wordle/reset")
+                .post("http://localhost:"+this.port+"/api/wordle/reset")
                 .then()
                 .statusCode(200);
     }
