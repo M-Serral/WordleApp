@@ -28,67 +28,9 @@ jobs:
       - name: Cache Maven dependencies
         uses: actions/cache@v3
         with:
-          path: ~/.m2
-          key: maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: maven-
-
-      - name: Install Chrome & ChromeDriver
-        run: |
-          sudo apt update
-          sudo apt install -y google-chrome-stable unzip curl jq
-
-          # Get Chrome version
-          CHROME_VERSION=$(google-chrome --version | grep -oP '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-          echo "Chrome version: $CHROME_VERSION"
-
-          # Get compatible ChromeDriver version
-          CHROMEDRIVER_VERSION=$(curl -sS "https://googlechromelabs.github.io/chrome-for-testing/latest-patch-versions-per-build-with-downloads.json" | jq -r ".builds[\"$CHROME_VERSION\"].version")
-
-          if [[ -z "$CHROMEDRIVER_VERSION" ]]; then
-            echo "No compatible ChromeDriver version was found for $CHROME_VERSION"
-            exit 1
-          fi
-
-          echo "ChromeDriver version: $CHROMEDRIVER_VERSION"
-
-          # Download ChromeDriver
-          curl -sS -o chromedriver.zip "https://storage.googleapis.com/chrome-for-testing-public/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip"
-
-          # Check if the download was successful
-          if ! unzip -tq chromedriver.zip; then
-            echo "Error: The downloaded file is not a valid ZIP"
-            exit 1
-          fi
-
-          # Extract ChromeDriver
-          sudo unzip -o chromedriver.zip -d /usr/local/bin/
-
-          # Verify extracted structure
-          if [ -f "/usr/local/bin/chromedriver-linux64/chromedriver" ]; then
-            sudo mv /usr/local/bin/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
-            sudo chmod +x /usr/local/bin/chromedriver
-            echo "ChromeDriver installed successfully."
-          else
-            echo "Error: ChromeDriver binary not found after extraction!"
-            exit 1
-          fi
-
-          # Clean up unnecessary files
-          sudo rm -rf chromedriver.zip /usr/local/bin/chromedriver-linux64
-
-          # Verify the installation
-          chromedriver --version
-
-      - name: Start application in background
-        run: mvn spring-boot:run -Dspring-boot.run.jvmArguments="-XX:+TieredCompilation -XX:TieredStopAtLevel=1" &
-        env:
-          SPRING_PROFILES_ACTIVE: test
-
-      - name: Wait for application to start
-        run: |
-          echo "Wait for application to start..."
-          timeout 30 sh -c 'until nc -z localhost 8080; do sleep 2; done'
-
+            path: ~/.m2
+            key: maven-${{ hashFiles('**/pom.xml') }}
+            restore-keys: maven-
 
       - name: Run tests
         run: mvn clean verify -Dserver.port=${{ env.SERVER_PORT }} jacoco:report jacoco:report-aggregate
