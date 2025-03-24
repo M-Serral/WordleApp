@@ -1,22 +1,25 @@
 package com.wordleapp.ui;
 
 import com.wordleapp.WordleAppApplication;
+import com.wordleapp.service.WordSelectorService;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 import java.util.List;
 import java.util.Map;
 
-import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = WordleAppApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WordleUITest {
 
+    @Autowired
+    private WordSelectorService wordSelectorService;
     @LocalServerPort
     int port;
 
@@ -26,7 +29,8 @@ class WordleUITest {
 
     @BeforeEach
     void setUp() {
-        resetGameState();
+
+        wordSelectorService.setFixedWordForTesting("SEXTO");
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
@@ -34,6 +38,7 @@ class WordleUITest {
 
         driver.get("http://localhost:"+this.port+"/");
         wordlePage = new WordlePage(driver);
+
 
     }
 
@@ -44,18 +49,6 @@ class WordleUITest {
         }
     }
 
-
-    /**
-     * Method to reset the user status before each test.
-     */
-    void resetGameState() {
-        given()
-                .contentType("application/json")
-                .when()
-                .post("http://localhost:"+this.port+"/api/wordle/reset")
-                .then()
-                .statusCode(200);
-    }
 
 
     @Test
@@ -94,7 +87,7 @@ class WordleUITest {
                 Map.entry("ARBOL", "Try again! Attempts left: 3."),
                 Map.entry("palos", "Try again! Attempts left: 2."),
                 Map.entry("PELOS", "Try again! Attempts left: 1."),
-                Map.entry("PELUS", "Game over! You've used all attempts."),
+                Map.entry("PELUS", "Game over! The secret word was " + wordSelectorService.getCurrentWord() + "."),
                 Map.entry("SEXTO", "You have reached the maximum number of attempts."),
                 Map.entry("ASA", "You have reached the maximum number of attempts.")
         );
