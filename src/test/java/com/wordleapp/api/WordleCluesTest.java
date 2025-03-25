@@ -1,38 +1,32 @@
 package com.wordleapp.api;
 
+import com.wordleapp.service.WordSelectorService;
 import io.restassured.RestAssured;
 import io.restassured.filter.session.SessionFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WordleCluesTest {
 
-        @LocalServerPort
-        int port;
+    @Autowired
+    private WordSelectorService wordSelectorService;
+
+    @LocalServerPort
+    int port;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
         RestAssured.baseURI = "http://localhost:" + port + "/api/wordle";
-        resetBeforeEachTest();
-    }
-
-    void resetBeforeEachTest() {
-        given()
-                .contentType("application/json")
-                .when()
-                .post("/reset")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .body(equalTo("Game reset! You have 6 attempts."));
+        wordSelectorService.setFixedWordForTesting("sexto");
     }
 
 
@@ -40,11 +34,9 @@ class WordleCluesTest {
     @Test
     void testCorrectLetterPositions() {
 
-        SessionFilter sessionFilter = new SessionFilter();
 
         given()
                 .contentType("application/json")
-                .filter(sessionFilter)
                 .when()
                 .post("/guess?guess=SEXTO")
                 .then()
@@ -57,11 +49,9 @@ class WordleCluesTest {
     @Test
     void testAllIncorrectLetters() {
 
-        SessionFilter sessionFilter = new SessionFilter();
 
         given()
                 .contentType("application/json")
-                .filter(sessionFilter)
                 .when()
                 .post("/guess?guess=CLIMA")
                 .then()
@@ -71,10 +61,8 @@ class WordleCluesTest {
 
     @Test
     void testMixedCorrectAndIncorrectPositions() {
-        SessionFilter sessionFilter = new SessionFilter();
         given()
                 .contentType("application/json")
-                .filter(sessionFilter)
                 .when()
                 .post("/guess?guess=SESGO")
                 .then()
@@ -84,10 +72,8 @@ class WordleCluesTest {
 
     @Test
     void testFirstWordPositions() {
-        SessionFilter sessionFilter = new SessionFilter();
         given()
                 .contentType("application/json")
-                .filter(sessionFilter)
                 .when()
                 .post("/guess?guess=EUROS")
                 .then()

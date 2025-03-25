@@ -1,6 +1,6 @@
 package com.wordleapp.service;
 
-import com.wordleapp.util.Constants;
+import com.wordleapp.utils.Constants;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -11,6 +11,14 @@ import java.util.Arrays;
 
 @Service
 public class WordleGameService {
+
+    private final WordSelectorService wordSelectorService;
+
+
+    public WordleGameService(WordSelectorService wordSelectorService) {
+        this.wordSelectorService = wordSelectorService;
+    }
+
 
     public ResponseEntity<String> checkWord(String guess, HttpSession session) {
 
@@ -32,9 +40,10 @@ public class WordleGameService {
         String hint = generateHint(upperGuess, session);
         session.setAttribute(Constants.LAST_HINT_KEY, hint);
 
-        if (guess.equalsIgnoreCase(Constants.SECRET_WORD)) {
+        if (upperGuess.equals(wordSelectorService.getCurrentWord())) {
             session.setAttribute(Constants.GAME_WON_KEY, true);
-            return ResponseEntity.ok("Correct! The word was: " + Constants.SECRET_WORD + ". Hint: " + guess + Constants.ARROW + hint);
+            return ResponseEntity.ok("CORRECT! The word was: " + wordSelectorService.getCurrentWord()
+                    + Constants.HINT + guess + Constants.ARROW + hint);
         }
 
         int attempts = updateAttempts(session);
@@ -45,20 +54,23 @@ public class WordleGameService {
 
     private void validateGameState(HttpSession session) {
         if (Boolean.TRUE.equals(session.getAttribute(Constants.GAME_WON_KEY))) {
-            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Game over! You've already won.");
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "GAME OVER! You've already won.");
         }
 
         if (getAttempts(session) >= Constants.MAX_ATTEMPTS) {
-            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "You have reached the maximum number of attempts.");
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS,
+                    "You have reached the maximum number of attempts.");
         }
     }
 
     private void validateGuess(String guess) {
         if (!guess.matches("^[A-Za-zñÑ]+$")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input: Only characters from the alphabet are allowed.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Invalid input: Only characters from the alphabet are allowed.");
         }
         if (guess.length() != Constants.WORD_LENGTH) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input: The word must be " + Constants.WORD_LENGTH + " letters long.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Invalid input: The word must be " + Constants.WORD_LENGTH + " letters long.");
         }
     }
 
@@ -82,7 +94,7 @@ public class WordleGameService {
 
     private void markCorrectPositions(String guess, char[] hint, boolean[] matched, boolean[] used) {
         for (int i = 0; i < Constants.WORD_LENGTH; i++) {
-            if (guess.charAt(i) == Constants.SECRET_WORD.charAt(i)) {
+            if (guess.charAt(i) == wordSelectorService.getCurrentWord().charAt(i)) {
                 hint[i] = guess.charAt(i);
                 matched[i] = true;
                 used[i] = true;
@@ -94,7 +106,7 @@ public class WordleGameService {
         for (int i = 0; i < Constants.WORD_LENGTH; i++) {
             if (hint[i] == '_') {
                 for (int j = 0; j < Constants.WORD_LENGTH; j++) {
-                    if (!matched[j] && !used[j] && guess.charAt(i) == Constants.SECRET_WORD.charAt(j)) {
+                    if (!matched[j] && !used[j] && guess.charAt(i) == wordSelectorService.getCurrentWord().charAt(j)) {
                         hint[i] = '?';
                         used[j] = true;
                         break;
@@ -123,8 +135,11 @@ public class WordleGameService {
     private ResponseEntity<String> buildResponse(int attempts, String hint, String guess) {
         return ResponseEntity.ok(
                 attempts == Constants.MAX_ATTEMPTS
-                        ? "Game over! You've used all attempts. Hint: " + guess + Constants.ARROW + hint
-                        : "Try again! Attempts left: " + (Constants.MAX_ATTEMPTS - attempts) + ". Hint: " + guess + Constants.ARROW + hint
+                        ? "GAME OVER! The secret word was " + wordSelectorService.getCurrentWord()
+                        + Constants.HINT  + guess + Constants.ARROW + hint
+
+                        : "Try again! Attempts left: " + (Constants.MAX_ATTEMPTS - attempts)
+                        + Constants.HINT  + guess + Constants.ARROW + hint
         );
     }
 }

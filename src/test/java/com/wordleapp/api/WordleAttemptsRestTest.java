@@ -1,10 +1,12 @@
 package com.wordleapp.api;
 
+import com.wordleapp.service.WordSelectorService;
 import io.restassured.RestAssured;
 import io.restassured.filter.session.SessionFilter;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,9 @@ import static org.hamcrest.Matchers.equalTo;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WordleAttemptsRestTest {
 
+    @Autowired
+    private WordSelectorService wordSelectorService;
+
     @LocalServerPort
     int port;
 
@@ -23,17 +28,7 @@ class WordleAttemptsRestTest {
     void setUp() {
         RestAssured.port = port;
         RestAssured.baseURI = "http://localhost:" + port + "/api/wordle";
-        resetBeforeEachTest();
-    }
-
-    void resetBeforeEachTest() {
-        given()
-                .contentType("application/json")
-                .when()
-                .post("/reset")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .body(equalTo("Game reset! You have 6 attempts."));
+        wordSelectorService.setFixedWordForTesting("sexto");
     }
 
 
@@ -81,7 +76,7 @@ class WordleAttemptsRestTest {
                 .post("/guess?guess=WRONG")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(containsString("Game over! You've used all attempts."));
+                .body(containsString("GAME OVER! The secret word was " + wordSelectorService.getCurrentWord()));
 
 
     }
@@ -108,7 +103,7 @@ class WordleAttemptsRestTest {
                 .post("/guess?guess=WRONG")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(containsString("Game over! You've used all attempts."));
+                .body(containsString("GAME OVER! The secret word was " + wordSelectorService.getCurrentWord()));
 
         given()
                 .contentType("application/json")
@@ -128,7 +123,7 @@ class WordleAttemptsRestTest {
 
         SessionFilter sessionFilter = new SessionFilter();
 
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= 5; i++) {
             given()
                     .contentType("application/json")
                     .filter(sessionFilter)
@@ -146,9 +141,9 @@ class WordleAttemptsRestTest {
                 .post("/guess?guess=SEXTO")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(containsString("Correct! The word was: SEXTO."));
+                .body(containsString("CORRECT! The word was: SEXTO."));
 
-        // He assures that after winning, he can't keep on trying.
+        // He assures that after winning, he can not keep on trying.
         given()
                 .contentType("application/json")
                 .filter(sessionFilter)
@@ -156,7 +151,7 @@ class WordleAttemptsRestTest {
                 .post("/guess?guess=WRONG")
                 .then()
                 .statusCode(HttpStatus.TOO_MANY_REQUESTS.value())
-                .body(containsString("Game over! You've already won."));
+                .body(containsString("GAME OVER! You've already won."));
 
     }
 
@@ -183,13 +178,25 @@ class WordleAttemptsRestTest {
                 .statusCode(HttpStatus.OK.value())
                 .body(equalTo("Game reset! You have 6 attempts."));
 
+        wordSelectorService.setFixedWordForTesting("sexto");
+
         given()
                 .contentType("application/json")
                 .filter(sessionFilter)
                 .when()
-                .post("/guess?guess=WRONG")
+                .post("/guess?guess=NACER")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body(containsString("Try again! Attempts left: 5"));
+
+        given()
+                .contentType("application/json")
+                .filter(sessionFilter)
+                .when()
+                .post("/guess?guess=SEXTO")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body(containsString("CORRECT! The word was: SEXTO."));
     }
+
 }
