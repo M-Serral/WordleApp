@@ -3,11 +3,12 @@ package com.wordleapp.ui;
 import com.wordleapp.WordleAppApplication;
 import com.wordleapp.service.WordSelectorService;
 import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 import java.util.List;
@@ -18,19 +19,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest(classes = WordleAppApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WordleUITest {
 
-    @Autowired
+    @MockBean
     private WordSelectorService wordSelectorService;
+
     @LocalServerPort
     int port;
 
     private WebDriver driver;
     private WordlePage wordlePage;
 
+    private final String  secretTestWord = "sexto".toUpperCase();
+
 
     @BeforeEach
     void setUp() {
 
-        wordSelectorService.setFixedWordForTesting("sexto");
+        Mockito.when(wordSelectorService.getCurrentWord()).thenReturn(secretTestWord);
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
@@ -60,7 +64,7 @@ class WordleUITest {
                 Map.entry("GAÑAN", "Try again! Attempts left: 4."),
                 Map.entry("ARbOL", "Try again! Attempts left: 3."),
                 Map.entry("pALoS", "Try again! Attempts left: 2."),
-                Map.entry("sexto", "CORRECT! The word was: " + wordSelectorService.getCurrentWord() + "."),
+                Map.entry("sexto", "CORRECT! The secret word was: " + wordSelectorService.getCurrentWord() + "."),
                 Map.entry("CASAS", "GAME OVER! You've already won.")
                 );
 
@@ -87,7 +91,7 @@ class WordleUITest {
                 Map.entry("ARBOL", "Try again! Attempts left: 3."),
                 Map.entry("palos", "Try again! Attempts left: 2."),
                 Map.entry("PELOS", "Try again! Attempts left: 1."),
-                Map.entry("PELUS", "GAME OVER! The secret word was " + wordSelectorService.getCurrentWord() + "."),
+                Map.entry("PELUS", "GAME OVER! The secret word was: " + wordSelectorService.getCurrentWord() + "."),
                 Map.entry("SEXTO", "You have reached the maximum number of attempts."),
                 Map.entry("ASA", "You have reached the maximum number of attempts.")
         );

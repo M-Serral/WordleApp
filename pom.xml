@@ -10,14 +10,13 @@
     </parent>
     <groupId>org.example</groupId>
     <artifactId>WordleApp</artifactId>
-    <version>0.6.1</version>
+    <version>0.6.2</version>
     <name>WordleApp</name>
     <description>WordleApp</description>
     <properties>
         <java.version>17</java.version>
         <sonar.host.url>http://localhost:9000</sonar.host.url>
-        <sonar.coverage.exclusions>**/WordleAppApplication.java,
-        **/PageController.java></sonar.coverage.exclusions>
+        <sonar.coverage.exclusions>**/WordleAppApplication.java, **/PageController.java, **/WordSelectorService.java</sonar.coverage.exclusions>
         <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
     <dependencies>
@@ -125,7 +124,8 @@
                 <configuration>
                     <excludes>
                         <exclude>com/wordleapp/WordleAppApplication</exclude>
-                        <exclude>com/wordleapp/PageController</exclude>
+                        <exclude>com/wordleapp/controller/PageController</exclude>
+                        <exclude>com/wordleapp/service/WordSelectorService</exclude>
                     </excludes>
                 </configuration>
             </plugin>

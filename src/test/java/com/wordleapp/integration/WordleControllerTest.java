@@ -36,7 +36,7 @@ class WordleControllerTest {
                         .param("guess", "SEXTO")
                         .session(session))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Correct! The word was: SEXTO")));
+                .andExpect(content().string(containsString("CORRECT! The secret word was: SEXTO")));
         mockMvc.perform(post("/api/wordle/guess")
                         .param("guess", "sexto")
                         .session(session))

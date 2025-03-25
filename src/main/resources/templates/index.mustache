@@ -6,17 +6,46 @@
     <link rel="stylesheet" type="text/css" href="/css/main.css">
     <title>WORDLE GAME</title>
     <style>
+
         #container {
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        #wordleForm {
+            display: flex;
+            flex-direction: row;
             align-items: center;
         }
 
+
+        #result-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
         #result {
-            margin-left: 30px;
+            margin-left: 0;
         }
 
         #hintContainer {
             margin-top: 10px;
+            text-align: center;
+        }
+
+        #resetButton {
+            display: none;
+            margin-top: 20px;
+            margin-left: 120px;
+            text-align: center;
+        }
+
+        h1 {
+            text-align: center;
+            width: 100%;
         }
     </style>
 </head>
@@ -28,15 +57,19 @@
         <input type="text" id="guessInput" maxlength="5" placeholder="Enter a 5-letter word">
         <button type="submit">Submit</button>
     </form>
-    <p id="result"></p>
+    <div id="result-container">
+        <p id="result"></p>
+        <button id="resetButton">Reset Game</button>
+    </div>
 </div>
 <div id="hintContainer"></div>
+
 
 <script>
     document.getElementById("wordleForm").addEventListener("submit", function(event) {
         event.preventDefault();
         let guessInput = document.getElementById("guessInput");
-        let guess = guessInput.value;
+        let guess = guessInput.value.toUpperCase();
 
         fetch(`/api/wordle/guess?guess=${guess}`, { method: "POST" })
                 .then(response => {
@@ -51,12 +84,21 @@
 
     // Restrict input to only letters (A-Z, a-z, ñ, Ñ)
     document.getElementById("guessInput").addEventListener("input", function(event) {
-        this.value = this.value.replace(/[^A-Za-zñÑ]/g, '');
+        this.value = this.value.toUpperCase().replace(/[^A-Za-zñÑ]/g, '');
+    });
+
+    document.getElementById("resetButton").addEventListener("click", function () {
+        fetch("/api/wordle/reset", { method: "POST" })
+                .then(response => response.text())
+                .then(() => {
+                    location.reload();
+                });
     });
 
     function updateUI(responseText, isError) {
         let resultElement = document.getElementById("result");
         let hintContainer = document.getElementById("hintContainer");
+        let resetButton = document.getElementById("resetButton");
 
         let parts = responseText.split("Hint:");
         let message = parts[0].trim();
@@ -71,17 +113,17 @@
                 hintContainer.appendChild(newHintElement);
             }
 
-            let gameOver = responseText.includes("Game over!") || responseText.includes("Correct!");
+            let gameOver = responseText.includes("GAME OVER!") || responseText.includes("CORRECT!");
             if (gameOver) {
                 document.getElementById("guessInput").disabled = true;
                 document.querySelector("button[type='submit']").disabled = true;
+                resetButton.style.display = "block";
+                resultElement.after(resetButton);
             }
         }
 
         document.getElementById("guessInput").value = "";
     }
 </script>
-
-
 </body>
 </html>

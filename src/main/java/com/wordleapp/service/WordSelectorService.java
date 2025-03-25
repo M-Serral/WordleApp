@@ -1,35 +1,54 @@
 package com.wordleapp.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
+import java.util.List;
 
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class WordSelectorService {
 
-    private static final List<String> WORDS = List.of(
-            "girar", "nacer", "luzco", "cielo", "marco", "perro", "plaza", "sabor", "banco", "verde",
-            "negro", "vapor", "danza", "canto", "hojas", "raton", "robar", "globo", "piano", "perla",
-            "corto", "larga", "turno", "hotel", "fuego", "radio", "acero", "metal", "denso", "brisa"
-    );
-
-    private final SecureRandom random = new SecureRandom();
+    private static final Logger logger = LoggerFactory.getLogger(WordSelectorService.class);
+    private static final String WORDS_FILE_PATH = "src/main/resources/words.txt";
+    private List<String> words;
 
     @Getter
     private String currentWord;
+    private final SecureRandom random = new SecureRandom();
 
-    public WordSelectorService() {
-        selectNewWord();
+    @PostConstruct
+    private void loadWords() {
+        Path path = Paths.get(WORDS_FILE_PATH);
+
+        if (Files.notExists(path)) {
+            logger.error("Words file does not exist at {}", WORDS_FILE_PATH);
+            throw new IllegalStateException("Words file not found");
+        }
+
+        try {
+            words = Files.readAllLines(path);
+            selectNewWord();
+        } catch (IOException e) {
+            logger.error("Failed to load words file from {}", WORDS_FILE_PATH, e);
+            throw new IllegalStateException("Failed to load words file", e);
+        }
     }
 
     public void selectNewWord() {
-        this.currentWord = WORDS.get(random.nextInt(WORDS.size())).toUpperCase();
+        if (words.isEmpty()) {
+            throw new IllegalStateException("No words available in the file.");
+        }
+        currentWord = words.get(random.nextInt(words.size())).toUpperCase();
     }
 
-    public void setFixedWordForTesting(String word) {
-        this.currentWord = word.toUpperCase();
-    }
 }

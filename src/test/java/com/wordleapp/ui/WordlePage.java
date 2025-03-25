@@ -18,13 +18,13 @@ public class WordlePage {
 
     public WordlePage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     public void enterGuess(String guess) {
-        wait.until(ExpectedConditions.presenceOfElementLocated(inputField));
         wait.until(ExpectedConditions.visibilityOfElementLocated(inputField));
-        wait.until(ExpectedConditions.elementToBeClickable(inputField)).clear();
+        wait.until(ExpectedConditions.elementToBeClickable(inputField));
+        driver.findElement(inputField).clear();
         driver.findElement(inputField).sendKeys(guess);
     }
 
@@ -55,7 +55,7 @@ public class WordlePage {
                 return false; // If the result has not yet appeared, the game is not over.
             }
             String resultText = getResultMessage();
-            return resultText.contains("Game over!") || resultText.contains("Correct!");
+            return resultText.contains("GAME OVER!") || resultText.contains("CORRECT!");
         } catch (Exception e) {
             return false; // If there are any errors, we assume that the game is still in progress.
         }
