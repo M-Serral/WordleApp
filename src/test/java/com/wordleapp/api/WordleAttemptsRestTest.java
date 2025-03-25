@@ -6,8 +6,9 @@ import io.restassured.filter.session.SessionFilter;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
@@ -18,17 +19,26 @@ import static org.hamcrest.Matchers.equalTo;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WordleAttemptsRestTest {
 
-    @Autowired
+    @MockBean
     private WordSelectorService wordSelectorService;
 
     @LocalServerPort
     int port;
 
+    private SessionFilter sessionFilter;
+
+    private final String  secretTestWord = "sexto".toUpperCase();
+
     @BeforeEach
     void setUp() {
+
         RestAssured.port = port;
         RestAssured.baseURI = "http://localhost:" + port + "/api/wordle";
-        wordSelectorService.setFixedWordForTesting("sexto");
+
+        Mockito.when(wordSelectorService.getCurrentWord()).thenReturn(secretTestWord);
+
+        sessionFilter = new SessionFilter();
+
     }
 
 
@@ -56,8 +66,6 @@ class WordleAttemptsRestTest {
     @Test
     void shouldAllowUpToFiveIncorrectAttempts() {
 
-        SessionFilter sessionFilter = new SessionFilter();
-
         for (int i = 1; i <= 5; i++) {
             given()
                     .contentType("application/json")
@@ -76,15 +84,13 @@ class WordleAttemptsRestTest {
                 .post("/guess?guess=WRONG")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(containsString("GAME OVER! The secret word was " + wordSelectorService.getCurrentWord()));
+                .body(containsString("GAME OVER! The secret word was: " + wordSelectorService.getCurrentWord()));
 
 
     }
 
     @Test
     void shouldBlockUserAfterSixIncorrectAttempts() {
-
-        SessionFilter sessionFilter = new SessionFilter();
 
         for (int i = 1; i <= 5; i++) {
             given()
@@ -103,7 +109,7 @@ class WordleAttemptsRestTest {
                 .post("/guess?guess=WRONG")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(containsString("GAME OVER! The secret word was " + wordSelectorService.getCurrentWord()));
+                .body(containsString("GAME OVER! The secret word was: " + wordSelectorService.getCurrentWord()));
 
         given()
                 .contentType("application/json")
@@ -120,8 +126,6 @@ class WordleAttemptsRestTest {
     @Test
     void shouldAllowWinBeforeSixAttempts() {
         // Simulates three unsuccessful attempts before hitting the mark
-
-        SessionFilter sessionFilter = new SessionFilter();
 
         for (int i = 1; i <= 5; i++) {
             given()
@@ -141,7 +145,7 @@ class WordleAttemptsRestTest {
                 .post("/guess?guess=SEXTO")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(containsString("CORRECT! The word was: SEXTO."));
+                .body(containsString("CORRECT! The secret word was: SEXTO."));
 
         // He assures that after winning, he can not keep on trying.
         given()
@@ -158,8 +162,6 @@ class WordleAttemptsRestTest {
 
     @Test
     void shouldResetAttemptsOnNewGame() {
-
-        SessionFilter sessionFilter = new SessionFilter();
 
         for (int i = 1; i <= 6; i++) {
             given()
@@ -178,16 +180,7 @@ class WordleAttemptsRestTest {
                 .statusCode(HttpStatus.OK.value())
                 .body(equalTo("Game reset! You have 6 attempts."));
 
-        wordSelectorService.setFixedWordForTesting("sexto");
-
-        given()
-                .contentType("application/json")
-                .filter(sessionFilter)
-                .when()
-                .post("/guess?guess=NACER")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .body(containsString("Try again! Attempts left: 5"));
+        Mockito.when(wordSelectorService.getCurrentWord()).thenReturn("NACER");
 
         given()
                 .contentType("application/json")
@@ -196,7 +189,16 @@ class WordleAttemptsRestTest {
                 .post("/guess?guess=SEXTO")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(containsString("CORRECT! The word was: SEXTO."));
+                .body(containsString("Try again! Attempts left: 5"));
+
+        given()
+                .contentType("application/json")
+                .filter(sessionFilter)
+                .when()
+                .post("/guess?guess=NACER")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body(containsString("CORRECT! The secret word was: NACER."));
     }
 
 }

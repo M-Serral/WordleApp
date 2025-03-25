@@ -5,8 +5,9 @@ import io.restassured.RestAssured;
 import io.restassured.filter.session.SessionFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
@@ -16,19 +17,27 @@ import static org.hamcrest.Matchers.containsString;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WordleCluesTest {
 
-    @Autowired
+    @MockBean
     private WordSelectorService wordSelectorService;
 
     @LocalServerPort
     int port;
 
+    private SessionFilter sessionFilter;
+
+    private final String  secretTestWord = "sexto".toUpperCase();
+
     @BeforeEach
     void setUp() {
+
         RestAssured.port = port;
         RestAssured.baseURI = "http://localhost:" + port + "/api/wordle";
-        wordSelectorService.setFixedWordForTesting("sexto");
-    }
 
+        Mockito.when(wordSelectorService.getCurrentWord()).thenReturn(secretTestWord);
+
+        sessionFilter = new SessionFilter();
+
+    }
 
 
     @Test
@@ -86,8 +95,6 @@ class WordleCluesTest {
     @Test
     void testUpdatedMemoryOfPreviousAttemptsAndLoose() {
 
-        SessionFilter sessionFilter = new SessionFilter();
-
         String[] attempts = {"EUROS", "SESGO", "SIETE", "TEXTA", "TEXTO", "RESTO"};
         String[] expectedClues = {"? _ _ ? ?", "S E _ _ O", "S _ ? T _", "_ E X T _", "_ E X T O", "_ E ? T O"};
 
@@ -114,8 +121,6 @@ class WordleCluesTest {
 
     @Test
     void testUpdatedMemoryOfPreviousAttemptsAndWin() {
-
-        SessionFilter sessionFilter = new SessionFilter();
 
         String[] attempts = {"TEJAS", "EXTRA", "CESTO"};
         String[] expectedClues = {"? E _ _ ?", "? ? ? _ _", "_ E ? T O"};

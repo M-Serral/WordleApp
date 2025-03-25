@@ -1,35 +1,42 @@
 package com.wordleapp.service;
 
+import com.wordleapp.exception.WordLoadingException;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
+import java.util.List;
 
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class WordSelectorService {
-
-    private static final List<String> WORDS = List.of(
-            "girar", "nacer", "luzco", "cielo", "marco", "perro", "plaza", "sabor", "banco", "verde",
-            "negro", "vapor", "danza", "canto", "hojas", "raton", "robar", "globo", "piano", "perla",
-            "corto", "larga", "turno", "hotel", "fuego", "radio", "acero", "metal", "denso", "brisa"
-    );
-
-    private final SecureRandom random = new SecureRandom();
-
+    private static final String WORDS_FILE_PATH = "src/main/resources/words.txt";
+    private List<String> words;
     @Getter
     private String currentWord;
+    private final SecureRandom random = new SecureRandom();
 
-    public WordSelectorService() {
-        selectNewWord();
+    @PostConstruct
+    private void loadWords() {
+        try {
+            Path path = Paths.get(WORDS_FILE_PATH);
+            words = Files.readAllLines(path);
+            selectNewWord();
+        } catch (IOException e) {
+            throw new WordLoadingException("Failed to load words file", e);
+        }
     }
 
     public void selectNewWord() {
-        this.currentWord = WORDS.get(random.nextInt(WORDS.size())).toUpperCase();
+        if (words.isEmpty()) {
+            throw new IllegalStateException("No words available in the file.");
+        }
+        currentWord = words.get(random.nextInt(words.size())).toUpperCase();
     }
 
-    public void setFixedWordForTesting(String word) {
-        this.currentWord = word.toUpperCase();
-    }
 }
