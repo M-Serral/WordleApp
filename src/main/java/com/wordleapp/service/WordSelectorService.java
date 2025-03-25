@@ -1,6 +1,8 @@
 package com.wordleapp.service;
 
-import com.wordleapp.exception.WordLoadingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 
@@ -15,20 +17,30 @@ import jakarta.annotation.PostConstruct;
 
 @Service
 public class WordSelectorService {
+
+    private static final Logger logger = LoggerFactory.getLogger(WordSelectorService.class);
     private static final String WORDS_FILE_PATH = "src/main/resources/words.txt";
     private List<String> words;
+
     @Getter
     private String currentWord;
     private final SecureRandom random = new SecureRandom();
 
     @PostConstruct
     private void loadWords() {
+        Path path = Paths.get(WORDS_FILE_PATH);
+
+        if (Files.notExists(path)) {
+            logger.error("Words file does not exist at {}", WORDS_FILE_PATH);
+            throw new IllegalStateException("Words file not found");
+        }
+
         try {
-            Path path = Paths.get(WORDS_FILE_PATH);
             words = Files.readAllLines(path);
             selectNewWord();
         } catch (IOException e) {
-            throw new WordLoadingException("Failed to load words file", e);
+            logger.error("Failed to load words file from {}", WORDS_FILE_PATH, e);
+            throw new IllegalStateException("Failed to load words file", e);
         }
     }
 
