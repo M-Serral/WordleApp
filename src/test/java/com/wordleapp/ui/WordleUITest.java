@@ -30,7 +30,7 @@ class WordleUITest {
     @BeforeEach
     void setUp() {
 
-        wordSelectorService.setFixedWordForTesting("SEXTO");
+        wordSelectorService.setFixedWordForTesting("sexto");
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
@@ -60,8 +60,8 @@ class WordleUITest {
                 Map.entry("GAÑAN", "Try again! Attempts left: 4."),
                 Map.entry("ARbOL", "Try again! Attempts left: 3."),
                 Map.entry("pALoS", "Try again! Attempts left: 2."),
-                Map.entry("sexto", "Correct! The word was: SEXTO."),
-                Map.entry("CASAS", "Game over! You've already won.")
+                Map.entry("sexto", "CORRECT! The word was: " + wordSelectorService.getCurrentWord() + "."),
+                Map.entry("CASAS", "GAME OVER! You've already won.")
                 );
 
         for (Map.Entry<String, String> testCase : testCases) {
@@ -87,7 +87,7 @@ class WordleUITest {
                 Map.entry("ARBOL", "Try again! Attempts left: 3."),
                 Map.entry("palos", "Try again! Attempts left: 2."),
                 Map.entry("PELOS", "Try again! Attempts left: 1."),
-                Map.entry("PELUS", "Game over! The secret word was " + wordSelectorService.getCurrentWord() + "."),
+                Map.entry("PELUS", "GAME OVER! The secret word was " + wordSelectorService.getCurrentWord() + "."),
                 Map.entry("SEXTO", "You have reached the maximum number of attempts."),
                 Map.entry("ASA", "You have reached the maximum number of attempts.")
         );

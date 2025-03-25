@@ -40,9 +40,9 @@ public class WordleGameService {
         String hint = generateHint(upperGuess, session);
         session.setAttribute(Constants.LAST_HINT_KEY, hint);
 
-        if (guess.equalsIgnoreCase(wordSelectorService.getCurrentWord())) {
+        if (upperGuess.equals(wordSelectorService.getCurrentWord())) {
             session.setAttribute(Constants.GAME_WON_KEY, true);
-            return ResponseEntity.ok("Correct! The word was: " + wordSelectorService.getCurrentWord()
+            return ResponseEntity.ok("CORRECT! The word was: " + wordSelectorService.getCurrentWord()
                     + Constants.HINT + guess + Constants.ARROW + hint);
         }
 
@@ -54,7 +54,7 @@ public class WordleGameService {
 
     private void validateGameState(HttpSession session) {
         if (Boolean.TRUE.equals(session.getAttribute(Constants.GAME_WON_KEY))) {
-            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Game over! You've already won.");
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "GAME OVER! You've already won.");
         }
 
         if (getAttempts(session) >= Constants.MAX_ATTEMPTS) {
@@ -135,7 +135,7 @@ public class WordleGameService {
     private ResponseEntity<String> buildResponse(int attempts, String hint, String guess) {
         return ResponseEntity.ok(
                 attempts == Constants.MAX_ATTEMPTS
-                        ? "Game over! The secret word was " + wordSelectorService.getCurrentWord()
+                        ? "GAME OVER! The secret word was " + wordSelectorService.getCurrentWord()
                         + Constants.HINT  + guess + Constants.ARROW + hint
 
                         : "Try again! Attempts left: " + (Constants.MAX_ATTEMPTS - attempts)

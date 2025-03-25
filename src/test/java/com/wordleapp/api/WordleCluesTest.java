@@ -26,7 +26,7 @@ class WordleCluesTest {
     void setUp() {
         RestAssured.port = port;
         RestAssured.baseURI = "http://localhost:" + port + "/api/wordle";
-        wordSelectorService.setFixedWordForTesting("SEXTO");
+        wordSelectorService.setFixedWordForTesting("sexto");
     }
 
 
