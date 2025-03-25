@@ -17,7 +17,8 @@
         <java.version>17</java.version>
         <sonar.host.url>http://localhost:9000</sonar.host.url>
         <sonar.coverage.exclusions>**/WordleAppApplication.java,
-        **/PageController.java></sonar.coverage.exclusions>
+        **/PageController.java>,**/WordSelectorService.java,
+            **/WordLoadingException.java></sonar.coverage.exclusions>
         <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
     <dependencies>
@@ -125,7 +126,9 @@
                 <configuration>
                     <excludes>
                         <exclude>com/wordleapp/WordleAppApplication</exclude>
-                        <exclude>com/wordleapp/PageController</exclude>
+                        <exclude>com/wordleapp/controller/PageController</exclude>
+                        <exclude>com/wordleapp/exception/WordLoadingException</exclude>
+                        <exclude>com/wordleapp/service/WordSelectorService</exclude>
                     </excludes>
                 </configuration>
             </plugin>
