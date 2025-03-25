@@ -17,7 +17,7 @@
         <java.version>17</java.version>
         <sonar.host.url>http://localhost:9000</sonar.host.url>
         <sonar.coverage.exclusions>**/WordleAppApplication.java,
-        **/PageController.java>,**/WordSelectorService.java,
+        **/PageController.java,**/WordSelectorService.java,
             **/WordLoadingException.java></sonar.coverage.exclusions>
         <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
