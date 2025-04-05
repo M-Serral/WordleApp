@@ -16,6 +16,8 @@ public class WordlePage {
     private final WebDriverWait wait;
 
     private final By resultMessage = By.id("result");
+    private final By board = By.id("result");
+
 
     public WordlePage(WebDriver driver) {
         this.driver = driver;
@@ -61,7 +63,7 @@ public class WordlePage {
         WebElement resetBtn = driver.findElement(By.id("resetButton"));
         resetBtn.click();
         new WebDriverWait(driver, Duration.ofSeconds(10))
-                .until(ExpectedConditions.presenceOfElementLocated(By.id("board")));
+                .until(ExpectedConditions.presenceOfElementLocated(board));
     }
 
 

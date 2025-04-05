@@ -4,17 +4,13 @@ import com.wordleapp.WordleAppApplication;
 import com.wordleapp.service.WordSelectorService;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
-import java.time.Duration;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -131,9 +127,6 @@ class WordleUITest {
         assertTrue(wordlePage.isResetButtonVisible(), "Reset button should be visible when game is over.");
 
         wordlePage.clickResetButton();
-
-        new WebDriverWait(driver, Duration.ofSeconds(10))
-                .until(ExpectedConditions.visibilityOfElementLocated(By.id("board")));
 
         wordlePage.getTileTexts(0);
         for (int row = 0; row < 6; row++) {

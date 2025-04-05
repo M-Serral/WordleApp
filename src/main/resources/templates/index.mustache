@@ -58,7 +58,7 @@
             color: white;
         }
 
-        /* Mensajes y botón de reset */
+        /* Messages and reset button */
         #result-container {
             margin-top: 20px;
             text-align: center;
@@ -191,7 +191,6 @@
         }
     }
 
-    // Envía el intento al backend
     function submitGuess() {
         const guess = guessRows[currentRow].join('');
         fetch(`/api/wordle/guess?guess=${guess}`, { method: "POST" })
