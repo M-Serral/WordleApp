@@ -16,7 +16,7 @@ public class WordlePage {
     private final WebDriverWait wait;
 
     private final By resultMessage = By.id("result");
-    private final By board = By.id("result");
+    private final By board = By.id("board");
 
 
     public WordlePage(WebDriver driver) {
