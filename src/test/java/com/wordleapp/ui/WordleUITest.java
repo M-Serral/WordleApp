@@ -12,9 +12,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 import java.util.List;
-import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes = WordleAppApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WordleUITest {
@@ -28,7 +27,7 @@ class WordleUITest {
     private WebDriver driver;
     private WordlePage wordlePage;
 
-    private final String  secretTestWord = "sexto".toUpperCase();
+    private final String secretTestWord = "noble".toUpperCase();
 
 
     @BeforeEach
@@ -40,7 +39,7 @@ class WordleUITest {
         options.addArguments("--headless");
         driver = new ChromeDriver(options);
 
-        driver.get("http://localhost:"+this.port+"/");
+        driver.get("http://localhost:" + this.port + "/");
         wordlePage = new WordlePage(driver);
 
 
@@ -48,65 +47,95 @@ class WordleUITest {
 
     @AfterEach
     void teardown() {
-        if(driver != null) {
+        if (driver != null) {
             driver.quit();
         }
     }
 
-
-
     @Test
     void testTryAttemptsAndWin() {
 
-        List<Map.Entry<String, String>> testCases = List.of(
-                Map.entry("PELON", "Try again! Attempts left: 5."),
-                Map.entry("app", "Invalid input: The word must be 5 letters long."),
-                Map.entry("GAÑAN", "Try again! Attempts left: 4."),
-                Map.entry("ARbOL", "Try again! Attempts left: 3."),
-                Map.entry("pALoS", "Try again! Attempts left: 2."),
-                Map.entry("sexto", "CORRECT! The secret word was: " + wordSelectorService.getCurrentWord() + "."),
-                Map.entry("CASAS", "GAME OVER! You've already won.")
-                );
+        wordlePage.makeGuessUI("JUNIO");
+        wordlePage.getResultMessage();
+        List<String> row0Classes = wordlePage.getTileClasses(0);
+        List<String> expectedRow0 = List.of("gray", "gray", "orange", "gray", "orange");
+        for (int i = 0; i < 5; i++) {
 
-        for (Map.Entry<String, String> testCase : testCases) {
-            String guess = testCase.getKey();
-            String expectedMessage = testCase.getValue();
-
-            wordlePage.makeGuess(guess);
-            String actualMessage = wordlePage.getResultMessage();
-
-            assertEquals(expectedMessage, actualMessage, "Failed for guess: " + guess);
-            if (wordlePage.isGameOver()) {
-                break;
-            }
+            assertTrue(row0Classes.get(i).contains(expectedRow0.get(i)),
+                    "In row 0, column " + i + " expected " + expectedRow0.get(i)
+                            + " but obtained: " + row0Classes.get(i));
         }
+
+        wordlePage.makeGuessUI("NORTE");
+        wordlePage.getResultMessage();
+        List<String> row1Classes = wordlePage.getTileClasses(1);
+        List<String> expectedRow1 = List.of("green", "green", "gray", "gray", "green");
+        for (int i = 0; i < 5; i++) {
+            assertTrue(row1Classes.get(i).contains(expectedRow1.get(i)),
+                    "In row 1, column " + i + " expected " + expectedRow1.get(i)
+                            + " but obtained: " + row1Classes.get(i));
+        }
+
+        wordlePage.makeGuessUI("NOBLE");
+        String message3 = wordlePage.getResultMessage();
+        List<String> row2Classes = wordlePage.getTileClasses(2);
+        List<String> expectedRow2 = List.of("green", "green", "green", "green", "green");
+        for (int i = 0; i < 5; i++) {
+            assertTrue(row2Classes.get(i).contains(expectedRow2.get(i)),
+                    "In row 2, column " + i + " was expected " + expectedRow2.get(i)
+                            + " but obtained: " + row2Classes.get(i));
+        }
+        assertTrue(message3.contains("CORRECT"), "The message does not indicate victory on the third attempt.");
     }
 
     @Test
     void testReachMaximumAttemps() {
-        List<Map.Entry<String, String>> testCases = List.of(
-                Map.entry("MATAS", "Try again! Attempts left: 5."),
-                Map.entry("APP", "Invalid input: The word must be 5 letters long."),
-                Map.entry("CATAN", "Try again! Attempts left: 4."),
-                Map.entry("ARBOL", "Try again! Attempts left: 3."),
-                Map.entry("palos", "Try again! Attempts left: 2."),
-                Map.entry("PELOS", "Try again! Attempts left: 1."),
-                Map.entry("PELUS", "GAME OVER! The secret word was: " + wordSelectorService.getCurrentWord() + "."),
-                Map.entry("SEXTO", "You have reached the maximum number of attempts."),
-                Map.entry("ASA", "You have reached the maximum number of attempts.")
-        );
 
-        for (Map.Entry<String, String> testCase : testCases) {
-            String guess = testCase.getKey();
-            String expectedMessage = testCase.getValue();
+        String[] guesses = {"AAAAA", "PPPPP", "UUUUU", "DDDDD", "IIIII", "FFFFF"};
+        List<String> expectedColors = List.of("gray", "gray", "gray", "gray", "gray");
 
-            wordlePage.makeGuess(guess);
-            String actualMessage = wordlePage.getResultMessage();
+        for (int i = 0; i < guesses.length; i++) {
+            wordlePage.makeGuessUI(guesses[i]);
+            wordlePage.getResultMessage();
+            List<String> rowClasses = wordlePage.getTileClasses(i);
+            for (int j = 0; j < 5; j++) {
+                assertTrue(rowClasses.get(j).contains(expectedColors.get(j)),
+                        "En la fila " + i + ", columna " + j + " se esperaba " + expectedColors.get(j)
+                                + " pero se obtuvo: " + rowClasses.get(j));
+            }
+        }
 
-            assertEquals(expectedMessage, actualMessage, "Failed for guess: " + guess);
-            if (wordlePage.isGameOver()) {
-                break;
+        String finalMessage = wordlePage.getResultMessage();
+        assertTrue(finalMessage.contains("GAME OVER!"), "The final message does not indicate that the maximum number of attempts has been reached.");
+
+        wordlePage.makeGuessUI("NOBLE");
+
+        String postMessage = wordlePage.getResultMessage();
+        assertTrue(postMessage.contains("GAME OVER!"),
+                "After reaching the maximum number of attempts, the GAME OVER message should still be displayed.");
+    }
+
+    @Test
+    void testResetGame() {
+        String[] wrongGuesses = {"AAAAA", "PPPPP", "UUUUU", "DDDDD", "IIIII", "FFFFF"};
+        for (String guess : wrongGuesses) {
+            wordlePage.makeGuessUI(guess);
+            wordlePage.getResultMessage();
+        }
+
+        assertTrue(wordlePage.isGameOver(), "Game should be over after maximum attempts.");
+        assertTrue(wordlePage.isResetButtonVisible(), "Reset button should be visible when game is over.");
+
+        wordlePage.clickResetButton();
+
+        wordlePage.getTileTexts(0);
+        for (int row = 0; row < 6; row++) {
+            List<String> rowTexts = wordlePage.getTileTexts(row);
+            for (int col = 0; col < rowTexts.size(); col++) {
+                assertTrue(rowTexts.get(col).isEmpty(),
+                        "After reset, tile in row " + row + ", column " + col + " should be empty.");
             }
         }
     }
+
 }
