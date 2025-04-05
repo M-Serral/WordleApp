@@ -1,128 +1,280 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <title>WORDLE GAME</title>
+    <meta charset="UTF-8"/>
+    <title>Wordle Game</title>
     <style>
-
-        #container {
+        /* Basic styles for centering content */
+        body {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
         }
 
+        h1 {
+            margin-top: 20px;
+        }
 
-        #wordleForm {
+        /* Board container */
+        #board {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            grid-template-rows: repeat(6, 60px);
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        /* Each cell (tile) */
+        .tile {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #ccc;
             display: flex;
-            flex-direction: row;
             align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            text-transform: uppercase;
+            background-color: white;
+            color: black;
         }
 
 
+        .green {
+            background-color: #6aaa64;
+            color: white;
+        }
+
+        .orange {
+            background-color: #c9b458;
+            color: white;
+        }
+
+        .gray {
+            background-color: #787c7e;
+            color: white;
+        }
+
+        /* Mensajes y botón de reset */
         #result-container {
             margin-top: 20px;
             text-align: center;
         }
 
         #result {
-            margin-left: 0;
-        }
-
-        #hintContainer {
-            margin-top: 10px;
-            text-align: center;
+            margin: 10px 0;
         }
 
         #resetButton {
             display: none;
-            margin-top: 20px;
-            margin-left: 120px;
-            text-align: center;
+            margin-top: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
         }
 
-        h1 {
-            text-align: center;
-            width: 100%;
-        }
     </style>
 </head>
 <body>
 <h1>Welcome to Wordle</h1>
-<div id="container">
-    <form id="wordleForm">
-        <label for="guessInput"></label>
-        <input type="text" id="guessInput" maxlength="5" placeholder="Enter a 5-letter word">
-        <button type="submit">Submit</button>
-    </form>
-    <div id="result-container">
-        <p id="result"></p>
-        <button id="resetButton">Reset Game</button>
-    </div>
-</div>
-<div id="hintContainer"></div>
 
+
+<div id="board">
+
+    <div class="tile" id="tile-0-0"></div>
+    <div class="tile" id="tile-0-1"></div>
+    <div class="tile" id="tile-0-2"></div>
+    <div class="tile" id="tile-0-3"></div>
+    <div class="tile" id="tile-0-4"></div>
+
+
+    <div class="tile" id="tile-1-0"></div>
+    <div class="tile" id="tile-1-1"></div>
+    <div class="tile" id="tile-1-2"></div>
+    <div class="tile" id="tile-1-3"></div>
+    <div class="tile" id="tile-1-4"></div>
+
+
+    <div class="tile" id="tile-2-0"></div>
+    <div class="tile" id="tile-2-1"></div>
+    <div class="tile" id="tile-2-2"></div>
+    <div class="tile" id="tile-2-3"></div>
+    <div class="tile" id="tile-2-4"></div>
+
+
+    <div class="tile" id="tile-3-0"></div>
+    <div class="tile" id="tile-3-1"></div>
+    <div class="tile" id="tile-3-2"></div>
+    <div class="tile" id="tile-3-3"></div>
+    <div class="tile" id="tile-3-4"></div>
+
+
+    <div class="tile" id="tile-4-0"></div>
+    <div class="tile" id="tile-4-1"></div>
+    <div class="tile" id="tile-4-2"></div>
+    <div class="tile" id="tile-4-3"></div>
+    <div class="tile" id="tile-4-4"></div>
+
+
+    <div class="tile" id="tile-5-0"></div>
+    <div class="tile" id="tile-5-1"></div>
+    <div class="tile" id="tile-5-2"></div>
+    <div class="tile" id="tile-5-3"></div>
+    <div class="tile" id="tile-5-4"></div>
+</div>
+
+<!-- Container to display the result/messages -->
+<div id="result-container">
+    <p id="result"></p>
+    <button id="resetButton">Reset Game</button>
+</div>
 
 <script>
-    document.getElementById("wordleForm").addEventListener("submit", function(event) {
-        event.preventDefault();
-        let guessInput = document.getElementById("guessInput");
-        let guess = guessInput.value.toUpperCase();
+    // Variables to control the state of the game in the front end
+    let currentRow = 0;
+    let currentCol = 0;
+    let isGameOver = false;
 
+
+    const guessRows = [
+        ['', '', '', '', ''], // Row 0
+        ['', '', '', '', ''], // Row 1
+        ['', '', '', '', ''], // Row 2
+        ['', '', '', '', ''], // Row 3
+        ['', '', '', '', ''], // Row 4
+        ['', '', '', '', '']  // Row 5
+    ];
+
+    document.addEventListener('keydown', handleKeyPress);
+
+    const resetButton = document.getElementById('resetButton');
+    resetButton.addEventListener('click', resetGame);
+
+    function handleKeyPress(e) {
+        if (isGameOver) return;
+
+        const key = e.key;
+
+        if (key.match(/^[a-zA-ZñÑ]$/)) {
+            // If it is a letter, and we have not yet filled in 5 fields
+            if (currentCol < 5) {
+                placeLetter(key.toUpperCase());
+            }
+        } else if (key === 'Backspace') {
+            // Delete last letter
+            removeLetter();
+        } else if (key === 'Enter') {
+            // Validate attempt if we have 5 letters in the row
+            if (currentCol === 5) {
+                submitGuess();
+            } else {
+                alert('Please complete all 5 letters before pressing Enter.');
+            }
+        }
+    }
+
+    function placeLetter(letter) {
+        guessRows[currentRow][currentCol] = letter;
+        const tile = document.getElementById(`tile-${currentRow}-${currentCol}`);
+        tile.textContent = letter;
+        currentCol++;
+    }
+
+    function removeLetter() {
+        if (currentCol > 0) {
+            currentCol--;
+            guessRows[currentRow][currentCol] = '';
+            const tile = document.getElementById(`tile-${currentRow}-${currentCol}`);
+            tile.textContent = '';
+        }
+    }
+
+    // Envía el intento al backend
+    function submitGuess() {
+        const guess = guessRows[currentRow].join('');
         fetch(`/api/wordle/guess?guess=${guess}`, { method: "POST" })
                 .then(response => {
                     if (!response.ok) {
+                        // If the server returns an error, we throw exception to catch it in the catch
                         return response.text().then(text => { throw new Error(text); });
                     }
                     return response.text();
                 })
-                .then(data => updateUI(data, false))
-                .catch(error => updateUI(error.message, true));
-    });
-
-    // Restrict input to only letters (A-Z, a-z, ñ, Ñ)
-    document.getElementById("guessInput").addEventListener("input", function(event) {
-        this.value = this.value.toUpperCase().replace(/[^A-Za-zñÑ]/g, '');
-    });
-
-    document.getElementById("resetButton").addEventListener("click", function () {
-        fetch("/api/wordle/reset", { method: "POST" })
-                .then(response => response.text())
-                .then(() => {
-                    location.reload();
+                .then(data => {
+                    updateUI(data, guess);
+                })
+                .catch(error => {
+                    // Show error in #result
+                    document.getElementById("result").innerText = error.message;
                 });
-    });
+    }
 
-    function updateUI(responseText, isError) {
-        let resultElement = document.getElementById("result");
-        let hintContainer = document.getElementById("hintContainer");
-        let resetButton = document.getElementById("resetButton");
+    function updateUI(responseText, guess) {
+        const resultElement = document.getElementById("result");
 
-        let parts = responseText.split("Hint:");
-        let message = parts[0].trim();
-        let hint = parts.length > 1 ? parts[1].trim() : "";
+        let [message, hintPart] = responseText.split("Hint:");
+        message = message.trim();
+        let hint = hintPart ? hintPart.trim() : '';
 
-        resultElement.innerText = message;
-
-        if (!isError) {
-            if (hint) {
-                let newHintElement = document.createElement("p");
-                newHintElement.innerText = hint;
-                hintContainer.appendChild(newHintElement);
-            }
-
-            let gameOver = responseText.includes("GAME OVER!") || responseText.includes("CORRECT!");
-            if (gameOver) {
-                document.getElementById("guessInput").disabled = true;
-                document.querySelector("button[type='submit']").disabled = true;
-                resetButton.style.display = "block";
-                resultElement.after(resetButton);
-            }
+        let arrowIndex = hint.indexOf("→");
+        if (arrowIndex === -1) {
+            arrowIndex = hint.indexOf("->");
+        }
+        let extractedHint = "";
+        if (arrowIndex !== -1) {
+            extractedHint = hint.substring(arrowIndex + (hint[arrowIndex] === '→' ? 2 : 2)).trim();
         }
 
-        document.getElementById("guessInput").value = "";
+        // We display the message on the screen
+        resultElement.innerText = message;
+
+        // If there is a hint, we paint the current row with the corresponding colors.
+        if (extractedHint) {
+            colorRow(extractedHint, currentRow, guess);
+        }
+
+        // We check if the game has finished
+        if (message.includes("GAME OVER!") || message.includes("CORRECT!")) {
+            isGameOver = true;
+            resetButton.style.display = "block";
+        } else {
+            // We move to the next row
+            currentRow++;
+            currentCol = 0;
+            // If row 5 is exceeded, the game is over.
+            if (currentRow > 5) {
+                isGameOver = true;
+                resetButton.style.display = "block";
+            }
+        }
+    }
+
+    // Paint the row with the colors according to the returned hint
+    // Example of hint: "S _ ? T _"
+    function colorRow(hint, rowIndex, guess) {
+        const hintArray = hint.split(" "); // ["S", "_", "?", "T", "_"]
+        for (let i = 0; i < 5; i++) {
+            const tile = document.getElementById(`tile-${rowIndex}-${i}`);
+            const ch = hintArray[i];
+            if (/[A-ZÑ]/.test(ch)) {
+                tile.classList.add('green');
+            } else if (ch === '?') {
+                tile.classList.add('orange');
+            } else if (ch === '_') {
+                tile.classList.add('gray');
+            }
+        }
+    }
+
+    // Resets the game (asks the backend to restart the session)
+    function resetGame() {
+        fetch("/api/wordle/reset", { method: "POST" })
+                .then(() => {
+                    // Reload the page to start from scratch
+                    location.reload();
+                });
     }
 </script>
 </body>
