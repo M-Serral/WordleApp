@@ -4,8 +4,10 @@
     <meta charset="UTF-8"/>
     <title>Wordle Game</title>
     <style>
-        /* Basic styles for centering content */
+        /* Background and text colors */
         body {
+            background-color: #000000;
+            color: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -17,107 +19,148 @@
 
         h1 {
             margin-top: 20px;
+            color: #ffffff;
         }
 
-        /* Board container */
+        /* Board container: 6 rows x 5 columns, moved closer to title */
         #board {
             display: grid;
-            grid-template-columns: repeat(5, 60px);
-            grid-template-rows: repeat(6, 60px);
-            gap: 10px;
-            margin-top: 30px;
+            grid-template-columns: repeat(5, 50px);  /* reduced from 60px to 50px */
+            grid-template-rows: repeat(6, 50px);     /* reduced from 60px to 50px */
+            gap: 8px;                                /* reduced gap */
+            margin-top: 5px;                         /* now closer to the title */
         }
 
-        /* Each cell (tile) */
+        /* Each tile styling */
         .tile {
-            width: 60px;
-            height: 60px;
-            border: 2px solid #ccc;
+            width: 50px;
+            height: 50px;
+            border: 2px solid #666;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2em;
+            font-size: 1.8em;  /* slightly smaller font */
             text-transform: uppercase;
-            background-color: white;
-            color: black;
+            background-color: #000;
+            color: #fff;
+            transition: border 0.2s ease-in-out;
         }
 
+        .tile.active {
+            border: 2px solid #007bff;
+        }
 
+        /* Color classes for tiles */
         .green {
             background-color: #6aaa64;
-            color: white;
+            color: #fff;
         }
-
         .orange {
             background-color: #c9b458;
-            color: white;
+            color: #fff;
         }
-
         .gray {
             background-color: #787c7e;
-            color: white;
+            color: #fff;
+        }
+        .black-tile {
+            background-color: #000000;
+            color: #fff;
         }
 
-        /* Messages and reset button */
+        /* Container for result message and reset button */
         #result-container {
-            margin-top: 20px;
+            margin-top: 10px;  /* slightly reduced margin */
             text-align: center;
         }
-
         #result {
             margin: 10px 0;
         }
-
         #resetButton {
             display: none;
-            margin-top: 10px;
+            margin-top: 5px;
+            margin-left: 100px;  /* moved upward */
             padding: 10px 20px;
             cursor: pointer;
         }
 
+        /* Virtual keyboard styles */
+        #keyboard {
+            margin-top: 10px;  /* moved upward */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .keyboard-row {
+            display: flex;
+            margin: 5px 0;
+        }
+        .key {
+            min-width: 45px;     /* increased from 40px to 45px */
+            padding: 12px 8px;     /* increased padding for larger buttons */
+            margin: 0 2px;
+            border: none;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-size: 1.2em;      /* slightly larger font on keys */
+            cursor: pointer;
+            color: #ffffff;
+            background-color: #787c7e;
+        }
+        .key-black {
+            background-color: #000000;
+            color: #ffffff;
+        }
+        .key-orange {
+            background-color: #c9b458;
+            color: #ffffff;
+        }
+        .key-green {
+            background-color: #6aaa64;
+            color: #ffffff;
+        }
     </style>
 </head>
 <body>
-<h1>Welcome to Wordle</h1>
-
+<h1>WELCOME TO WORDLE</h1>
 
 <div id="board">
-
+    <!-- Row 0 -->
     <div class="tile" id="tile-0-0"></div>
     <div class="tile" id="tile-0-1"></div>
     <div class="tile" id="tile-0-2"></div>
     <div class="tile" id="tile-0-3"></div>
     <div class="tile" id="tile-0-4"></div>
 
-
+    <!-- Row 1 -->
     <div class="tile" id="tile-1-0"></div>
     <div class="tile" id="tile-1-1"></div>
     <div class="tile" id="tile-1-2"></div>
     <div class="tile" id="tile-1-3"></div>
     <div class="tile" id="tile-1-4"></div>
 
-
+    <!-- Row 2 -->
     <div class="tile" id="tile-2-0"></div>
     <div class="tile" id="tile-2-1"></div>
     <div class="tile" id="tile-2-2"></div>
     <div class="tile" id="tile-2-3"></div>
     <div class="tile" id="tile-2-4"></div>
 
-
+    <!-- Row 3 -->
     <div class="tile" id="tile-3-0"></div>
     <div class="tile" id="tile-3-1"></div>
     <div class="tile" id="tile-3-2"></div>
     <div class="tile" id="tile-3-3"></div>
     <div class="tile" id="tile-3-4"></div>
 
-
+    <!-- Row 4 -->
     <div class="tile" id="tile-4-0"></div>
     <div class="tile" id="tile-4-1"></div>
     <div class="tile" id="tile-4-2"></div>
     <div class="tile" id="tile-4-3"></div>
     <div class="tile" id="tile-4-4"></div>
 
-
+    <!-- Row 5 -->
     <div class="tile" id="tile-5-0"></div>
     <div class="tile" id="tile-5-1"></div>
     <div class="tile" id="tile-5-2"></div>
@@ -125,78 +168,148 @@
     <div class="tile" id="tile-5-4"></div>
 </div>
 
-<!-- Container to display the result/messages -->
+<!-- Container for result message and reset button -->
 <div id="result-container">
     <p id="result"></p>
     <button id="resetButton">Reset Game</button>
 </div>
 
+<!-- Virtual keyboard container -->
+<div id="keyboard">
+    <div class="keyboard-row" id="keyboard-row-1"></div>
+    <div class="keyboard-row" id="keyboard-row-2"></div>
+    <div class="keyboard-row" id="keyboard-row-3"></div>
+</div>
+
 <script>
-    // Variables to control the state of the game in the front end
     let currentRow = 0;
     let currentCol = 0;
     let isGameOver = false;
-
-
     const guessRows = [
-        ['', '', '', '', ''], // Row 0
-        ['', '', '', '', ''], // Row 1
-        ['', '', '', '', ''], // Row 2
-        ['', '', '', '', ''], // Row 3
-        ['', '', '', '', ''], // Row 4
-        ['', '', '', '', '']  // Row 5
+        ['', '', '', '', ''],
+        ['', '', '', '', ''],
+        ['', '', '', '', ''],
+        ['', '', '', '', ''],
+        ['', '', '', '', ''],
+        ['', '', '', '', '']
     ];
+    const letterColors = {};
+
+    const keysRow1 = ['Q','W','E','R','T','Y','U','I','O','P'];
+    const keysRow2 = ['A','S','D','F','G','H','J','K','L','Ñ'];
+    const keysRow3 = ['Z','X','C','V','B','N','M'];
+
+    initBoard();
+    initKeyboard();
+    initTileClickHandlers();
 
     document.addEventListener('keydown', handleKeyPress);
-
     const resetButton = document.getElementById('resetButton');
     resetButton.addEventListener('click', resetGame);
 
+    function initTileClickHandlers() {
+        for (let row = 0; row < 6; row++) {
+            for (let col = 0; col < 5; col++) {
+                const tile = document.getElementById(`tile-${row}-${col}`);
+                tile.addEventListener('click', function(){
+                    if (row === currentRow && !isGameOver) {
+                        currentCol = col;
+                        updateActiveCell();
+                    }
+                });
+            }
+        }
+    }
+
+    function initKeyboard() {
+        createKeyboardRow(keysRow1, document.getElementById('keyboard-row-1'));
+        createKeyboardRow(keysRow2, document.getElementById('keyboard-row-2'));
+        createKeyboardRow(keysRow3, document.getElementById('keyboard-row-3'));
+    }
+    function createKeyboardRow(keysArray, container) {
+        keysArray.forEach(letter => {
+            const btn = document.createElement('button');
+            btn.textContent = letter;
+            btn.classList.add('key');
+            btn.dataset.letter = letter;
+            btn.addEventListener('click', () => handleKeyClick(letter));
+            container.appendChild(btn);
+            letterColors[letter] = 'grey';
+        });
+    }
+    function handleKeyClick(letter) {
+        if (isGameOver) return;
+        placeLetter(letter);
+    }
     function handleKeyPress(e) {
         if (isGameOver) return;
-
         const key = e.key;
-
-        if (key.match(/^[a-zA-ZñÑ]$/)) {
-            // If it is a letter, and we have not yet filled in 5 fields
-            if (currentCol < 5) {
-                placeLetter(key.toUpperCase());
+        if (key === 'ArrowLeft') {
+            if (currentCol > 0) {
+                currentCol--;
+                updateActiveCell();
             }
+            return;
+        } else if (key === 'ArrowRight') {
+            if (currentCol < 4) {
+                currentCol++;
+                updateActiveCell();
+            }
+            return;
+        }
+        if (key.match(/^[a-zA-ZñÑ]$/)) {
+            placeLetter(key.toUpperCase());
         } else if (key === 'Backspace') {
-            // Delete last letter
             removeLetter();
         } else if (key === 'Enter') {
-            // Validate attempt if we have 5 letters in the row
-            if (currentCol === 5) {
+            if (currentCol === 5 || guessRows[currentRow].every(l => l !== '')) {
                 submitGuess();
             } else {
                 alert('Please complete all 5 letters before pressing Enter.');
             }
         }
     }
-
     function placeLetter(letter) {
-        guessRows[currentRow][currentCol] = letter;
-        const tile = document.getElementById(`tile-${currentRow}-${currentCol}`);
-        tile.textContent = letter;
-        currentCol++;
-    }
-
-    function removeLetter() {
-        if (currentCol > 0) {
-            currentCol--;
-            guessRows[currentRow][currentCol] = '';
-            const tile = document.getElementById(`tile-${currentRow}-${currentCol}`);
-            tile.textContent = '';
+        if (isGameOver) return;
+        // Insert letter and auto-move if not in last cell
+        if (currentCol < 4) {
+            guessRows[currentRow][currentCol] = letter;
+            document.getElementById(`tile-${currentRow}-${currentCol}`).textContent = letter;
+            currentCol++;
+            updateActiveCell();
+        } else if (currentCol === 4) {
+            guessRows[currentRow][currentCol] = letter;
+            document.getElementById(`tile-${currentRow}-${currentCol}`).textContent = letter;
+            // When last cell is filled, remove active highlight
+            updateActiveCell(false);
         }
     }
-
+    function removeLetter() {
+        if (isGameOver) return;
+        // If last cell is not active (i.e. focus was removed after entering letter)
+        const currentTile = document.getElementById(`tile-${currentRow}-${currentCol}`);
+        if (currentCol === 4 && !currentTile.classList.contains('active')) {
+            currentCol = 4;
+            updateActiveCell();
+        }
+        const activeTile = document.getElementById(`tile-${currentRow}-${currentCol}`);
+        if (guessRows[currentRow][currentCol] !== '') {
+            // If active cell has a letter, remove it and stay in place
+            guessRows[currentRow][currentCol] = '';
+            activeTile.textContent = '';
+        } else if (currentCol > 0) {
+            // If empty and not first, move left and clear that cell
+            currentCol--;
+            guessRows[currentRow][currentCol] = '';
+            document.getElementById(`tile-${currentRow}-${currentCol}`).textContent = '';
+        }
+        updateActiveCell();
+    }
     function submitGuess() {
         const guess = guessRows[currentRow].join('');
         fetch(`/api/wordle/guess?guess=${guess}`, { method: "POST" })
                 .then(response => {
                     if (!response.ok) {
-                        // If the server returns an error, we throw exception to catch it in the catch
                         return response.text().then(text => { throw new Error(text); });
                     }
                     return response.text();
@@ -205,17 +318,16 @@
                     updateUI(data, guess);
                 })
                 .catch(error => {
-                    // Show error in #result
                     document.getElementById("result").innerText = error.message;
                 });
     }
-
     function updateUI(responseText, guess) {
         const resultElement = document.getElementById("result");
-
         let [message, hintPart] = responseText.split("Hint:");
         message = message.trim();
         let hint = hintPart ? hintPart.trim() : '';
+
+        document.querySelectorAll('.tile.active').forEach(t => t.classList.remove('active'));
 
         let arrowIndex = hint.indexOf("→");
         if (arrowIndex === -1) {
@@ -223,57 +335,79 @@
         }
         let extractedHint = "";
         if (arrowIndex !== -1) {
-            extractedHint = hint.substring(arrowIndex + (hint[arrowIndex] === '→' ? 2 : 2)).trim();
+            extractedHint = hint.substring(arrowIndex + 2).trim();
         }
-
-        // We display the message on the screen
         resultElement.innerText = message;
-
-        // If there is a hint, we paint the current row with the corresponding colors.
         if (extractedHint) {
             colorRow(extractedHint, currentRow, guess);
         }
-
-        // We check if the game has finished
         if (message.includes("GAME OVER!") || message.includes("CORRECT!")) {
             isGameOver = true;
             resetButton.style.display = "block";
+            document.querySelectorAll('.tile.active').forEach(t => t.classList.remove('active'));
         } else {
-            // We move to the next row
             currentRow++;
             currentCol = 0;
-            // If row 5 is exceeded, the game is over.
+            updateActiveCell();
             if (currentRow > 5) {
                 isGameOver = true;
                 resetButton.style.display = "block";
             }
         }
     }
-
-    // Paint the row with the colors according to the returned hint
-    // Example of hint: "S _ ? T _"
     function colorRow(hint, rowIndex, guess) {
-        const hintArray = hint.split(" "); // ["S", "_", "?", "T", "_"]
+        const hintArray = hint.split(" ");
         for (let i = 0; i < 5; i++) {
             const tile = document.getElementById(`tile-${rowIndex}-${i}`);
             const ch = hintArray[i];
+            const letter = guess[i] ? guess[i].toUpperCase() : '';
             if (/[A-ZÑ]/.test(ch)) {
                 tile.classList.add('green');
+                updateKeyColor(letter, 'green');
             } else if (ch === '?') {
                 tile.classList.add('orange');
+                updateKeyColor(letter, 'orange');
             } else if (ch === '_') {
-                tile.classList.add('gray');
+                tile.classList.add('black-tile');
+                updateKeyColor(letter, 'black');
             }
         }
     }
-
-    // Resets the game (asks the backend to restart the session)
+    function updateKeyColor(letter, newColor) {
+        const priority = { 'grey': 1, 'black': 2, 'orange': 3, 'green': 4 };
+        let current = letterColors[letter] || 'grey';
+        if (priority[newColor] > priority[current]) {
+            letterColors[letter] = newColor;
+            const keyButton = document.querySelector(`button.key[data-letter="${letter}"]`);
+            if (keyButton) {
+                keyButton.classList.remove('key-black', 'key-orange', 'key-green');
+                if (newColor === 'black') {
+                    keyButton.classList.add('key-black');
+                } else if (newColor === 'orange') {
+                    keyButton.classList.add('key-orange');
+                } else if (newColor === 'green') {
+                    keyButton.classList.add('key-green');
+                }
+            }
+        }
+    }
     function resetGame() {
         fetch("/api/wordle/reset", { method: "POST" })
-                .then(() => {
-                    // Reload the page to start from scratch
-                    location.reload();
-                });
+                .then(() => location.reload());
+    }
+    function updateActiveCell(setActive = true) {
+        for (let col = 0; col < 5; col++) {
+            document.getElementById(`tile-${currentRow}-${col}`).classList.remove('active');
+        }
+        if (setActive) {
+            const activeTile = document.getElementById(`tile-${currentRow}-${currentCol}`);
+            if (activeTile && !isGameOver) {
+                activeTile.classList.add('active');
+            }
+        }
+    }
+    function initBoard() {
+        updateActiveCell();
     }
 </script>
 </body>
