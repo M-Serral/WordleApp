@@ -3,123 +3,8 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Wordle Game</title>
-    <style>
-        /* Background and text colors */
-        body {
-            background-color: #000000;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
+    <link rel="stylesheet" href="/css/main.css">
 
-        h1 {
-            margin-top: 20px;
-            color: #ffffff;
-        }
-
-        /* Board container: 6 rows x 5 columns, moved closer to title */
-        #board {
-            display: grid;
-            grid-template-columns: repeat(5, 50px);  /* reduced from 60px to 50px */
-            grid-template-rows: repeat(6, 50px);     /* reduced from 60px to 50px */
-            gap: 8px;                                /* reduced gap */
-            margin-top: 5px;                         /* now closer to the title */
-        }
-
-        /* Each tile styling */
-        .tile {
-            width: 50px;
-            height: 50px;
-            border: 2px solid #666;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8em;  /* slightly smaller font */
-            text-transform: uppercase;
-            background-color: #000;
-            color: #fff;
-            transition: border 0.2s ease-in-out;
-        }
-
-        .tile.active {
-            border: 2px solid #007bff;
-        }
-
-        /* Color classes for tiles */
-        .green {
-            background-color: #6aaa64;
-            color: #fff;
-        }
-        .orange {
-            background-color: #c9b458;
-            color: #fff;
-        }
-        .gray {
-            background-color: #787c7e;
-            color: #fff;
-        }
-        .black-tile {
-            background-color: #000000;
-            color: #fff;
-        }
-
-        /* Container for result message and reset button */
-        #result-container {
-            margin-top: 10px;  /* slightly reduced margin */
-            text-align: center;
-        }
-        #result {
-            margin: 10px 0;
-        }
-        #resetButton {
-            display: none;
-            margin-top: 5px;
-            margin-left: 100px;  /* moved upward */
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-
-        /* Virtual keyboard styles */
-        #keyboard {
-            margin-top: 10px;  /* moved upward */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .keyboard-row {
-            display: flex;
-            margin: 5px 0;
-        }
-        .key {
-            min-width: 45px;     /* increased from 40px to 45px */
-            padding: 12px 8px;     /* increased padding for larger buttons */
-            margin: 0 2px;
-            border: none;
-            border-radius: 4px;
-            text-transform: uppercase;
-            font-size: 1.2em;      /* slightly larger font on keys */
-            cursor: pointer;
-            color: #ffffff;
-            background-color: #787c7e;
-        }
-        .key-black {
-            background-color: #000000;
-            color: #ffffff;
-        }
-        .key-orange {
-            background-color: #c9b458;
-            color: #ffffff;
-        }
-        .key-green {
-            background-color: #6aaa64;
-            color: #ffffff;
-        }
-    </style>
 </head>
 <body>
 <h1>WELCOME TO WORDLE</h1>
@@ -168,18 +53,17 @@
     <div class="tile" id="tile-5-4"></div>
 </div>
 
-<!-- Container for result message and reset button -->
 <div id="result-container">
     <p id="result"></p>
     <button id="resetButton">Reset Game</button>
 </div>
 
-<!-- Virtual keyboard container -->
 <div id="keyboard">
     <div class="keyboard-row" id="keyboard-row-1"></div>
     <div class="keyboard-row" id="keyboard-row-2"></div>
     <div class="keyboard-row" id="keyboard-row-3"></div>
 </div>
+
 
 <script>
     let currentRow = 0;
