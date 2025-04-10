@@ -17,6 +17,6 @@ public class SessionGameService {
         session.removeAttribute(Constants.ATTEMPTS_KEY);
         session.removeAttribute(Constants.GAME_WON_KEY);
         session.removeAttribute(Constants.LAST_HINT_KEY);
-        wordSelectorService.selectNewWord();
+        wordSelectorService.selectRandomWord();
     }
 }
