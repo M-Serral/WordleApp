@@ -355,8 +355,9 @@
             }
         }
     }
+
     function colorRow(hint, rowIndex, guess) {
-        const hintArray = hint.split(" ");
+        const hintArray = hint.split(" "); // e.g., "N O _ _ E" → ["N","O","_","_","E"]
         for (let i = 0; i < 5; i++) {
             const tile = document.getElementById(`tile-${rowIndex}-${i}`);
             const ch = hintArray[i];
@@ -368,11 +369,14 @@
                 tile.classList.add('orange');
                 updateKeyColor(letter, 'orange');
             } else if (ch === '_') {
-                tile.classList.add('black-tile');
-                updateKeyColor(letter, 'black');
+                // Instead of adding "black-tile", we add "gray" to the board tile.
+                tile.classList.add('gray');
+                updateKeyColor(letter, 'black');  // For keyboard keys, still mark as "black".
             }
         }
     }
+
+
     function updateKeyColor(letter, newColor) {
         const priority = { 'grey': 1, 'black': 2, 'orange': 3, 'green': 4 };
         let current = letterColors[letter] || 'grey';
