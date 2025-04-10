@@ -10,11 +10,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.SecureRandom;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import jakarta.annotation.PostConstruct;
 
+@SuppressWarnings("java:S2245")
 @Service
 public class WordSelectorService {
 
@@ -24,7 +25,6 @@ public class WordSelectorService {
 
     @Getter
     private String currentWord;
-    private final SecureRandom random = new SecureRandom();
 
     @PostConstruct
     private void loadWords() {
@@ -48,7 +48,7 @@ public class WordSelectorService {
         if (words.isEmpty()) {
             throw new IllegalStateException("No words available in the file.");
         }
-        currentWord = words.get(random.nextInt(words.size())).toUpperCase();
+        currentWord = words.get(ThreadLocalRandom.current().nextInt(words.size())).toUpperCase();
     }
 
 }
