@@ -1,54 +1,37 @@
 package com.wordleapp.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import lombok.Getter;
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import com.wordleapp.model.SecretWord;
+import com.wordleapp.repository.SecretWordRepository;
 
 import jakarta.annotation.PostConstruct;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Service;
 
-@SuppressWarnings("java:S2245")
+
 @Service
+@DependsOn("secretWordInitializer")
 public class WordSelectorService {
 
-    private static final Logger logger = LoggerFactory.getLogger(WordSelectorService.class);
-    private static final String WORDS_FILE_PATH = "src/main/resources/words.txt";
-    private List<String> words;
-
-    @Getter
+    private final SecretWordRepository secretWordRepository;
     private String currentWord;
 
-    @PostConstruct
-    private void loadWords() {
-        Path path = Paths.get(WORDS_FILE_PATH);
-
-        if (Files.notExists(path)) {
-            logger.error("Words file does not exist at {}", WORDS_FILE_PATH);
-            throw new IllegalStateException("Words file not found");
-        }
-
-        try {
-            words = Files.readAllLines(path);
-            selectNewWord();
-        } catch (IOException e) {
-            logger.error("Failed to load words file from {}", WORDS_FILE_PATH, e);
-            throw new IllegalStateException("Failed to load words file", e);
-        }
+    public WordSelectorService(SecretWordRepository secretWordRepository) {
+        this.secretWordRepository = secretWordRepository;
     }
 
-    public void selectNewWord() {
-        if (words.isEmpty()) {
-            throw new IllegalStateException("No words available in the file.");
+    @PostConstruct
+    public void selectRandomWord() {
+        SecretWord randomWord = secretWordRepository.findRandomWord()
+                .orElseThrow(() -> new IllegalStateException("Random word not found."));
+        this.currentWord = randomWord.getWord();
+    }
+
+
+    public String getCurrentWord() {
+        if (currentWord == null) {
+            throw new IllegalStateException("No word selected. Use selectNewWord() first.");
         }
-        currentWord = words.get(ThreadLocalRandom.current().nextInt(words.size())).toUpperCase();
+        return currentWord;
     }
 
 }

@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Qodana and changelog templates
+qodana.yaml
+CHANGELOG-template.md
+RELEASE_NOTES-template.md
+
+
