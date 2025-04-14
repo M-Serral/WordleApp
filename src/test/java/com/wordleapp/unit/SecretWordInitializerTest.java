@@ -35,7 +35,7 @@ class SecretWordInitializerTest {
 
         InputStream mockInput = new ByteArrayInputStream(fileContent.getBytes(StandardCharsets.UTF_8));
 
-        // Spying to mockeying file reading
+        // Spying to mocking file reading
         SecretWordInitializer spyInitializer = spy(initializer);
         doReturn(new BufferedReader(new InputStreamReader(mockInput)))
                 .when(spyInitializer).getBufferedReaderForResource();
