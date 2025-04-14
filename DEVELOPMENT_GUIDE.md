@@ -30,22 +30,34 @@ Or:
 
 Use short, clear messages based on commit type:
 
-| Prefix   | Meaning                    |
-|----------|----------------------------|
-| `feat:`  | New feature                |
-| `fix:`   | Bug fix                    |
-| `refactor:` | Code refactor (no behavior change) |
-| `chore:` | Minor changes, cleanup     |
-| `docs:`  | Documentation changes      |
-| `test:`  | New or updated test        |
+| Type    | Use When...                                                                 |
+|---------|------------------------------------------------------------------------------|
+| `feat:` | You add a **new feature** visible to the user or that extends functionality. |
+| `fix:`  | You fix a **bug** or correct unexpected behavior.                            |
+| `refactor:` | You improve code structure **without changing behavior**.               |
+| `chore:` | You make internal changes like build scripts, configs, or cleanup.         |
+| `docs:` | You create or update **documentation files**.                                |
+| `test:` | You add or modify **unit/integration tests**.                                |
 
-#### Example commit flow:
+---
 
-    git commit -m "feat: create SecretWord entity"
-    git commit -m "feat: add SecretWordRepository"
-    git commit -m "refactor: load word from DB instead of file"
-    git commit -m "chore: remove file dependency"
-    git commit -m "fix: handle empty DB case"
+#### ✅ Example commit flow from WordleApp:
+
+---
+
+| Commit Message                                                      | Prefix      | Justification                                           |
+|---------------------------------------------------------------------|-------------|---------------------------------------------------------|
+| `feat: create SecretWord entity`                                    | `feat:`     | New domain feature added                                |
+| `feat: add SecretWordRepository`                                    | `feat:`     | Enables DB access, new capability                       |
+| `feat: initialize DB words with @PostConstruct service`             | `feat:`     | Adds a new startup feature                              |
+| `refactor: update WordSelectorService to use MySQL instead of file` | `refactor:` | Changes how a feature works internally                  |
+| `chore: remove file-based word loading and words.txt`               | `chore:`    | Removes unused internal code, no user impact            |
+| `fix: handle random selection errors when DB is empty`              | `fix:`      | Prevents crash or logic error when DB is empty          |
+| `docs: update README for v1.1.0 with Docker and MySQL setup`        | `docs:`     | Pure documentation update                               |
+| `docs: add changelog entries for v1.0.0 and v1.1.0`                 | `docs:`     | Maintains version history                               |
+| `docs: add release notes for v1.1.0`                                | `docs:`     | Release documentation                                   |
+| `docs: add development workflow guide`                              | `docs:`     | Team/internal documentation                             |
+| `docs: add release process checklist for version publishing`        | `docs:`     | Practical doc for future maintainers                    |
 
 ---
 
@@ -80,14 +92,6 @@ When the version is complete:
     git push origin master
     git push origin v1.1.0
 
----
-
-### 5. Build Docker image (optional)
-
-    docker build -t yourname/wordleapp:1.1.0 .
-    docker push yourname/wordleapp:1.1.0
-
----
 
 ## 🔁 Iterating Further
 
@@ -107,32 +111,3 @@ Repeat the same commit → changelog → merge → tag → release process.
 - Professional-grade CI/CD compatibility
 
 ---
-
-## 🔤 Conventional Commit Types (Reference)
-
-Use these prefixes in your commit messages to maintain clarity and consistency across the project.
-
-| Type    | Use When...                                                                 |
-|---------|------------------------------------------------------------------------------|
-| `feat:` | You add a **new feature** visible to the user or that extends functionality. |
-| `fix:`  | You fix a **bug** or correct unexpected behavior.                            |
-| `refactor:` | You improve code structure **without changing behavior**.               |
-| `chore:` | You make internal changes like build scripts, configs, or cleanup.         |
-| `docs:` | You create or update **documentation files**.                                |
-| `test:` | You add or modify **unit/integration tests**.                                |
-
-### ✅ Examples from WordleApp
-
-| Commit Message                                                      | Prefix      | Justification                                           |
-|---------------------------------------------------------------------|-------------|---------------------------------------------------------|
-| `feat: create SecretWord entity`                                    | `feat:`     | New domain feature added                                |
-| `feat: add SecretWordRepository`                                    | `feat:`     | Enables DB access, new capability                       |
-| `feat: initialize DB words with @PostConstruct service`             | `feat:`     | Adds a new startup feature                              |
-| `refactor: update WordSelectorService to use MySQL instead of file` | `refactor:` | Changes how a feature works internally                  |
-| `chore: remove file-based word loading and words.txt`               | `chore:`    | Removes unused internal code, no user impact            |
-| `fix: handle random selection errors when DB is empty`              | `fix:`      | Prevents crash or logic error when DB is empty          |
-| `docs: update README for v1.1.0 with Docker and MySQL setup`        | `docs:`     | Pure documentation update                               |
-| `docs: add changelog entries for v1.0.0 and v1.1.0`                 | `docs:`     | Maintains version history                               |
-| `docs: add release notes for v1.1.0`                                | `docs:`     | Release documentation                                   |
-| `docs: add development workflow guide`                              | `docs:`     | Team/internal documentation                             |
-| `docs: add release process checklist for version publishing`        | `docs:`     | Practical doc for future maintainers                    |

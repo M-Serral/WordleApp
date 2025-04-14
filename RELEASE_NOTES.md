@@ -1,25 +1,22 @@
-# 🚀 Release Notes – v1.1.0
+# WordleApp v1.1.0 - 2025-04-13
 
-WordleApp version 1.1.0 introduces backend persistence using MySQL and a production-ready deployment setup via Docker Compose. This version marks the beginning of the second development phase (TFG Phase 2).
+This release introduces persistent storage and startup initialization:
 
----
+## ✨ Features
+- Words are now stored and retrieved from a MySQL database.
+- The database is auto-populated with words from `words.txt` if empty.
+- A random secret word is selected each time the application starts.
 
-## ✨ New Features
+## 🐳 Deployment
+- Full Docker support added (`docker-compose.yml`).
+- New `application-docker.properties` and `application-local.properties` for profile-based configuration.
 
-- Added `SecretWord` JPA entity to manage secret words in the database.
-- Initialized secret words at startup using a `@PostConstruct` service.
-- Replaced file-based word loading with database-backed word selection logic.
-- Docker Compose setup with `wordle-app` and `wordle-mysql` services.
-- Environment-specific configuration using `application-docker.properties`.
+## 🧪 Quality
+- Integrated `@PostConstruct` initialization to bootstrap the DB.
+- Maintained test compatibility with UI and session game logic.
+- Added integration tests with H2 and unit tests mocking repository behavior.
 
-## 🛠 Improvements
 
-- Spring profiles allow switching between local and production environments.
-- Full Docker support for deployment and testing.
-
-## 🐞 Fixes
-
-- Fixed timezone issues in JDBC connection with `serverTimezone=Europe/Madrid`.
 
 ## 📌 How to Deploy
 

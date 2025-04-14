@@ -5,16 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),  
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.0] - 2025-04-10
+## [1.1.0] - 2025-04-13
 ### Added
-- MySQL integration: replaced in-memory word list with database-based word selection.
-- Docker Compose configuration for production deployment.
-- Spring profile switching for environments (`local`, `docker`).
-- Application connects to MySQL container in production via environment variables.
-- Added environment-based `application-docker.properties`.
+- Secret words are now stored in a MySQL database instead of being read from a file.
+- If the database is empty, initial words are loaded from `words.txt` during application startup.
+- A random word is selected from the database each time the game starts.
+- Integration and unit tests for the new services.
 
-### Fixed
-- Resolved timezone compatibility error in JDBC connection with `serverTimezone`.
+### Changed
+- The logic of the word selection has been refactored to use `SecretWordRepository`.
+
+### Technical Improvements
+- Introduced `@PostConstruct` and `@DependsOn` for deterministic startup order.
+- Externalized configuration using `application-{profile}.properties`.
+- Dockerized the application with MySQL using `docker-compose`.
+
 
 ## [0.x.y] - 2024-04-01
 ### Added
