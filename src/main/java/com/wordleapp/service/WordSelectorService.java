@@ -21,11 +21,8 @@ public class WordSelectorService {
 
     @PostConstruct
     public void selectRandomWord() {
-        SecretWord randomWord = secretWordRepository.findRandomWord();
-        if (randomWord == null) {
-            throw new IllegalStateException("Random word not found.");
-        }
-
+        SecretWord randomWord = secretWordRepository.findRandomWord()
+                .orElseThrow(() -> new IllegalStateException("Random word not found."));
         this.currentWord = randomWord.getWord();
     }
 
