@@ -18,8 +18,8 @@ jobs:
           git config --global user.email "actions@github.com"
           git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
           git fetch --tags
-          git tag -a "v1.2.0-test" -m "Release v1.2.0-test"
-          git push origin "v${{ env.VERSION }}"
+          git tag -a "v1.2.0" -m "Release version 1.2.0 - Dictionary-based validation and secret word refactor"
+          git push origin "v1.2.0"
           
 
       - name: Read release notes
