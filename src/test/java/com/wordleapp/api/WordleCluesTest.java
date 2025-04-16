@@ -1,6 +1,7 @@
 package com.wordleapp.api;
 
 import com.wordleapp.service.WordSelectorService;
+import com.wordleapp.testsupport.BaseTestConfiguration;
 import io.restassured.RestAssured;
 import io.restassured.filter.session.SessionFilter;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,14 +11,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 
-@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class WordleCluesTest {
+class WordleCluesTest extends BaseTestConfiguration {
 
     @MockBean
     private WordSelectorService wordSelectorService;

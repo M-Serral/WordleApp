@@ -1,10 +1,14 @@
 package com.wordleapp.integration;
 
+import com.wordleapp.service.WordSelectorService;
+import com.wordleapp.testsupport.BaseTestConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -16,10 +20,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class WordleControllerTest {
+class WordleControllerTest extends BaseTestConfiguration {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private WordSelectorService wordSelectorService;
+
+    private final String  secretTestWord = "sexto".toUpperCase();
 
     @BeforeEach
     void resetGame() throws Exception {
@@ -32,6 +41,8 @@ class WordleControllerTest {
 
         MockHttpSession session = new MockHttpSession();
 
+        Mockito.when(wordSelectorService.getCurrentWord()).thenReturn(secretTestWord);
+
         mockMvc.perform(post("/api/wordle/guess")
                         .param("guess", "SEXTO")
                         .session(session))
@@ -41,7 +52,7 @@ class WordleControllerTest {
                         .param("guess", "sexto")
                         .session(session))
                 .andExpect(status().isTooManyRequests())
-                .andExpect(content().string(containsString("Game over! You've already won.")));
+                .andExpect(content().string(containsString("GAME OVER! You've already won.")));
     }
 
 
@@ -50,6 +61,8 @@ class WordleControllerTest {
     void testUserAttemptsAndFails() throws Exception {
 
         MockHttpSession session = new MockHttpSession();
+
+        Mockito.when(wordSelectorService.getCurrentWord()).thenReturn("SEXTO");
 
         for (int i = 1; i <= 5; i++) {
             String guess = "WRON" + (char) ('A' + i);
@@ -63,6 +76,6 @@ class WordleControllerTest {
                         .param("guess", "WRONG")
                         .session(session))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Game over! You've used all attempts.")));
+                .andExpect(content().string(containsString("GAME OVER! The secret word was: " + secretTestWord)));
     }
 }
