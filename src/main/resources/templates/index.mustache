@@ -202,9 +202,17 @@
                     updateUI(data, guess);
                 })
                 .catch(error => {
-                    document.getElementById("result").innerText = error.message;
+                    let errorMessage = error.message;
+
+                    if (errorMessage.includes("Not in the list of valid words")) {
+                        errorMessage = "Not in the list of valid words.";
+                        highlightInvalidInput();
+                    }
+
+                    document.getElementById("result").innerText = errorMessage;
                 });
     }
+
     function updateUI(responseText, guess) {
         const resultElement = document.getElementById("result");
         let [message, hintPart] = responseText.split("Hint:");
@@ -296,6 +304,51 @@
     }
     function initBoard() {
         updateActiveCell();
+    }
+
+    async function submitWord(word) {
+        try {
+            const response = await fetch("/guess?guess=" + word, { method: "POST" });
+            const text = await response.text();
+
+            if (!response.ok) {
+                if (text.includes("Not in the list of valid words")) {
+                    highlightInvalidInput();
+                    return;
+                }
+            }
+
+            document.body.innerHTML = text;
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
+    function highlightInvalidInput() {
+        for (let col = 0; col < 5; col++) {
+            const tile = document.getElementById(`tile-${currentRow}-${col}`);
+            if (tile) {
+                tile.classList.remove("filled", "active");
+                tile.classList.add("invalid-word");
+                tile.textContent = "";
+            }
+        }
+
+        const firstTile = document.getElementById(`tile-${currentRow}-0`);
+        if (firstTile) {
+            firstTile.classList.add("active");
+        }
+
+        // Restart the visual and logical cursor
+        currentTile = 0;
+        currentCol = 0;
+
+       updateActiveCell(); // already makes the cursor visual set correctly
+    }
+
+
+    function rowHasFilledCells(row) {
+        return Array.from(row.querySelectorAll('.cell')).some(cell => cell.textContent.trim() !== "");
     }
 </script>
 </body>

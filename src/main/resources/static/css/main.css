@@ -124,3 +124,9 @@ h1 {
     background-color: #6aaa64;
     color: #ffffff;
 }
+
+.invalid-word {
+    background-color: #007bff !important; /* Blue */
+    transition: background-color 0.2s ease-in-out;
+}
+
