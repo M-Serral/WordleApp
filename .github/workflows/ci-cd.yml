@@ -165,7 +165,7 @@ jobs:
           fi
 
           # Create local tag
-          git tag -a "$TAG_NAME" -m "$PR_TITLE"
+          git tag -a "$TAG_NAME" -m "$PR_TITLE" ""
 
           # Push tag to GitHub via API
           curl -X POST \
