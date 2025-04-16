@@ -1,9 +1,10 @@
 
 package com.wordleapp.unit;
 
-import com.wordleapp.model.SecretWord;
-import com.wordleapp.repository.SecretWordRepository;
-import com.wordleapp.service.SecretWordInitializer;
+import com.wordleapp.model.AvailableWord;
+import com.wordleapp.repository.AvailableWordRepository;
+import com.wordleapp.service.AvailableWordInitializer;
+import com.wordleapp.service.WordSelectorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,15 +17,15 @@ import java.nio.charset.StandardCharsets;
 
 import static org.mockito.Mockito.*;
 
-class SecretWordInitializerTest {
+class AvailableWordInitializerTest {
 
-    private SecretWordRepository repository;
-    private SecretWordInitializer initializer;
+    private AvailableWordRepository repository;
+    private AvailableWordInitializer initializer;
 
     @BeforeEach
     void setUp() {
-        repository = mock(SecretWordRepository.class);
-        initializer = new SecretWordInitializer(repository);
+        repository = mock(AvailableWordRepository.class);
+        initializer = new AvailableWordInitializer(repository, mock(WordSelectorService.class));
     }
 
     @Test
@@ -36,7 +37,7 @@ class SecretWordInitializerTest {
         InputStream mockInput = new ByteArrayInputStream(fileContent.getBytes(StandardCharsets.UTF_8));
 
         // Spying to mocking file reading
-        SecretWordInitializer spyInitializer = spy(initializer);
+        AvailableWordInitializer spyInitializer = spy(initializer);
         doReturn(new BufferedReader(new InputStreamReader(mockInput)))
                 .when(spyInitializer).getBufferedReaderForResource();
 
@@ -62,17 +63,17 @@ class SecretWordInitializerTest {
         InputStream mockInput = new ByteArrayInputStream(mockWords.getBytes());
 
         // Replacing getResourceAsStream using reflection
-        Field field = initializer.getClass().getDeclaredField("secretWordRepository");
+        Field field = initializer.getClass().getDeclaredField("availableWordRepository");
         field.setAccessible(true);
         field.set(initializer, repository);
 
-        SecretWordInitializer spyInitializer = spy(initializer);
+        AvailableWordInitializer spyInitializer = spy(initializer);
         doReturn(new BufferedReader(new InputStreamReader(mockInput)))
                 .when(spyInitializer)
                 .getBufferedReaderForResource();
 
         spyInitializer.initWordsFromFile();
 
-        verify(repository, times(4)).save(any(SecretWord.class));
+        verify(repository, times(4)).save(any(AvailableWord.class));
     }
 }
