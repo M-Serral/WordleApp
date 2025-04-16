@@ -15,6 +15,7 @@ jobs:
         run: |
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          
 
       - name: Create and publish Git Tag via GitHub API
         env:
@@ -24,8 +25,18 @@ jobs:
           git config --global user.email "actions@github.com"
 
           TAG_NAME=v${{ env.VERSION }}
-          TAG_MESSAGE="Release version 1.2.0 - Dictionary-based validation and secret word refactor"
+          TAG_MESSAGE=Release version ${{ env.VERSION }}
           COMMIT_SHA=$(git rev-parse HEAD)
+          
+          # Get the latest merged PR title targeting master
+          PR_TITLE=$(curl -s -H "Authorization: token $GH_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls?state=closed&base=master&sort=updated&direction=desc" \
+            | jq -r '[.[] | select(.merged_at != null)][0].title')
+          
+          # Fallback if PR_TITLE is null
+          if [ -z "$PR_TITLE" ] || [ "$PR_TITLE" = "null" ]; then
+          PR_TITLE="Release $TAG_NAME"
+          fi
 
           # Create local tag
           git tag -a "$TAG_NAME" -m "$TAG_MESSAGE"
