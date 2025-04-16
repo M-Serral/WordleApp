@@ -54,3 +54,6 @@ jobs:
           files: |
             docker-compose.yml
             Dockerfile
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+
