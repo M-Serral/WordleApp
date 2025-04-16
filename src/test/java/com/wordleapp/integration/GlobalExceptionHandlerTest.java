@@ -1,5 +1,6 @@
 package com.wordleapp.integration;
 
+import com.wordleapp.testsupport.BaseTestConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class GlobalExceptionHandlerTest {
+class GlobalExceptionHandlerTest extends BaseTestConfiguration {
 
     @Autowired
     private MockMvc mockMvc;

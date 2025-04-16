@@ -36,5 +36,5 @@ build/
 qodana.yaml
 CHANGELOG-template.md
 RELEASE_NOTES-template.md
-
+data.sql
 

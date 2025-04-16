@@ -2,6 +2,7 @@ package com.wordleapp.ui;
 
 import com.wordleapp.WordleAppApplication;
 import com.wordleapp.service.WordSelectorService;
+import com.wordleapp.testsupport.BaseTestConfiguration;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.openqa.selenium.WebDriver;
@@ -10,15 +11,13 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ActiveProfiles("test")
 @SpringBootTest(classes = WordleAppApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class WordleUITest {
+class WordleUITest extends BaseTestConfiguration {
 
     @MockBean
     private WordSelectorService wordSelectorService;
@@ -93,7 +92,7 @@ class WordleUITest {
     @Test
     void testReachMaximumAttemps() {
 
-        String[] guesses = {"AAAAA", "PPPPP", "UUUUU", "DDDDD", "IIIII", "FFFFF"};
+        String[] guesses = {"CUSTA", "VIGIA", "MARCA", "TURMA", "CAPAR", "RUMIA"};
         List<String> expectedColors = List.of("gray", "gray", "gray", "gray", "gray");
 
         for (int i = 0; i < guesses.length; i++) {
@@ -102,8 +101,8 @@ class WordleUITest {
             List<String> rowClasses = wordlePage.getTileClasses(i);
             for (int j = 0; j < 5; j++) {
                 assertTrue(rowClasses.get(j).contains(expectedColors.get(j)),
-                        "En la fila " + i + ", columna " + j + " se esperaba " + expectedColors.get(j)
-                                + " pero se obtuvo: " + rowClasses.get(j));
+                        "In row 2, column " + i + ", column " + j + " was expected " + expectedColors.get(j)
+                                + " but obtained: " + rowClasses.get(j));
             }
         }
 
@@ -119,7 +118,7 @@ class WordleUITest {
 
     @Test
     void testResetGame() {
-        String[] wrongGuesses = {"AAAAA", "PPPPP", "UUUUU", "DDDDD", "IIIII", "FFFFF"};
+        String[] wrongGuesses = {"CUSTA", "VIGIA", "MARCA", "TURMA", "CAPAR", "RUMIA"};
         for (String guess : wrongGuesses) {
             wordlePage.makeGuessUI(guess);
             wordlePage.getResultMessage();
@@ -137,6 +136,22 @@ class WordleUITest {
                 assertTrue(rowTexts.get(col).isEmpty(),
                         "After reset, tile in row " + row + ", column " + col + " should be empty.");
             }
+        }
+    }
+
+    @Test
+    void testInvalidWordClearsRowAndShowsError() {
+        String invalidWord = "TRAZO"; // palabra no en available_word
+
+        wordlePage.makeGuessUI(invalidWord);
+
+        String result = wordlePage.getResultMessage();
+        assertTrue(result.contains("Not in the list of valid words"),
+                "Expected error message for invalid word");
+
+        List<String> tileTexts = wordlePage.getTileTexts(0);
+        for (int i = 0; i < tileTexts.size(); i++) {
+            assertTrue(tileTexts.get(i).isEmpty(), "Tile at row 0, col " + i + " should be empty after invalid word");
         }
     }
 

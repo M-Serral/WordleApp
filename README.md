@@ -106,3 +106,11 @@ This project was developed as part of a Bachelor's Final Year Project (TFG) focu
 - CI/CD to automate build and deployment
 - Static code analysis to manage technical debt
 - Integration testing with real MySQL and Docker Compose
+- Dictionary-based Word Validation (v1.2.0)
+
+    Starting in version 1.2.0, the application uses two separate data files to initialize its database:
+    
+    - `dictionary.txt`: loaded into the `available_word` table, defines which words are valid to guess.
+    - `words.txt`: contains around 300 curated, easier words used as the game's secret word.
+    
+    All logic is database-driven. If a guessed word isn't in the dictionary, it's rejected and does not count as an attempt.
