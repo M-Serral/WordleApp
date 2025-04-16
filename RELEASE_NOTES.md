@@ -7,7 +7,7 @@ Backend services were extended and refactored accordingly to support this behavi
 ## ✨ New Features
 
 - Dictionary loader from `dictionary.txt` to populate `AvailableWord` table.
-- New `SecretWordInitializer` loads 200 "easier" secret words from `words.txt`.
+- New `SecretWordInitializer` loads 200 easier secret words from `words.txt`.
 - Added validation logic: words must exist in the `AvailableWord` table to be guessed.
 - New frontend animation and behavior when user inputs invalid words.
 - Custom `DictionaryNormalizer` utility to transform word sources into valid input files.
