@@ -38,7 +38,7 @@ public class AvailableWordInitializer {
         }
     }
 
-    private BufferedReader createReaderFromDictionary() {
+    public BufferedReader createReaderFromDictionary() {
         InputStreamReader inputStreamReader = new InputStreamReader(
                 Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("dictionary.txt"))
         );
