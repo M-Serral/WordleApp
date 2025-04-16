@@ -1,0 +1,42 @@
+name: Test Tag Push
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure Git and push tag
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
+          git fetch --tags
+          git tag -a "v1.2.0-test" -m "Release v1.2.0-test"
+          git push origin "v${{ env.VERSION }}"
+          
+
+      - name: Read release notes
+        id: release_notes
+        run: |
+          echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
+          cat RELEASE_NOTES.md >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+
+      - name: Create and publish GitHub Draft Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VERSION }}
+          name: WordleApp v${{ env.VERSION }}
+          body: ${{ env.RELEASE_BODY }}
+          draft: true
+          files: |
+            docker-compose.yml
+            Dockerfile
