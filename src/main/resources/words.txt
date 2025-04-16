@@ -83,12 +83,11 @@ delta
 desde
 diosa
 duelo
-educo
-eludo
 email
 entra
 trato
 error
+truño
 etapa
 falso
 feroz
@@ -326,5 +325,5 @@ cruce
 clero
 claro
 mixto
-truño
 tosco
+grumo

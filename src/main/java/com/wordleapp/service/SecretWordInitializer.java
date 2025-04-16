@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -18,31 +19,47 @@ import java.util.Objects;
 public class SecretWordInitializer {
 
     private final SecretWordRepository secretWordRepository;
+    private final WordSelectorService wordSelectorService;
 
-    public SecretWordInitializer(SecretWordRepository secretWordRepository) {
+    public SecretWordInitializer(SecretWordRepository secretWordRepository, WordSelectorService wordSelectorService) {
         this.secretWordRepository = secretWordRepository;
+        this.wordSelectorService = wordSelectorService;
     }
 
     @PostConstruct
     public void initSecretWordsFromFile() {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("words.txt"))
-        ))) {
-            reader.lines()
-                    .map(String::trim)
-                    .map(String::toUpperCase)
-                    .filter(word -> word.length() == 5)
-                    .distinct()
-                    .forEach(word -> {
-                        if (!secretWordRepository.existsByWord(word)) {
-                            secretWordRepository.save(new SecretWord(word));
-                            log.info("✅ Secret word inserted: {}", word);
-                        } else {
-                            log.info("ℹ️ Secret word already exists: {}", word);
-                        }
-                    });
-        } catch (IOException e) {
-            throw new IllegalStateException("❌ Error loading words.txt", e);
+
+        // we need to delete all data from table to add new secret word
+        if (secretWordRepository.count() > 0) {
+            log.info("✅ Secret words already loaded. Skipping load.");
+        } else {
+            try (BufferedReader reader = createReader()) {
+
+                var words = reader.lines()
+                        .map(String::trim)
+                        .map(String::toUpperCase)
+                        .filter(word -> word.length() == 5)
+                        .distinct()
+                        .map(SecretWord::new)
+                        .toList();
+
+
+                secretWordRepository.saveAll(words);
+                log.info("✅ Loaded {} secret words from words.txt", words.size());
+
+            } catch (IOException e) {
+                throw new IllegalStateException("❌ Failed to load secret words", e);
+            }
         }
+
+        wordSelectorService.selectRandomWord();
+        log.info("✅ Random word selected after secret word load");
+    }
+
+    // Testing
+    public BufferedReader createReader() {
+        return new BufferedReader(new InputStreamReader(
+                Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("words.txt"))
+        ));
     }
 }
