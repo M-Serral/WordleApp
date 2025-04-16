@@ -1,3 +1,5 @@
+DELETE FROM secret_word;
+
 INSERT INTO secret_word (word) VALUES ('MOUSE');
 INSERT INTO secret_word (word) VALUES ('PLANT');
 INSERT INTO secret_word (word) VALUES ('TABLE');
