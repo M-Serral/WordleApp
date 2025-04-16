@@ -1,5 +1,6 @@
 package com.wordleapp.service;
 
+import com.wordleapp.repository.AvailableWordRepository;
 import com.wordleapp.utils.Constants;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,12 @@ import java.util.Arrays;
 public class WordleGameService {
 
     private final WordSelectorService wordSelectorService;
+    private final AvailableWordRepository availableWordRepository;
 
-
-    public WordleGameService(WordSelectorService wordSelectorService) {
+    public WordleGameService(WordSelectorService wordSelectorService,
+                             AvailableWordRepository availableWordRepository) {
         this.wordSelectorService = wordSelectorService;
+        this.availableWordRepository = availableWordRepository;
     }
 
 
@@ -25,6 +28,7 @@ public class WordleGameService {
         try {
             validateGameState(session);
             validateGuess(guess);
+            validateAvailableWord(guess);
         } catch (ResponseStatusException e) {
             String lastHint = (String) session.getAttribute(Constants.LAST_HINT_KEY);
 
@@ -35,6 +39,7 @@ public class WordleGameService {
             throw new ResponseStatusException(status,
                     e.getReason() + (lastHint != null ? " Hint: " + lastHint : ""));
         }
+
 
         String upperGuess = guess.toUpperCase();
         String hint = generateHint(upperGuess, session);
@@ -71,6 +76,13 @@ public class WordleGameService {
         if (guess.length() != Constants.WORD_LENGTH) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Invalid input: The word must be " + Constants.WORD_LENGTH + " letters long.");
+        }
+    }
+
+    private void validateAvailableWord(String guess) {
+        if (!availableWordRepository.existsByWord(guess.toUpperCase())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Not in the list of valid words.");
         }
     }
 
