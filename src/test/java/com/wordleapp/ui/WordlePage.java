@@ -34,9 +34,10 @@ public class WordlePage {
 
 
     public void makeGuessUI(String guess) {
-        WebElement body = driver.findElement(By.tagName("body"));
+        WebElement body = wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("body")));
         body.sendKeys(guess + Keys.ENTER);
     }
+
 
     public boolean isGameOver() {
         try {
@@ -84,6 +85,4 @@ public class WordlePage {
             return false;
         }
     }
-
-
 }
