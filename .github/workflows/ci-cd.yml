@@ -158,14 +158,14 @@ jobs:
           # Get the latest merged PR title targeting master
           PR_TITLE=$(curl -s -H "Authorization: token $GH_TOKEN" \
             "https://api.github.com/repos/M-Serral/WordleApp/pulls?state=closed&base=master&sort=updated&direction=desc" \
-            | jq -r '[.[] | select(.merged_at != null)][0].title')
+            | jq -r '[.[] | select(.merged_at != null)][0].title' | tr -d '\n')
 
           if [ -z "$PR_TITLE" ] || [ "$PR_TITLE" = "null" ]; then
             PR_TITLE="Release $TAG_NAME"
           fi
 
           # Create local tag
-          git tag -a "$TAG_NAME" -m "$PR_TITLE" -m ""
+          git tag -a "$TAG_NAME" -m "$PR_TITLE"
 
           # Push tag to GitHub via API
           curl -X POST \
