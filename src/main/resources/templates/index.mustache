@@ -206,7 +206,8 @@
 
                     if (errorMessage.includes("Not in the list of valid words")) {
                         errorMessage = "Not in the list of valid words.";
-                        highlightInvalidInput();
+                        animateInvalidGuess();
+                        animateErrorMessage();
                     }
 
                     document.getElementById("result").innerText = errorMessage;
@@ -291,6 +292,7 @@
         fetch("/api/wordle/reset", { method: "POST" })
                 .then(() => location.reload());
     }
+
     function updateActiveCell(setActive = true) {
         for (let col = 0; col < 5; col++) {
             document.getElementById(`tile-${currentRow}-${col}`).classList.remove('active');
@@ -302,48 +304,48 @@
             }
         }
     }
-    function initBoard() {
-        updateActiveCell();
-    }
 
-    async function submitWord(word) {
-        try {
-            const response = await fetch("/guess?guess=" + word, { method: "POST" });
-            const text = await response.text();
-
-            if (!response.ok) {
-                if (text.includes("Not in the list of valid words")) {
-                    highlightInvalidInput();
-                    return;
-                }
-            }
-
-            document.body.innerHTML = text;
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    }
-
-    function highlightInvalidInput() {
+    function animateInvalidGuess() {
         for (let col = 0; col < 5; col++) {
             const tile = document.getElementById(`tile-${currentRow}-${col}`);
             if (tile) {
-                tile.classList.remove("filled", "active");
-                tile.classList.add("invalid-word");
                 tile.textContent = "";
+                tile.classList.add("shake");
+
+                // Remove the animation after finishing (so that it can be repeated if it fails again).
+                tile.addEventListener("animationend", () => {
+                    tile.classList.remove("shake");
+                }, { once: true });
             }
         }
-
-        const firstTile = document.getElementById(`tile-${currentRow}-0`);
-        if (firstTile) {
-            firstTile.classList.add("active");
-        }
-
         // Restart the visual and logical cursor
         currentTile = 0;
         currentCol = 0;
 
-       updateActiveCell(); // already makes the cursor visual set correctly
+        updateActiveCell(); // already makes the cursor visual set correctly
+    }
+
+    function animateErrorMessage() {
+        const resultElem = document.getElementById("result");
+
+        // Removes any previous animation
+        resultElem.classList.remove("error-flash");
+
+        // Force reflow to restart animation
+        void resultElem.offsetWidth;
+
+        // Add class with animation
+        resultElem.classList.add("error-flash");
+
+        // Automatic cleaning at the end of animation
+        resultElem.addEventListener("animationend", () => {
+            resultElem.classList.remove("error-flash");
+        }, { once: true });
+    }
+
+
+    function initBoard() {
+        updateActiveCell();
     }
 
 

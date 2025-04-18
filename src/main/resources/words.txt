@@ -327,3 +327,5 @@ claro
 mixto
 tosco
 grumo
+vizco
+vodka

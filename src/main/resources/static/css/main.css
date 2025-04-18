@@ -125,8 +125,32 @@ h1 {
     color: #ffffff;
 }
 
-.invalid-word {
-    background-color: #007bff !important; /* Blue */
-    transition: background-color 0.2s ease-in-out;
+@keyframes shake {
+    0%   { transform: translateX(0); }
+    20%  { transform: translateX(-5px); }
+    40%  { transform: translateX(5px); }
+    60%  { transform: translateX(-5px); }
+    80%  { transform: translateX(5px); }
+    100% { transform: translateX(0); }
 }
+
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes flash {
+    0%   { opacity: 1; }
+    25%  { opacity: 0.2; }
+    50%  { opacity: 1; }
+    75%  { opacity: 0.2; }
+    100% { opacity: 1; }
+}
+
+.error-flash {
+    animation: flash 0.6s ease-in-out;
+}
+
+
+
+
 
