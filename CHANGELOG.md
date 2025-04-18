@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),  
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.2.1] - 2025-04-18
+
+### 🐞 Bug Fixes
+- Fixed a visual feedback bug where invalid word messages did not reappear when entering the same error multiple times.
+- Added animation to invalid input rows to replace static blue coloring.
+
+
 ## [v1.2.0] - 2025-04-16
 
 ### ✨ Added
