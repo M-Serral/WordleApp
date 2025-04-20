@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),  
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.2.2] - 2025-04-20
+
+### 🐞 Bug Fixes
+- Fixed a UI bug where invalid words triggered a mixed orange, green or grey tile background.
+- Fixed bad behavior when we enter an invalid word just after entering a non dictionary-contained word.
+- Ensured that feedback messages refresh even when repeated (e.g., multiple invalid guesses).
+
+
 ## [v1.2.1] - 2025-04-18
 
 ### 🐞 Bug Fixes

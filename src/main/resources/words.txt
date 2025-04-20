@@ -3,7 +3,6 @@ acero
 actor
 aviso
 barco
-beso
 cable
 campo
 cebra
