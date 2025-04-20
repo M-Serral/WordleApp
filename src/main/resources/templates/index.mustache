@@ -146,11 +146,7 @@
         } else if (key === 'Backspace') {
             removeLetter();
         } else if (key === 'Enter') {
-            if (currentCol === 5 || guessRows[currentRow].every(l => l !== '')) {
                 submitGuess();
-            } else {
-                alert('Please complete all 5 letters before pressing Enter.');
-            }
         }
     }
     function placeLetter(letter) {
@@ -189,6 +185,7 @@
         }
         updateActiveCell();
     }
+
     function submitGuess() {
         const guess = guessRows[currentRow].join('');
         fetch(`/api/wordle/guess?guess=${guess}`, { method: "POST" })
@@ -204,11 +201,16 @@
                 .catch(error => {
                     let errorMessage = error.message;
 
-                    if (errorMessage.includes("Not in the list of valid words")) {
-                        errorMessage = "Not in the list of valid words.";
-                        animateInvalidGuess();
-                        animateErrorMessage();
+                    if (errorMessage.includes("Invalid input: The word must be 5 letters long.")) {
+                        errorMessage = "Invalid input: The word must be 5 letters long.";
                     }
+
+                    else if (errorMessage.includes("Not in the list of valid words")) {
+                        errorMessage = "Not in the list of valid words.";
+                    }
+
+                    animateInvalidGuess();
+                    animateErrorMessage();
 
                     document.getElementById("result").innerText = errorMessage;
                 });
@@ -318,7 +320,8 @@
                 }, { once: true });
             }
         }
-        // Restart the visual and logical cursor
+        // Restart the visual and logical cursor, and clean row in memory
+        guessRows[currentRow] = ["", "", "", "", ""];
         currentTile = 0;
         currentCol = 0;
 
