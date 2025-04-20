@@ -41,13 +41,14 @@ class WordleIntegrationTest extends BaseTestConfiguration {
     @Test
     void shouldRejectWordNotInAvailableWordList() {
 
-        String[] availableWords = {"APPLE", "GRAPE", "MANGO", "ASFDD", "QWOPE", "LEMON",
+        String[] availableWords = {"APPLE", "GRAPE", "MANGO", "ASFDD", "QWOPE", "APP", "LEMON",
                 "SUGAW", "BREAK", "ABECD", "SEXTO"};
         String[] expectedResult = {"Try again! Attempts left: 5",
                 "Try again! Attempts left: 4",
                 "Try again! Attempts left: 3",
                 "Not in the list of valid words",
                 "Not in the list of valid words",
+                "Invalid input: The word must be 5 letters long.",
                 "Try again! Attempts left: 2",
                 "Not in the list of valid words",
                 "Try again! Attempts left: 1",
@@ -56,6 +57,7 @@ class WordleIntegrationTest extends BaseTestConfiguration {
         String[] httpStatus = {String.valueOf(HttpStatus.OK.value()),
                 String.valueOf(HttpStatus.OK.value()),
                 String.valueOf(HttpStatus.OK.value()),
+                String.valueOf(HttpStatus.BAD_REQUEST.value()),
                 String.valueOf(HttpStatus.BAD_REQUEST.value()),
                 String.valueOf(HttpStatus.BAD_REQUEST.value()),
                 String.valueOf(HttpStatus.OK.value()),
