@@ -2,8 +2,10 @@ package com.wordleapp.service;
 
 import com.wordleapp.model.SecretWord;
 import com.wordleapp.repository.SecretWordRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class WordSelectorService {
 
@@ -18,6 +20,9 @@ public class WordSelectorService {
         SecretWord randomWord = secretWordRepository.findRandomWord()
                 .orElseThrow(() -> new IllegalStateException("Random word not found."));
         this.currentWord = randomWord.getWord();
+
+        // to help debugging via front
+        log.info("PALABRA SECRETA: {}", this.currentWord);
     }
 
 
