@@ -7,6 +7,9 @@
 
 </head>
 <body>
+<div id="user-info" style="position: absolute; top: 10px; left: 10px; font-size: 1.2em;">
+    <!-- Username will appear here -->
+</div>
 <h1>WELCOME TO WORDLE</h1>
 
 <div id="board">
@@ -87,9 +90,66 @@
     initKeyboard();
     initTileClickHandlers();
 
+    document.addEventListener("DOMContentLoaded", async function () {
+        await checkServerRestart(); // detect restart
+        await initializeUsername(); // then ask for name if needed
+        displayUsername();
+    });
     document.addEventListener('keydown', handleKeyPress);
     const resetButton = document.getElementById('resetButton');
     resetButton.addEventListener('click', resetGame);
+
+    async function checkServerRestart() {
+        try {
+            const response = await fetch("/api/wordle/session-id");
+            const serverSessionId = await response.text();
+
+            const localSessionId = sessionStorage.getItem("serverSessionId");
+
+            if (!localSessionId) {
+                // First time saved, don't delete it yet.
+                sessionStorage.setItem("serverSessionId", serverSessionId);
+            } else if (localSessionId !== serverSessionId) {
+                // Only if there was already one, and it changed, we assume it is a new server.
+                sessionStorage.clear();
+                sessionStorage.setItem("serverSessionId", serverSessionId);
+            }
+
+        } catch (e) {
+            console.error("Failed to fetch session ID", e);
+        }
+    }
+
+
+    async function initializeUsername() {
+        const hasInitialized = sessionStorage.getItem("initialized");
+
+        if (!sessionStorage.getItem("username") || !hasInitialized) {
+            let username = "";
+
+            while (!username) {
+                username = prompt("Enter your name to start playing Wordle:");
+                if (username === null || username.trim() === "") {
+                    alert("Username is required to start the game.");
+                    username = "";
+                } else {
+                    username = username.trim();
+                }
+            }
+
+            sessionStorage.setItem("username", username);
+            sessionStorage.setItem("initialized", "true");
+        }
+    }
+
+    function displayUsername() {
+        const user = sessionStorage.getItem("username");
+        if (user) {
+            const userInfoDiv = document.getElementById("user-info");
+            userInfoDiv.textContent = `👤 ${user}`;
+        }
+    }
+
 
     function initTileClickHandlers() {
         for (let row = 0; row < 6; row++) {
@@ -290,10 +350,19 @@
             }
         }
     }
+
+
     function resetGame() {
-        fetch("/api/wordle/reset", { method: "POST" })
+        const username = sessionStorage.getItem("username");
+        if (!username) {
+            alert("Username not found. Please reload the page.");
+            return;
+        }
+
+        fetch(`/api/wordle/reset?username=${encodeURIComponent(username)}`, { method: "POST" })
                 .then(() => location.reload());
     }
+
 
     function updateActiveCell(setActive = true) {
         for (let col = 0; col < 5; col++) {
@@ -355,6 +424,7 @@
     function rowHasFilledCells(row) {
         return Array.from(row.querySelectorAll('.cell')).some(cell => cell.textContent.trim() !== "");
     }
+
 </script>
 </body>
 </html>
