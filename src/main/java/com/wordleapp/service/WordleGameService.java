@@ -15,11 +15,14 @@ public class WordleGameService {
 
     private final WordSelectorService wordSelectorService;
     private final AvailableWordRepository availableWordRepository;
+    private final GameService gameService;
+
 
     public WordleGameService(WordSelectorService wordSelectorService,
-                             AvailableWordRepository availableWordRepository) {
+                             AvailableWordRepository availableWordRepository, GameService gameService) {
         this.wordSelectorService = wordSelectorService;
         this.availableWordRepository = availableWordRepository;
+        this.gameService = gameService;
     }
 
 
@@ -47,6 +50,7 @@ public class WordleGameService {
 
         if (upperGuess.equals(wordSelectorService.getCurrentWord())) {
             session.setAttribute(Constants.GAME_WON_KEY, true);
+            gameService.saveGameIfWon(session); // Save game
             return ResponseEntity.ok("CORRECT! The secret word was: " + wordSelectorService.getCurrentWord()
                     + Constants.HINT + guess + Constants.ARROW + hint);
         }
