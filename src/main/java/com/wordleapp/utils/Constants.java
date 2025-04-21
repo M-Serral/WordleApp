@@ -14,4 +14,8 @@ public class Constants {
     public static final String HINT_SESSION_KEY = "wordle_hint";
     public static final String HINT = ". Hint: ";
     public static final String ARROW = " → ";
+    public static final String SECRET_WORD_KEY = "secret_word";
+    public static final String USERNAME_KEY = "username";
+    public static final String SESSION_ID = "serverSessionId";
+
 }
