@@ -2,6 +2,7 @@ package com.wordleapp.controller;
 
 import com.wordleapp.service.SessionGameService;
 import com.wordleapp.service.WordleGameService;
+import com.wordleapp.utils.Constants;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +26,14 @@ public class WordleController {
     }
 
     @PostMapping("/reset")
-    public ResponseEntity<String> resetGame(HttpSession session) {
-        sessionGameService.resetGame(session);
+    public ResponseEntity<String> resetGame(@RequestParam String username, HttpSession session) {
+        session.setAttribute(Constants.USERNAME_KEY, username);
+        sessionGameService.resetGame(username, session);
         return ResponseEntity.ok("Game reset! You have 6 attempts.");
+    }
+    @GetMapping("/session-id")
+    public ResponseEntity<String> getSessionId(HttpSession session) {
+        Object sessionId = session.getAttribute(Constants.SESSION_ID);
+        return ResponseEntity.ok(sessionId != null ? sessionId.toString() : "");
     }
 }
