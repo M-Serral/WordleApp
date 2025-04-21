@@ -11,6 +11,7 @@ public interface SecretWordRepository extends JpaRepository<SecretWord, Long> {
     @Query(value = "SELECT * FROM secret_word ORDER BY RAND() LIMIT 1", nativeQuery = true)
     Optional<SecretWord> findRandomWord();
 
+    Optional<SecretWord> findByWord(String word);
 
     boolean existsByWord(String word);
 }
