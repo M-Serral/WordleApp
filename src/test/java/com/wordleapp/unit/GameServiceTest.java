@@ -31,7 +31,6 @@ class GameServiceTest {
 
     @Test
     void shouldSaveGameWhenGameIsWonAndSessionIsValid() {
-        // Simular HttpSession
         HttpSession session = mock(HttpSession.class);
 
         when(session.getAttribute(Constants.GAME_WON_KEY)).thenReturn(true);
@@ -43,11 +42,7 @@ class GameServiceTest {
         secretWord.setWord("HELLO");
 
         when(secretWordRepository.findByWord("HELLO")).thenReturn(Optional.of(secretWord));
-
-        // Ejecutar
         gameService.saveGameIfWon(session);
-
-        // Verificar que el juego se guardó
         verify(gameRepository, times(1)).save(any(Game.class));
     }
 }
