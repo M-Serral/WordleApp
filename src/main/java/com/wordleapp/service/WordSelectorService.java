@@ -22,7 +22,9 @@ public class WordSelectorService {
         this.currentWord = randomWord.getWord();
 
         // to help debugging via front
-        log.info("PALABRA SECRETA: {}", this.currentWord);
+        log.info("🕵️  [DEBUG MODE] The secret word for this session is: {}", currentWord);
+
+
     }
 
 

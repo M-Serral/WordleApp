@@ -22,9 +22,5 @@ public class SessionGameService {
         wordSelectorService.selectRandomWord();
         session.setAttribute(Constants.SECRET_WORD_KEY, wordSelectorService.getCurrentWord());
         session.setAttribute(Constants.USERNAME_KEY, username);
-        // Generate new server session identifier
-        if (session.getAttribute(Constants.SESSION_ID) == null) {
-            session.setAttribute(Constants.SESSION_ID, UUID.randomUUID().toString());
-        }
     }
 }

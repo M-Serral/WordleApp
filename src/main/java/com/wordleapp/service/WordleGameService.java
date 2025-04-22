@@ -29,6 +29,7 @@ public class WordleGameService {
     public ResponseEntity<String> checkWord(String guess, HttpSession session) {
 
         try {
+            validateEmpty(guess);
             validateGameState(session);
             validateGuess(guess);
             validateAvailableWord(guess);
@@ -59,6 +60,13 @@ public class WordleGameService {
 
         return buildResponse(attempts, hint, upperGuess);
 
+    }
+
+    private void validateEmpty(String guess) {
+        if (guess.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "The word cannot be empty.");
+        }
     }
 
     private void validateGameState(HttpSession session) {
