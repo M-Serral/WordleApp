@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),  
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.3.0] - 2025-04-22
+
+### Added
+- Custom modal for capturing the player's name on game startup.
+- Real-time username validation with restricted character set (letters, ñ, numbers).
+- Error feedback below input field when name is empty.
+- SESSION_ID generation logic to detect backend restarts.
+- Frontend logic to detect session mismatch and clear stale data.
+- Support for using Enter key to confirm username.
+- Session-aware reset logic using `sessionStorage`.
+
+### Changed
+- Game no longer uses native `prompt()`; replaced with styled modal.
+- `resetGame` no longer triggers modal if username exists and is valid.
+
+### Fixed
+- Username persistence between Spring Boot restarts without confirmation.
+- UI layout issues caused by dynamic content (e.g. error message shifting layout).
+- Modal not centered vertically on certain screen sizes.
+
+### Removed
+- Native JavaScript `prompt()` usage.
+
 ## [v1.2.2] - 2025-04-20
 
 ### 🐞 Bug Fixes
@@ -39,6 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Crash on game start when secret word list was empty
 
 ## [v1.1.0] - 2025-04-13
+
 ### Added
 - Secret words are now stored in a MySQL database instead of being read from a file.
 - If the database is empty, initial words are loaded from `words.txt` during application startup.
@@ -55,6 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [v0.x.y] - 2024-04-01
+
 ### Added
 - Initial release of WordleApp core functionality.
 - Game logic with word validation and user attempts.
