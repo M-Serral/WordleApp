@@ -42,8 +42,7 @@ class WordleUITest extends BaseTestConfiguration {
 
         driver.get("http://localhost:" + this.port + "/");
         wordlePage = new WordlePage(driver);
-
-
+        wordlePage.enterUsernameAndStart("TESTUSER");
     }
 
     @AfterEach

@@ -85,4 +85,16 @@ public class WordlePage {
             return false;
         }
     }
+
+    public void enterUsernameAndStart(String username) {
+        WebElement usernameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("username-input")));
+        usernameInput.clear();
+        usernameInput.sendKeys(username);
+
+        WebElement startButton = driver.findElement(By.id("username-submit"));
+        startButton.click();
+
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("username-modal")));
+    }
+
 }

@@ -26,5 +26,4 @@ public class SecretWord {
     public SecretWord(String word) {
         this.word = word;
     }
-
 }

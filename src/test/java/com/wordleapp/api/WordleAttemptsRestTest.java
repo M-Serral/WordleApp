@@ -176,7 +176,7 @@ class WordleAttemptsRestTest extends BaseTestConfiguration {
                 .contentType("application/json")
                 .filter(sessionFilter)
                 .when()
-                .post("/reset")
+                .post("/reset?username=MIGUEL")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body(equalTo("Game reset! You have 6 attempts."));
