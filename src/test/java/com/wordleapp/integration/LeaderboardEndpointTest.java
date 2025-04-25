@@ -1,6 +1,6 @@
 package com.wordleapp.integration;
 
-import com.wordleapp.controller.LeaderboardController;
+import com.wordleapp.controller.LeaderboardRestController;
 import com.wordleapp.dto.LeaderboardEntry;
 import com.wordleapp.service.LeaderboardService;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = LeaderboardController.class)
+@WebMvcTest(controllers = LeaderboardRestController.class)
 
 class LeaderboardEndpointTest {
 

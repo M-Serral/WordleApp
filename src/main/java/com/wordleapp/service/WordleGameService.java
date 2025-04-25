@@ -29,11 +29,6 @@ public class WordleGameService {
 
     public ResponseEntity<String> checkWord(String guess, HttpSession session) {
 
-        Object username = session.getAttribute(Constants.USERNAME_KEY);
-        if (username == null) {
-            throw new IllegalStateException("❌ USERNAME IS NULL. Make sure you have called /reset correctly.");
-        }
-
         try {
             validateEmpty(guess);
             validateGameState(session);

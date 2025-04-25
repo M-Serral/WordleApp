@@ -19,7 +19,7 @@ public class WordSelectorService {
     public void selectRandomWord() {
         this.currentSecretWord = secretWordRepository.findRandomWord()
                 .orElseThrow(() -> new IllegalStateException("Random word not found."));
-        log.info("🕵️  [DEBUG MODE] The secret word for this session is: {}", currentSecretWord.getWord());
+        log.info("\uD83E\uDDD0  [DEBUG MODE] The secret word for this session is: {}", currentSecretWord.getWord());
     }
 
     public String getCurrentWord() {
