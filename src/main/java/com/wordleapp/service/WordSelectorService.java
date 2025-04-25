@@ -28,10 +28,4 @@ public class WordSelectorService {
         }
         return currentSecretWord.getWord();
     }
-
-    public SecretWord getCurrentSecretWord() {
-        if (currentSecretWord == null) throw new IllegalStateException("No word selected.");
-        return currentSecretWord;
-    }
-
 }
