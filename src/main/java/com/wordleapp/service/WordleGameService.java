@@ -3,13 +3,14 @@ package com.wordleapp.service;
 import com.wordleapp.repository.AvailableWordRepository;
 import com.wordleapp.utils.Constants;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
-
+@Slf4j
 @Service
 public class WordleGameService {
 
@@ -27,6 +28,11 @@ public class WordleGameService {
 
 
     public ResponseEntity<String> checkWord(String guess, HttpSession session) {
+
+        Object username = session.getAttribute(Constants.USERNAME_KEY);
+        if (username == null) {
+            throw new IllegalStateException("❌ USERNAME IS NULL. Make sure you have called /reset correctly.");
+        }
 
         try {
             validateEmpty(guess);
@@ -49,14 +55,15 @@ public class WordleGameService {
         String hint = generateHint(upperGuess, session);
         session.setAttribute(Constants.LAST_HINT_KEY, hint);
 
+        session.setAttribute(Constants.SECRET_WORD_KEY, wordSelectorService.getCurrentWord());
+        int attempts = updateAttempts(session);
+
         if (upperGuess.equals(wordSelectorService.getCurrentWord())) {
             session.setAttribute(Constants.GAME_WON_KEY, true);
             gameService.saveGameIfWon(session); // Save game
             return ResponseEntity.ok("CORRECT! The secret word was: " + wordSelectorService.getCurrentWord()
                     + Constants.HINT + guess + Constants.ARROW + hint);
         }
-
-        int attempts = updateAttempts(session);
 
         return buildResponse(attempts, hint, upperGuess);
 
@@ -157,6 +164,10 @@ public class WordleGameService {
     }
 
     private ResponseEntity<String> buildResponse(int attempts, String hint, String guess) {
+        log.info("🧪 RESPONSE: {}", attempts == Constants.MAX_ATTEMPTS
+                ? "GAME OVER! The secret word was: " + wordSelectorService.getCurrentWord()
+                : "Try again! Attempts left: " + (Constants.MAX_ATTEMPTS - attempts));
+
         return ResponseEntity.ok(
                 attempts == Constants.MAX_ATTEMPTS
                         ? "GAME OVER! The secret word was: " + wordSelectorService.getCurrentWord()
