@@ -203,6 +203,29 @@ h1 {
     visibility: visible;
 }
 
+#leaderboard-container {
+    margin-top: 20px;
+    width: 90%;
+    max-width: 700px;
+    text-align: center;
+}
+
+#leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+#leaderboard-table th, #leaderboard-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#leaderboard-table th {
+    background-color: #333;
+    color: white;
+}
+
 
 
 
