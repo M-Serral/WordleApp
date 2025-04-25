@@ -18,11 +18,9 @@ import java.util.Objects;
 public class SecretWordInitializer {
 
     private final SecretWordRepository secretWordRepository;
-    private final WordSelectorService wordSelectorService;
 
-    public SecretWordInitializer(SecretWordRepository secretWordRepository, WordSelectorService wordSelectorService) {
+    public SecretWordInitializer(SecretWordRepository secretWordRepository) {
         this.secretWordRepository = secretWordRepository;
-        this.wordSelectorService = wordSelectorService;
     }
 
     @PostConstruct
@@ -50,9 +48,6 @@ public class SecretWordInitializer {
                 throw new IllegalStateException("❌ Failed to load secret words", e);
             }
         }
-
-        wordSelectorService.selectRandomWord();
-        log.info("✅ Random word selected after secret word load");
     }
 
     // Testing
