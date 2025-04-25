@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),  
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.4.0] - 2025-04-25
+
+### Added
+
+- `index.mustache`: leaderboard navigation button and restore logic
+- `leaderboard.mustache`: new view to display ranked games
+- `WordleController`: `/leaderboard` endpoint
+- `GameService`: save completed games to DB
+- `main.css`: leaderboard table styling
+
+### Changed
+
+- `WordleGameService`: updated logic to register game end correctly on 6th attempt
+- `SessionGameService`: only stores serializable values (e.g., `String`)
+- `WordSelectorService`: exposes `getCurrentWord()` for comparison, but not entity
+- `index.mustache`: full game state persistence between pages
+
+### Fixed
+
+- Broken UI state after leaderboard navigation
+- Reset button disappearing after final attempt
+- JavaScript errors from `null` DOM elements
+- Invalid persistence of JPA entities in session
+
 ## [v1.3.0] - 2025-04-22
 
 ### Added

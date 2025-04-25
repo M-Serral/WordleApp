@@ -1,27 +1,34 @@
-# WordleApp v1.3.0 - 2025-04-22
+# 📦 Release Notes – v1.4.0
 
-## Overview
+**Release date**: 2025-04-25
+**Version**: `1.4.0`  
+**Scope**: Frontend + Backend + Persistence + UX  
+**Status**: ✅ Completed and validated
 
-This release introduces a **brand new user experience** for player identification and robust session management between frontend and backend. The game now detects if the Spring Boot server has been restarted and safely prompts for a new player name when necessary, preventing incorrect player continuity.
+## ✨ New Features
 
-## Key Features
+- ✅ A new **leaderboard page** allows users to view completed games from all players.
+- ✅ Games are now **persisted in the database** upon victory.
+- ✅ A **leaderboard button** has been added to the main UI.
+- ✅ The leaderboard can be sorted by date or number of attempts.
 
-- 🧑‍💻 **Username Modal**: Users now enter their name through a styled modal instead of a native prompt. This improves usability, control, and aesthetics.
-- 🔐 **Session Awareness**: The backend generates a `SESSION_ID` for each session, and the frontend compares it against stored session info. If mismatched, it resets all local session data.
-- 🎯 **Error Feedback**: Invalid or empty usernames now display a clear message below the input field in red, maintaining layout stability.
-- ⌨️ **Enhanced UX**: Users can confirm their name using the Enter key, and only valid inputs (letters, ñ, and numbers) are accepted.
-- 🔁 **Session Reset Handling**: If a user closes the game or the server restarts without pressing "Reset Game", a new name will still be requested upon the next access.
+## 🔁 Improvements
 
-## Improvements
+- ✅ The game state (attempts, hints, win/loss status) is now fully **restored after navigation** (e.g., going to `/leaderboard` and returning).
+- ✅ The "Reset Game" button now reliably appears when a game ends, even after returning from the leaderboard.
+- ✅ Added **defensive checks** to prevent JavaScript crashes on pages where elements may be missing (e.g., sort select on non-leaderboard views).
+- ✅ Improved robustness in how frontend and backend maintain the end-of-game state.
 
-- Consistent modal positioning and layout under all viewport conditions.
-- Better code structure via controller method refactoring (`ensureSessionId`).
-- Full Selenium support through test mode toggle, avoiding modal interruptions during automated testing.
+## 🐛 Bug Fixes
 
-## Upgrade Notes
+- 🐞 Fixed an issue where the last tile in the first row would remain highlighted after navigating.
+- 🐞 Fixed cases where the game was blocked or unresponsive after clicking reset.
+- 🐞 Fixed an edge case where the leaderboard button caused session issues after winning or losing.
 
-No manual database changes are required. All session management is handled automatically on both frontend and backend.
+## 🛡️ Quality Enhancements
+
+- 🧹 Made backend `HttpSession` usage SonarQube-compliant by storing only `String` values (not entity objects).
+- 💾 Improved consistency between frontend game flow and backend persistence logic.
+- 🧪 Added client-side guards to ensure DOM is only manipulated if elements exist.
 
 ---
-
-🛠️ Next up in `1.4.0`: in-game statistics, ranking history, and game history screen!
