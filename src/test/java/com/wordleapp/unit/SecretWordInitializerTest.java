@@ -2,7 +2,6 @@ package com.wordleapp.unit;
 
 import com.wordleapp.repository.SecretWordRepository;
 import com.wordleapp.service.SecretWordInitializer;
-import com.wordleapp.service.WordSelectorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,12 +15,10 @@ import static org.mockito.Mockito.*;
 class SecretWordInitializerTest {
 
     private SecretWordRepository secretWordRepository;
-    private WordSelectorService wordSelectorService;
 
     @BeforeEach
     void setUp() {
         secretWordRepository = mock(SecretWordRepository.class);
-        wordSelectorService = mock(WordSelectorService.class);
     }
 
     @Test
@@ -30,7 +27,7 @@ class SecretWordInitializerTest {
         BufferedReader mockReader = new BufferedReader(
                 new InputStreamReader(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))));
 
-        SecretWordInitializer spy = spy(new SecretWordInitializer(secretWordRepository, wordSelectorService));
+        SecretWordInitializer spy = spy(new SecretWordInitializer(secretWordRepository));
         doReturn(0L).when(secretWordRepository).count();
         doReturn(mockReader).when(spy).createReader();
 
@@ -39,17 +36,15 @@ class SecretWordInitializerTest {
         spy.initSecretWordsFromFile();
 
         verify(secretWordRepository).saveAll(anyList());
-        verify(wordSelectorService).selectRandomWord();
     }
 
     @Test
     void shouldSkipIfAlreadyLoaded() {
-        SecretWordInitializer initializer = new SecretWordInitializer(secretWordRepository, wordSelectorService);
+        SecretWordInitializer initializer = new SecretWordInitializer(secretWordRepository);
         when(secretWordRepository.count()).thenReturn(100L);
 
         initializer.initSecretWordsFromFile();
 
         verify(secretWordRepository, never()).save(any());
-        verify(wordSelectorService).selectRandomWord();
     }
 }

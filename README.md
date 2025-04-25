@@ -32,7 +32,8 @@
 
 2. Launch the app and MySQL with Docker:
 
-   docker-compose up --build --remove-orphans
+   "docker-compose up --build --remove-orphans" (use "docker-compose down -v" after first run
+    to clean up containers, networks, volumes, etc.)
 
 This will start two containers:
 - `wordle-mysql`: MySQL database container

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Leaderboard</title>
+    <link rel="stylesheet" href="/css/leaderboard.css">
+</head>
+<body>
+
+<button id="back-button" onclick="window.location.href='/'">🔙 Back</button>
+
+<h1>🏆 Wordle Leaderboard</h1>
+
+<label for="sort-select">Sort by:</label>
+<select id="sort-select">
+    <option value="date">Date</option>
+    <option value="attempts">Attempts</option>
+</select>
+
+<table id="leaderboard-table">
+    <thead>
+    <tr>
+        <th>Username</th>
+        <th>Word</th>
+        <th>Attempts</th>
+        <th>Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Dynamically loaded -->
+    </tbody>
+</table>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        fetchAndRenderLeaderboard();
+        document.getElementById("sort-select").addEventListener("change", fetchAndRenderLeaderboard);
+    });
+
+    function fetchAndRenderLeaderboard() {
+        const sort = document.getElementById("sort-select").value;
+        fetch(`/api/wordle/leaderboard?orderBy=${sort}`)
+            .then(res => res.json())
+            .then(data => renderLeaderboard(data))
+            .catch(err => console.error("Failed to fetch leaderboard", err));
+    }
+
+    function renderLeaderboard(entries) {
+        const tbody = document.querySelector("#leaderboard-table tbody");
+        tbody.innerHTML = "";
+
+        entries.forEach(entry => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${entry.username}</td>
+                <td>${entry.word}</td>
+                <td>${entry.attempts}</td>
+                <td>${new Date(entry.date).toLocaleString()}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+</script>
+
+</body>
+</html>

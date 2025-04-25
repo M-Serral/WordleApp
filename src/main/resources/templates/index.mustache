@@ -7,6 +7,11 @@
 
 </head>
 <body>
+<div style="position: absolute; top: 10px; right: 10px;">
+    <button onclick="window.location.href='/leaderboard'" style="padding: 10px 15px;">
+        🏆 Leaderboard
+    </button>
+</div>
 <div id="user-info" style="position: absolute; top: 10px; left: 10px; font-size: 1.2em;">
     <!-- Username will appear here -->
 </div>
@@ -75,7 +80,6 @@
     <div class="keyboard-row" id="keyboard-row-3"></div>
 </div>
 
-
 <script>
     let currentRow = 0;
     let currentCol = 0;
@@ -99,22 +103,71 @@
     initTileClickHandlers();
 
     document.addEventListener("DOMContentLoaded", async function () {
-        await fetch("/api/wordle/init"); // Garantiza que el backend tiene SESSION_ID
+        await fetch("/api/wordle/init"); // Ensures that the backend has SESSION_ID
 
-        const wasCleared = await checkServerRestart(); // Detecta si el servidor se reinició
+        const wasCleared = await checkServerRestart(); // Checks if the server has been restarted
 
-        await initializeUsername(); // SIEMPRE se ejecuta
+        await initializeUsername(); // ALWAYS runs
 
-        // Si el servidor fue reiniciado, volvemos a mostrar el prompt
+        // If the server was restarted, we show the prompt again.
         if (wasCleared) {
-            await initializeUsername(); // lo vuelve a forzar
+            await initializeUsername();// forcing it again
         }
 
         displayUsername();
+        restoreGuesses();
+
+        // Visual reinforcement after restoring the game
+        if (sessionStorage.getItem("gameEnded") === "true") {
+            isGameOver = true;
+            resetButton.style.display = "block";
+            document.querySelectorAll('.tile.active').forEach(t => t.classList.remove('active'));
+            console.log("🔁 Restaurando botón reset tras volver del leaderboard");
+        }
     });
     document.addEventListener('keydown', handleKeyPress);
     const resetButton = document.getElementById('resetButton');
     resetButton.addEventListener('click', resetGame);
+
+    function restoreGuesses() {
+        document.querySelectorAll('.tile.active').forEach(t => t.classList.remove('active')); // limpiar bordes
+
+        const storedGuesses = JSON.parse(sessionStorage.getItem("wordleGuesses") || "[]");
+
+        storedGuesses.forEach((entry, index) => {
+            const guess = entry.word.toUpperCase();
+            const hint = entry.hint || "_ _ _ _ _";
+
+            guessRows[index] = guess.split('');
+            for (let i = 0; i < guess.length; i++) {
+                const tile = document.getElementById(`tile-${index}-${i}`);
+                tile.textContent = guess[i];
+            }
+
+            colorRow(hint, index, guess);
+        });
+
+        currentRow = storedGuesses.length;
+        currentCol = 0;
+        updateActiveCell();
+
+        const gameEndedFlag = sessionStorage.getItem("gameEnded");
+        const lostOrCompleted = storedGuesses.length === 6;
+
+        if (gameEndedFlag === "true" || lostOrCompleted) {
+            isGameOver = true;
+            sessionStorage.setItem("gameEnded", "true");
+            resetButton.style.display = "block";
+            document.querySelectorAll('.tile.active').forEach(t => t.classList.remove('active'));
+        }
+
+        // WE FORCE the button to be displayed in any case after restoring if applicable
+        if (sessionStorage.getItem("gameEnded") === "true") {
+            resetButton.style.display = "block";
+        }
+    }
+
+
 
     async function checkServerRestart() {
         try {
@@ -182,6 +235,7 @@
                     sessionStorage.setItem("username", username);
                     sessionStorage.setItem("initialized", "true");
                     modal.style.display = "none";
+                    fetch(`/api/wordle/reset?username=${encodeURIComponent(username)}`, { method: "POST" });
                     resolve();
                 });
             });
@@ -304,6 +358,13 @@
 
     function submitGuess() {
         const guess = guessRows[currentRow].join('');
+        const username = sessionStorage.getItem("username");
+
+        if (!username) {
+            alert("⚠️ Username is missing. Please reload and re-enter your name.");
+            return;
+        }
+
         fetch(`/api/wordle/guess?guess=${guess}`, { method: "POST" })
                 .then(response => {
                     if (!response.ok) {
@@ -312,6 +373,14 @@
                     return response.text();
                 })
                 .then(data => {
+                    const [message, hintPart] = data.split("Hint:");
+                    const hint = hintPart ? hintPart.trim().split("→")[1].trim() : null;
+
+                    // Save only valid words
+                    let previousGuesses = JSON.parse(sessionStorage.getItem("wordleGuesses") || "[]");
+                    previousGuesses.push({ word: guess, hint });
+                    sessionStorage.setItem("wordleGuesses", JSON.stringify(previousGuesses));
+
                     updateUI(data, guess);
                 })
                 .catch(error => {
@@ -319,15 +388,12 @@
 
                     if (errorMessage.includes("Invalid input: The word must be 5 letters long.")) {
                         errorMessage = "Invalid input: The word must be 5 letters long.";
-                    }
-
-                    else if (errorMessage.includes("Not in the list of valid words")) {
+                    } else if (errorMessage.includes("Not in the list of valid words")) {
                         errorMessage = "Not in the list of valid words.";
                     }
 
                     animateInvalidGuess();
                     animateErrorMessage();
-
                     document.getElementById("result").innerText = errorMessage;
                 });
     }
@@ -337,6 +403,8 @@
         let [message, hintPart] = responseText.split("Hint:");
         message = message.trim();
         let hint = hintPart ? hintPart.trim() : '';
+
+        console.log("🔎 Mensaje recibido del backend:", message);
 
         document.querySelectorAll('.tile.active').forEach(t => t.classList.remove('active'));
 
@@ -352,18 +420,21 @@
         if (extractedHint) {
             colorRow(extractedHint, currentRow, guess);
         }
-        if (message.includes("GAME OVER!") || message.includes("CORRECT!")) {
+
+        const maxedOut = currentRow === 5;
+
+        if (message.includes("GAME OVER!") || message.includes("CORRECT!") || maxedOut) {
+            console.log("✅ Se marca gameEnded en sessionStorage");
             isGameOver = true;
+            sessionStorage.setItem("gameEnded", "true");
             resetButton.style.display = "block";
             document.querySelectorAll('.tile.active').forEach(t => t.classList.remove('active'));
+            currentRow++;
         } else {
             currentRow++;
             currentCol = 0;
             updateActiveCell();
-            if (currentRow > 5) {
-                isGameOver = true;
-                resetButton.style.display = "block";
-            }
+            sessionStorage.removeItem("gameEnded");
         }
     }
 
@@ -407,22 +478,30 @@
         }
     }
 
-
     function resetGame() {
         const username = sessionStorage.getItem("username");
         if (!username) {
             alert("Username not found. Please reload the page.");
             return;
         }
+        sessionStorage.removeItem("wordleGuesses");
+        sessionStorage.removeItem("gameEnded");
         sessionStorage.setItem("initialized", "true");
+
         fetch(`/api/wordle/reset?username=${encodeURIComponent(username)}`, { method: "POST" })
-                .then(() => location.reload());
+                .then(() => {
+                    sessionStorage.removeItem("gameEnded");
+                    window.location.href = "/";
+                });
     }
 
 
     function updateActiveCell(setActive = true) {
         for (let col = 0; col < 5; col++) {
-            document.getElementById(`tile-${currentRow}-${col}`).classList.remove('active');
+            const tile = document.getElementById(`tile-${currentRow}-${col}`);
+            if (tile) {
+                tile.classList.remove('active');
+            }
         }
         if (setActive) {
             const activeTile = document.getElementById(`tile-${currentRow}-${currentCol}`);
@@ -480,6 +559,48 @@
     function rowHasFilledCells(row) {
         return Array.from(row.querySelectorAll('.cell')).some(cell => cell.textContent.trim() !== "");
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const sortSelect = document.getElementById("sort-select");
+
+        if (sortSelect) {
+            fetchAndRenderLeaderboard();
+            sortSelect.addEventListener("change", fetchAndRenderLeaderboard);
+        }
+    });
+
+
+    function fetchAndRenderLeaderboard() {
+        const sortSelect = document.getElementById("sort-select");
+        if (!sortSelect) return;
+
+        const sort = sortSelect.value;
+
+        fetch(`/api/wordle/leaderboard?orderBy=${sort}`)
+                .then(res => res.json())
+                .then(data => renderLeaderboard(data))
+                .catch(err => {
+                    console.error("Failed to fetch leaderboard", err);
+                });
+    }
+
+
+    function renderLeaderboard(entries) {
+        const tbody = document.querySelector("#leaderboard-table tbody");
+        tbody.innerHTML = "";
+
+        entries.forEach(entry => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+            <td>${entry.username}</td>
+            <td>${entry.word}</td>
+            <td>${entry.attempts}</td>
+            <td>${new Date(entry.date).toLocaleString()}</td>
+        `;
+            tbody.appendChild(row);
+        });
+    }
+
 
 </script>
 </body>

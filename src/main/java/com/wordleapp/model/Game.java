@@ -29,6 +29,7 @@ public class Game {
     @ManyToOne
     private SecretWord secretWord;
 
+    @Setter
     @CreationTimestamp
     private LocalDateTime createdAt;
 

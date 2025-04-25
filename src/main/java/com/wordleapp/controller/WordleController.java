@@ -47,7 +47,6 @@ public class WordleController {
         return ResponseEntity.ok().build();
     }
 
-
     private void ensureSessionId(HttpSession session) {
         if (session.getAttribute(Constants.SESSION_ID) == null) {
             session.setAttribute(Constants.SESSION_ID, UUID.randomUUID().toString());
