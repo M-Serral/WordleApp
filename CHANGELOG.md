@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),  
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.5.0] - 2025-04-28
+
+### Added
+- New Ranking screen to view players ranked by number of attempts for a given secret word.
+- RankingController and RankingRestController created.
+- RankingService extended to support top N filtering and handling ties.
+- Added dynamic input to allow typing or selecting secret words for filtering.
+- Created TestDataLoader and TestDataController for manual test data insertion.
+
+### Changed
+- Leaderboard and Ranking tables now share unified styling (`tables.css`).
+- Updated existing Leaderboard screen to coexist with new Ranking screen.
+
+### Testing
+- Added RankingService integration tests for correct top N and ties handling.
+- Manual validation of new REST endpoints via browser and Postman.
+
+### Known Issues
+- TestDataLoader must be manually triggered; not used automatically on startup.
+
+
 ## [v1.4.0] - 2025-04-25
 
 ### Added
