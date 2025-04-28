@@ -140,7 +140,7 @@ class WordleUITest extends BaseTestConfiguration {
 
     @Test
     void testInvalidWordClearsRowAndShowsError() {
-        String invalidWord = "TRAZO"; // palabra no en available_word
+        String invalidWord = "TRAZO"; // word not in available_word
 
         wordlePage.makeGuessUI(invalidWord);
 
