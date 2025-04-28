@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ranking by Word</title>
+    <link rel="stylesheet" href="/css/tables.css">
+</head>
+<body>
+
+<!-- Button to return to start -->
+<button id="back-button" onclick="window.location.href='/'">🔙 Back</button>
+
+<h1>🔢 Ranking by Word</h1>
+
+<!-- Selectors for choosing word and top -->
+<div style="margin-top: 20px;">
+    <label for="word-input">Choose word:</label>
+    <input list="word-options" id="word-input" name="word" placeholder="Type or choose a word">
+
+    <datalist id="word-options">
+        <!-- Options will be loaded dynamically -->
+    </datalist>
+
+
+    <label for="top-select">Top:</label>
+    <select id="top-select">
+        <option value="1">Top 1</option>
+        <option value="3">Top 3</option>
+        <option value="5">Top 5</option>
+    </select>
+
+    <button id="fetch-ranking">Search</button>
+</div>
+
+<table id="ranking-table" style="margin-top: 40px;">
+    <thead>
+    <tr>
+        <th>Username</th>
+        <th>Attempts</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- They will be loaded dynamically -->
+    </tbody>
+</table>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        loadSecretWords();
+        document.getElementById("fetch-ranking").addEventListener("click", fetchAndRenderRanking);
+    });
+
+    function loadSecretWords() {
+        fetch('/api/wordle/secret-words')
+                .then(res => res.json())
+                .then(words => {
+                    const datalist = document.getElementById('word-options');
+                    words.forEach(word => {
+                        const option = document.createElement('option');
+                        option.value = word;
+                        datalist.appendChild(option);
+                    });
+                })
+                .catch(err => console.error("Failed to fetch available words", err));
+    }
+
+    function fetchAndRenderRanking() {
+        const selectedWord = document.getElementById('word-input').value;
+        const topN = document.getElementById('top-select').value;
+
+        fetch(`/api/wordle/ranking?word=${selectedWord}&top=${topN}`)
+                .then(res => res.json())
+                .then(data => renderRanking(data))
+                .catch(err => console.error("Failed to fetch ranking", err));
+    }
+
+
+    function renderRanking(entries) {
+        const tbody = document.querySelector("#ranking-table tbody");
+        tbody.innerHTML = "";
+
+        entries.forEach(entry => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${entry.username}</td>
+                <td>${entry.attempts}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+</script>
+
+</body>
+</html>
