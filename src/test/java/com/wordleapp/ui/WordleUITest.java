@@ -3,6 +3,7 @@ package com.wordleapp.ui;
 import com.wordleapp.WordleAppApplication;
 import com.wordleapp.service.WordSelectorService;
 import com.wordleapp.testsupport.BaseTestConfiguration;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.openqa.selenium.WebDriver;
@@ -35,6 +36,8 @@ class WordleUITest extends BaseTestConfiguration {
     void setUp() {
 
         Mockito.when(wordSelectorService.getCurrentWord()).thenReturn(secretTestWord);
+
+        WebDriverManager.chromedriver().setup();
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
