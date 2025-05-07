@@ -32,7 +32,7 @@
 
 2. Launch the app and MySQL with Docker:
 
-   "docker-compose up --build --remove-orphans" (use "docker-compose down -v" after first run
+   ``` "docker-compose up --build --remove-orphans" ``` (use ``` "docker-compose down -v" ``` after first run
     to clean up containers, networks, volumes, etc.)
 
 This will start two containers:
@@ -141,48 +141,7 @@ If successful, the server will respond:
 
 ---
 
-## 🔄 Data Inserted
 
-- 6 `Game` entries into the database.
-- Different usernames (`User1`, `User2`, ..., `User5`).
-- Various numbers of attempts (1 to 4).
-- Different creation timestamps.
-
----
-
-## ⚠️ Why Manual Trigger?
-
-- Prevents unintended data pollution during normal application use.
-- Supports reproducible test scenarios without impacting production.
-- Easy to remove after validation.
-
----
-
-## ✅ Cleanup
-
-After testing:
-
-- **Delete `TestDataController` and `TestDataLoader`**, or
-- **Comment out** the endpoint methods.
-
-No residual changes will affect the application.
-
----
-
-## 🖋️ Best Practice Justification
-
-Inserting test data via controlled HTTP endpoints is a recognized best practice in professional software testing.
-It ensures:
-
-- Separation of concerns.
-- Minimal risk to production environments.
-- Repeatable validation.
-
----
-
-## 🔹 Bonus Tip
-
-Include a screenshot of the successful endpoint call (browser or Postman) in your TFG memory to strengthen the validation proof.
 
 
 ## 🧾 License
