@@ -126,7 +126,7 @@
             isGameOver = true;
             resetButton.style.display = "block";
             document.querySelectorAll('.tile.active').forEach(t => t.classList.remove('active'));
-            console.log("🔁 Restaurando botón reset tras volver del leaderboard");
+            console.log("🔁 Resetting reset button after returning from leaderboard");
         }
     });
     document.addEventListener('keydown', handleKeyPress);
@@ -408,7 +408,7 @@
         message = message.trim();
         let hint = hintPart ? hintPart.trim() : '';
 
-        console.log("🔎 Mensaje recibido del backend:", message);
+        console.log("🔎 Message received from the backend:", message);
 
         document.querySelectorAll('.tile.active').forEach(t => t.classList.remove('active'));
 
@@ -428,7 +428,7 @@
         const maxedOut = currentRow === 5;
 
         if (message.includes("GAME OVER!") || message.includes("CORRECT!") || maxedOut) {
-            console.log("✅ Se marca gameEnded en sessionStorage");
+            console.log("✅ gameEnded is marked in sessionStorage");
             isGameOver = true;
             sessionStorage.setItem("gameEnded", "true");
             resetButton.style.display = "block";
