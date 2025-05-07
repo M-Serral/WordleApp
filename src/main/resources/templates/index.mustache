@@ -7,7 +7,12 @@
 
 </head>
 <body>
-<div style="position: absolute; top: 10px; right: 10px;">
+
+<div id="top-buttons" style="display: flex; justify-content: space-between; align-items: center; width: 800px; margin-top: 10px;">
+    <button onclick="window.location.href='/ranking'" style="padding: 10px 15px;">
+        🔢 Ranking
+    </button>
+    <h1>WELCOME TO WORDLE</h1>
     <button onclick="window.location.href='/leaderboard'" style="padding: 10px 15px;">
         🏆 Leaderboard
     </button>
@@ -23,7 +28,6 @@
         <button id="username-submit">Start</button>
     </div>
 </div>
-<h1>WELCOME TO WORDLE</h1>
 
 <div id="board">
     <!-- Row 0 -->
