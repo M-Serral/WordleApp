@@ -1,34 +1,17 @@
-# Release Notes - WordleApp v1.5.1
+# Release Notes - WordleApp v1.5.2
 
-## 🧼 Technical Improvements
+## ☕ Java Version Upgrade
 
-- Refactored `RankingService` to reduce cognitive complexity and meet SonarCloud quality gates.
-- Replaced manual sorting logic with a clean and efficient stream-based pipeline.
-- Introduced a custom repository method to fetch filtered and sorted `Game` entries directly from the database.
+- Upgraded Java runtime from version 17 to version 21 (LTS).
+- Updated `pom.xml` to use Java 21 for source and target compatibility.
+- Updated GitHub Actions to use Java 21 with `actions/setup-java`.
+- Updated Dockerfile to use a base image with Java 21 (Eclipse Temurin).
 
-## 🧪 Test Coverage Enhancements
+## 🧪 Validation
 
-- Added integration test class for non-tied ranking scenarios (`RankingServiceNoTieTest`).
-- Added UI tests for Leaderboard and Ranking pages using Selenium WebDriver.
-- Ensured all new functionalities are covered by unit or integration tests to maintain high test coverage metrics.
+- Application fully tested after upgrade with existing test suite.
+- No regressions or compatibility issues were found during upgrade.
 
-## 🐳 Docker & Deployment
+## 📦 Summary
 
-- Created `docker-compose.prod.yml` for production-grade deployment using prebuilt DockerHub image (`mserral/wordleapp:latest`).
-- Added persistent volume to the MySQL container for data retention.
-- Automated tagging and pushing of the `latest` Docker image in GitHub Actions workflow after merging to `master`.
-- Published `docker-compose.prod.yml` as a downloadable release artifact for quick, portable deployments.
-
-## 🔐 Safety Measures
-
-- The `/api/test/insert-selected-word-games` endpoint is only available under the `local` or `docker` Spring profile.
-- Protected the test data endpoint to prevent accidental execution using a `?confirm=true` flag.
-
-## 📦 Release Artifacts
-
-- Docker image: `mserral/wordleapp:latest`
-- Downloadable files:
-    - `docker-compose.prod.yml`
-    - `docker-compose.yml`
-    - `Dockerfile`
-
+This version includes an environment-level upgrade to ensure the application is aligned with the latest supported LTS Java version. No functional changes were introduced, but SemVer was incremented to `1.5.2` to reflect the underlying platform update.
