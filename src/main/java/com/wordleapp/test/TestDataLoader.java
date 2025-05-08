@@ -32,7 +32,7 @@ public class TestDataLoader {
     }
 
     /**
-     * Insert test items associated with the secret word “BOOK”.
+     * Insert test items associated with the secret word “LIBRO”.
      * This method should only be used during functional validations.
      */
 
