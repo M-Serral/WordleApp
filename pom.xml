@@ -10,11 +10,11 @@
     </parent>
     <groupId>org.example</groupId>
     <artifactId>WordleApp</artifactId>
-    <version>1.5.1</version>
+    <version>1.5.2</version>
     <name>WordleApp</name>
     <description>WordleApp</description>
     <properties>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <sonar.host.url>http://localhost:9000</sonar.host.url>
         <sonar.coverage.exclusions>**/WordleAppApplication.java, **/PageController.java, **/RankingController.java,
             **/LeaderBoardController.java, **/WordSelectorService.java, **/DictionaryNormalizer.java, **/AvailableWord.java,
@@ -95,8 +95,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
             <plugin>
