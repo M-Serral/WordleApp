@@ -24,6 +24,7 @@ services:
     ports:
       - "8080:8080"
     environment:
+      SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mysql://wordle-mysql:3306/wordle?serverTimezone=Europe/Madrid
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: wordle2025
