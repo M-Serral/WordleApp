@@ -93,6 +93,56 @@ On every push to `master`, the GitHub Actions workflow:
 
 ---
 
+# ✅ Quick Production Run Guide
+
+This section explains how to run the **latest production version** of the WordleApp using Docker.
+
+## 🔄 Always up-to-date via DockerHub
+
+The application image is automatically published to DockerHub with the `latest` tag every time a new version is merged into `master`.
+
+That means this file (`docker-compose.prod.yml`) **never needs to change** — it always pulls the latest available version.
+
+## 🚀 How to run the app (no compilation required)
+
+1. Download this file: `docker-compose.prod.yml`
+2. Open a terminal in the folder containing the file.
+3. Run:
+
+```bash
+docker pull mserral/wordleapp:latest
+docker-compose -f docker-compose.prod.yml up
+```
+
+4. Open your browser and go to:
+```
+http://localhost:8080
+```
+
+## ❓ What's in this file
+
+- A preconfigured MySQL service with persistence.
+- The WordleApp service pulled from DockerHub: `mserral/wordleapp:latest`
+- Spring Boot uses the `docker` profile with proper environment variables.
+- Optional endpoint for test data:
+  ```
+  http://localhost:8080/api/test/insert-selected-word-games?confirm=true
+  ```
+
+## 🧹 How to stop the app
+
+In the same terminal:
+```bash
+CTRL+C
+docker-compose -f docker-compose.prod.yml down
+```
+
+## 📝 Note
+
+This file is published in every GitHub Release for convenience and repeatable deployment. It is intended for demonstration and validation only.
+
+
+
 ## 🧾 License
 
 MIT © 2025 M-Serral
