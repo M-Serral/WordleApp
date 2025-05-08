@@ -4,10 +4,21 @@ import com.wordleapp.model.Game;
 import com.wordleapp.repository.GameRepository;
 import com.wordleapp.repository.SecretWordRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+/**
+ * Utility component to insert test items in a controlled manner.
+ * <p>
+ * ⚠️ Only active when the Spring profile is “local”.
+ * <p>
+ * Used during development to populate the database with dummy games,
+ * Facilitating the validation of filters, rankings and display in the user interface.
+ */
+
+@Profile("local")
 @Slf4j
 @Component
 public class TestDataLoader {
@@ -19,6 +30,11 @@ public class TestDataLoader {
         this.gameRepository = gameRepository;
         this.secretWordRepository = secretWordRepository;
     }
+
+    /**
+     * Insert test items associated with the secret word “BOOK”.
+     * This method should only be used during functional validations.
+     */
 
     public void insertTestGames() {
         String secretWordText = "LIBRO";

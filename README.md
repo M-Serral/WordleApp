@@ -93,57 +93,6 @@ On every push to `master`, the GitHub Actions workflow:
 
 ---
 
-# TestDataLoader - Manual Usage Documentation
-
-## ✨ Purpose
-
-This component was created to manually insert controlled test games into the database for validation purposes, specifically to test the "Ranking by Secret Word" feature without needing manual gameplay.
-
-By isolating test data creation from application startup, we ensure that the production environment remains clean and that the database state is only modified when explicitly intended.
-
----
-
-## 📆 How It Works
-
-- `TestDataLoader` is a Spring component located under `src.main.java.com.wordleapp.test`.
-- It **does not** insert data automatically when the application starts.
-- It exposes a **manual method** `insertTestGames()` that can be triggered through a dedicated REST endpoint.
-
-A supporting controller, `TestDataController`, was created for this purpose.
-
----
-
-## 🔗 Endpoint for Manual Test Data Insertion
-
-| Method | URL | Description |
-|:---|:---|:---|
-| `GET` | `/api/test/insert-selected-word-games` | Inserts 5 test games associated with the secret word `"LIBRO"`. |
-
-### Example Usage
-
-- Using a web browser:
-
-  ```
-  http://localhost:8080/api/test/insert-selected-word-games
-  ```
-
-- Or using `curl`:
-
-  ```bash
-  curl -X GET http://localhost:8080/api/test/insert-selected-word-games
-  ```
-
-If successful, the server will respond:
-
-```text
-✅ Test games for LIBRO inserted successfully!
-```
-
----
-
-
-
-
 ## 🧾 License
 
 MIT © 2025 M-Serral
