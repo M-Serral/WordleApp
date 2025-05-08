@@ -12,13 +12,14 @@ import java.time.LocalDateTime;
 /**
  * Utility component to insert test items in a controlled manner.
  * <p>
- * ⚠️ Only active when the Spring profile is “local”.
+ * ⚠️ Only active when the Spring profile is “local”. WE can add docker profile if tutor wants to validate
+ * in production.
  * <p>
  * Used during development to populate the database with dummy games,
  * Facilitating the validation of filters, rankings and display in the user interface.
  */
 
-@Profile("local")
+@Profile({"local", "docker"})
 @Slf4j
 @Component
 public class TestDataLoader {
