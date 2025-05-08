@@ -7,9 +7,7 @@ import com.wordleapp.repository.SecretWordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,43 +21,20 @@ public class RankingService {
             throw new IllegalArgumentException("The word must not be empty");
         }
 
-        Optional<SecretWord> secretOpt = secretWordRepository.findByWord(word.toUpperCase());
-        if (secretOpt.isEmpty()) {
-            return List.of(); // Word not found
-        }
+        SecretWord secretWord = secretWordRepository.findByWord(word.toUpperCase())
+                .orElse(null);
 
-        List<Game> allGames = gameRepository.findAll();
-        List<Game> matchingGames = new ArrayList<>();
+        if (secretWord == null) return List.of();
 
-        for (Game game : allGames) {
-            if (game.getSecretWord() != null && game.getSecretWord().getWord().equalsIgnoreCase(word)) {
-                matchingGames.add(game);
-            }
-        }
+        List<Game> sortedGames = gameRepository.findBySecretWordOrderByAttempts(secretWord);
 
-        for (int i = 0; i < matchingGames.size(); i++) {
-            for (int j = i + 1; j < matchingGames.size(); j++) {
-                if (matchingGames.get(i).getAttempts() > matchingGames.get(j).getAttempts()) {
-                    Game temp = matchingGames.get(i);
-                    matchingGames.set(i, matchingGames.get(j));
-                    matchingGames.set(j, temp);
-                }
-            }
-        }
+        if (sortedGames.isEmpty() || topN >= sortedGames.size()) return sortedGames;
 
-        List<Game> result = new ArrayList<>();
-        if (!matchingGames.isEmpty()) {
-            if (topN >= matchingGames.size()) {
-                result.addAll(matchingGames);
-            } else {
-                int attemptsLimit = matchingGames.get(topN - 1).getAttempts();
-                for (Game game : matchingGames) {
-                    if (game.getAttempts() <= attemptsLimit) {
-                        result.add(game);
-                    }
-                }
-            }
-        }
-        return result;
+        int cutoff = sortedGames.get(topN - 1).getAttempts();
+        return sortedGames.stream()
+                // avoids further scanning of the list after the limit of
+                // attempts has been exceeded (since the list is sorted).
+                .takeWhile(g -> g.getAttempts() <= cutoff)
+                .toList();
     }
 }

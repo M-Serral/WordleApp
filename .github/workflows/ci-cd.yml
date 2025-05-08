@@ -143,6 +143,11 @@ jobs:
       - name: Push Docker Image
         run: docker push mserral/wordleapp:${{ env.VERSION }}-${{ env.GIT_SHA }}
 
+      - name: Tag and push image as 'latest'
+        run: |
+          docker tag mserral/wordleapp:${{ env.VERSION }}-${{ env.GIT_SHA }} mserral/wordleapp:latest
+          docker push mserral/wordleapp:latest
+
 
       - name: Create and publish Git Tag via GitHub API with PR title
         env:
@@ -196,6 +201,7 @@ jobs:
           name: WordleApp v${{ env.VERSION }}
           body: ${{ env.RELEASE_BODY }}
           files: |
+            docker-compose.prod.yml
             docker-compose.yml
             Dockerfile
           prerelease: false

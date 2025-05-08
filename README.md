@@ -32,7 +32,7 @@
 
 2. Launch the app and MySQL with Docker:
 
-   "docker-compose up --build --remove-orphans" (use "docker-compose down -v" after first run
+   ``` "docker-compose up --build --remove-orphans" ``` (use ``` "docker-compose down -v" ``` after first run
     to clean up containers, networks, volumes, etc.)
 
 This will start two containers:
@@ -93,96 +93,54 @@ On every push to `master`, the GitHub Actions workflow:
 
 ---
 
-# TestDataLoader - Manual Usage Documentation
+# ✅ Quick Production Run Guide
 
-## ✨ Purpose
+This section explains how to run the **latest production version** of the WordleApp using Docker.
 
-This component was created to manually insert controlled test games into the database for validation purposes, specifically to test the "Ranking by Secret Word" feature without needing manual gameplay.
+## 🔄 Always up-to-date via DockerHub
 
-By isolating test data creation from application startup, we ensure that the production environment remains clean and that the database state is only modified when explicitly intended.
+The application image is automatically published to DockerHub with the `latest` tag every time a new version is merged into `master`.
 
----
+That means this file (`docker-compose.prod.yml`) **never needs to change** — it always pulls the latest available version.
 
-## 📆 How It Works
+## 🚀 How to run the app (no compilation required)
 
-- `TestDataLoader` is a Spring component located under `src.main.java.com.wordleapp.test`.
-- It **does not** insert data automatically when the application starts.
-- It exposes a **manual method** `insertTestGames()` that can be triggered through a dedicated REST endpoint.
+1. Download this file: `docker-compose.prod.yml`
+2. Open a terminal in the folder containing the file.
+3. Run:
 
-A supporting controller, `TestDataController`, was created for this purpose.
-
----
-
-## 🔗 Endpoint for Manual Test Data Insertion
-
-| Method | URL | Description |
-|:---|:---|:---|
-| `GET` | `/api/test/insert-selected-word-games` | Inserts 5 test games associated with the secret word `"LIBRO"`. |
-
-### Example Usage
-
-- Using a web browser:
-
-  ```
-  http://localhost:8080/api/test/insert-selected-word-games
-  ```
-
-- Or using `curl`:
-
-  ```bash
-  curl -X GET http://localhost:8080/api/test/insert-selected-word-games
-  ```
-
-If successful, the server will respond:
-
-```text
-✅ Test games for LIBRO inserted successfully!
+```bash
+docker pull mserral/wordleapp:latest
+docker-compose -f docker-compose.prod.yml up
 ```
 
----
+4. Open your browser and go to:
+```
+http://localhost:8080
+```
 
-## 🔄 Data Inserted
+## ❓ What's in this file
 
-- 6 `Game` entries into the database.
-- Different usernames (`User1`, `User2`, ..., `User5`).
-- Various numbers of attempts (1 to 4).
-- Different creation timestamps.
+- A preconfigured MySQL service with persistence.
+- The WordleApp service pulled from DockerHub: `mserral/wordleapp:latest`
+- Spring Boot uses the `docker` profile with proper environment variables.
+- Optional endpoint for test data:
+  ```
+  http://localhost:8080/api/test/insert-selected-word-games?confirm=true
+  ```
 
----
+## 🧹 How to stop the app
 
-## ⚠️ Why Manual Trigger?
+In the same terminal:
+```bash
+CTRL+C
+docker-compose -f docker-compose.prod.yml down
+```
 
-- Prevents unintended data pollution during normal application use.
-- Supports reproducible test scenarios without impacting production.
-- Easy to remove after validation.
+## 📝 Note
 
----
+This file is published in every GitHub Release for convenience and repeatable deployment. It is intended for demonstration and validation only.
 
-## ✅ Cleanup
-
-After testing:
-
-- **Delete `TestDataController` and `TestDataLoader`**, or
-- **Comment out** the endpoint methods.
-
-No residual changes will affect the application.
-
----
-
-## 🖋️ Best Practice Justification
-
-Inserting test data via controlled HTTP endpoints is a recognized best practice in professional software testing.
-It ensures:
-
-- Separation of concerns.
-- Minimal risk to production environments.
-- Repeatable validation.
-
----
-
-## 🔹 Bonus Tip
-
-Include a screenshot of the successful endpoint call (browser or Postman) in your TFG memory to strengthen the validation proof.
 
 
 ## 🧾 License

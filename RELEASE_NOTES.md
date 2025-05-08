@@ -1,17 +1,34 @@
-# Release Notes - WordleApp v1.5.0
+# Release Notes - WordleApp v1.5.1
 
-## New Features
-- 🎯 Introduced a Ranking screen to allow filtering users by secret word, showing also tje number of attempts.
-- 🔤 Enhanced the search experience with an editable input field for secret words.
-- 🔍 Added Top N filter options (Top 1, Top 3, Top 5) with tie management.
+## 🧼 Technical Improvements
 
-## Improvements
-- 🖌️ Unified the table design across Leaderboard and Ranking screens with a new CSS file (`tables.css`).
-- 🛠️ Added backend services to support the new features in a modular and scalable way.
+- Refactored `RankingService` to reduce cognitive complexity and meet SonarCloud quality gates.
+- Replaced manual sorting logic with a clean and efficient stream-based pipeline.
+- Introduced a custom repository method to fetch filtered and sorted `Game` entries directly from the database.
 
-## Testing and Validation
-- ✅ Successfully validated new endpoints manually and via automated integration tests.
-- ✅ Created temporary utilities (`TestDataLoader`, `TestDataController`) for inserting controlled test data.
+## 🧪 Test Coverage Enhancements
 
-## Important Notes
-- The `TestDataLoader` must be manually triggered and should be removed after validation to avoid polluting production databases.
+- Added integration test class for non-tied ranking scenarios (`RankingServiceNoTieTest`).
+- Added UI tests for Leaderboard and Ranking pages using Selenium WebDriver.
+- Ensured all new functionalities are covered by unit or integration tests to maintain high test coverage metrics.
+
+## 🐳 Docker & Deployment
+
+- Created `docker-compose.prod.yml` for production-grade deployment using prebuilt DockerHub image (`mserral/wordleapp:latest`).
+- Added persistent volume to the MySQL container for data retention.
+- Automated tagging and pushing of the `latest` Docker image in GitHub Actions workflow after merging to `master`.
+- Published `docker-compose.prod.yml` as a downloadable release artifact for quick, portable deployments.
+
+## 🔐 Safety Measures
+
+- The `/api/test/insert-selected-word-games` endpoint is only available under the `local` or `docker` Spring profile.
+- Protected the test data endpoint to prevent accidental execution using a `?confirm=true` flag.
+
+## 📦 Release Artifacts
+
+- Docker image: `mserral/wordleapp:latest`
+- Downloadable files:
+    - `docker-compose.prod.yml`
+    - `docker-compose.yml`
+    - `Dockerfile`
+
