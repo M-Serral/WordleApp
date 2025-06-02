@@ -5,20 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),  
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.5.3] - 2025-06-02
+## [v1.5.3] - 2025-06-02
 
 ### Changed
 - Migrated build system to Java 21 (LTS).
 - Updated Dockerfile and CI/CD to use Java 21 images.
 - Fixed Maven build issues due to Java release version mismatch.
 
-## [1.5.2] - 2025-05-07
+## [v1.5.2] - 2025-05-07
 
 ### Changed
 - Upgraded Java from 17 to 21 (LTS).
 - Updated Dockerfile and GitHub Actions accordingly.
 
-## [1.5.1] - 2025-05-06
+## [v1.5.1] - 2025-05-06
 
 ### Changed
 - Refactored RankingService to reduce complexity and improve database efficiency.
