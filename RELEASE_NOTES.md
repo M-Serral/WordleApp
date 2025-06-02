@@ -1,17 +1,22 @@
-# Release Notes - WordleApp v1.5.2
+# Release Notes - WordleApp v1.5.3 Java 21 Upgrade and Compatibility Fixes
 
-## ☕ Java Version Upgrade
+## ✅ What’s New
 
-- Upgraded Java runtime from version 17 to version 21 (LTS).
-- Updated `pom.xml` to use Java 21 for source and target compatibility.
-- Updated GitHub Actions to use Java 21 with `actions/setup-java`.
-- Updated Dockerfile to use a base image with Java 21 (Eclipse Temurin).
+This patch focuses on **environment compatibility**, ensuring the application is future-proof and aligns with industry standards.
 
-## 🧪 Validation
+### ✨ Highlights
+- **Upgraded Java Version to 21**:
+    - Updated project configuration (Maven and Docker) to compile using `--release 21`.
+    - Ensures compatibility with the latest LTS Java version, boosting long-term support and performance.
 
-- Application fully tested after upgrade with existing test suite.
-- No regressions or compatibility issues were found during upgrade.
+- **Local Development Configuration Improved**:
+    - Updated IDE and system settings to point to JDK 21.
+    - Fixed build errors such as `release version 21 not supported`.
 
-## 📦 Summary
+- **Dockerfile Updated**:
+    - Multi-stage Docker build now uses `eclipse-temurin-21` and `openjdk:21-jdk-slim`.
 
-This version includes an environment-level upgrade to ensure the application is aligned with the latest supported LTS Java version. No functional changes were introduced, but SemVer was incremented to `1.5.2` to reflect the underlying platform update.
+- **CI/CD Reliability Increased**:
+    - GitHub Actions now builds and deploys Docker images compatible with Java 21.
+
+---
