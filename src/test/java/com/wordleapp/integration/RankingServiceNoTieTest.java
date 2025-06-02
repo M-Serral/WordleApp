@@ -50,7 +50,7 @@ class RankingServiceNoTieTest extends BaseTestConfiguration {
         List<Game> top1 = rankingService.findTopRankingsBySecretWord("CLARO", 1);
 
         assertEquals(1, top1.size());
-        assertEquals("A", top1.get(0).getUsername());
+        assertEquals("A", top1.getFirst().getUsername());
     }
 
     @Test
