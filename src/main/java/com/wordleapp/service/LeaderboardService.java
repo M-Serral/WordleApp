@@ -5,7 +5,6 @@ import com.wordleapp.model.Game;
 import com.wordleapp.repository.GameRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -18,14 +17,15 @@ public class LeaderboardService {
     }
 
     public List<LeaderboardEntry> getLeaderboard(String orderBy) {
-        Comparator<Game> comparator = Comparator.comparing(Game::getCreatedAt).reversed();
+        List<Game> games;
 
         if ("attempts".equalsIgnoreCase(orderBy)) {
-            comparator = Comparator.comparingInt(Game::getAttempts);
+            games = gameRepository.findAllByOrderByAttemptsAsc();
+        } else {
+            games = gameRepository.findAllByOrderByCreatedAtDesc();
         }
 
-        return gameRepository.findAll().stream()
-                .sorted(comparator)
+        return games.stream()
                 .map(game -> new LeaderboardEntry(
                         game.getUsername(),
                         game.getSecretWord().getWord(),
@@ -34,4 +34,5 @@ public class LeaderboardService {
                 ))
                 .toList();
     }
+
 }

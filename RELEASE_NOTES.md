@@ -1,22 +1,19 @@
-# Release Notes - WordleApp v1.5.3 Java 21 Upgrade and Compatibility Fixes
+# Release Notes - WordleApp v1.5.4
+Leaderboard Performance Refactor
 
 ## ✅ What’s New
 
-This patch focuses on **environment compatibility**, ensuring the application is future-proof and aligns with industry standards.
+This patch improves the **performance, maintainability, and clarity** of the leaderboard functionality by delegating sorting logic to the persistence layer.
 
 ### ✨ Highlights
-- **Upgraded Java Version to 21**:
-    - Updated project configuration (Maven and Docker) to compile using `--release 21`.
-    - Ensures compatibility with the latest LTS Java version, boosting long-term support and performance.
 
-- **Local Development Configuration Improved**:
-    - Updated IDE and system settings to point to JDK 21.
-    - Fixed build errors such as `release version 21 not supported`.
+- **Leaderboard Sorting Optimized**:
+  - Replaced in-memory sorting in `LeaderboardService` with database-level ordering using `findAllByOrderByAttemptsAsc()` and `findAllByOrderByCreatedAtDesc()` from Spring Data JPA.
+  - Reduces memory consumption and improves query efficiency.
 
-- **Dockerfile Updated**:
-    - Multi-stage Docker build now uses `eclipse-temurin-21` and `openjdk:21-jdk-slim`.
-
-- **CI/CD Reliability Increased**:
-    - GitHub Actions now builds and deploys Docker images compatible with Java 21.
+- **Code Quality Aligned with SRP**:
+  - Refactored the service to follow the Single Responsibility Principle.
+  - Sorting is now handled where it belongs: in the repository.
 
 ---
+

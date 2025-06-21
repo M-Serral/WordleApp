@@ -33,13 +33,12 @@ class LeaderboardServiceTest {
     void shouldReturnEntriesOrderedByDateDesc() {
         // given
         List<Game> games = List.of(
-                createGame("Ana", "CASAS", 3, LocalDateTime.of(2024, 4, 1, 10, 0)),
-                createGame("Luis", "RATON", 4, LocalDateTime.of(2024, 4, 2, 12, 0))
-        );
-        when(gameRepository.findAll()).thenReturn(games);
+                createGame("Luis", "RATON", 4, LocalDateTime.of(2024, 4, 2, 12, 0)),
+                createGame("Ana", "CASAS", 3, LocalDateTime.of(2024, 4, 1, 10, 0))
+                );
+        when(gameRepository.findAllByOrderByAttemptsAsc()).thenReturn(games);
 
-        // when
-        List<LeaderboardEntry> result = leaderboardService.getLeaderboard("date");
+        List<LeaderboardEntry> result = leaderboardService.getLeaderboard("attempts");
 
         // then
         assertEquals(2, result.size());
@@ -54,10 +53,10 @@ class LeaderboardServiceTest {
     void shouldReturnEntriesOrderedByAttemptsAsc() {
         // given
         List<Game> games = List.of(
-                createGame("Ana", "CASAS", 3, LocalDateTime.of(2024, 4, 1, 10, 0)),
-                createGame("Luis", "RATON", 2, LocalDateTime.of(2024, 4, 2, 12, 0))
+                createGame("Luis", "RATON", 2, LocalDateTime.of(2024, 4, 2, 12, 0)),
+                createGame("Ana", "CASAS", 3, LocalDateTime.of(2024, 4, 1, 10, 0))
         );
-        when(gameRepository.findAll()).thenReturn(games);
+        when(gameRepository.findAllByOrderByAttemptsAsc()).thenReturn(games);
 
         // when
         List<LeaderboardEntry> result = leaderboardService.getLeaderboard("attempts");
