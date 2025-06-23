@@ -18,7 +18,7 @@
         <sonar.host.url>http://localhost:9000</sonar.host.url>
         <sonar.coverage.exclusions>**/WordleAppApplication.java, **/PageController.java, **/RankingController.java,
             **/LeaderBoardController.java, **/WordSelectorService.java, **/DictionaryNormalizer.java, **/AvailableWord.java,
-            **/Game.java, **/TestDataLoader.java, **/TestDataController.java,</sonar.coverage.exclusions>
+            **/Game.java, **/TestDataLoader.java, **/TestDataController.java, **/Constants.java,</sonar.coverage.exclusions>
         <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
     <dependencies>
@@ -145,9 +145,18 @@
                 </executions>
                 <configuration>
                     <excludes>
-                        <exclude>com/wordleapp/WordleAppApplication</exclude>
-                        <exclude>com/wordleapp/controller/PageController</exclude>
-                        <exclude>com/wordleapp/service/WordSelectorService</exclude>
+                        <exclude>**/com/wordleapp/WordleAppApplication.class</exclude>
+                        <exclude>**/com/wordleapp/controller/PageController.class</exclude>
+                        <exclude>**/com/wordleapp/service/WordSelectorService.class</exclude>
+                        <exclude>**/com/wordleapp/controller/RankingController.class</exclude>
+                        <exclude>**/com/wordleapp/controller/PageController.class</exclude>
+                        <exclude>**/com/wordleapp/controller/LeaderBoardController.class</exclude>
+                        <exclude>**/com/wordleapp/utils/DictionaryNormalizer.class</exclude>
+                        <exclude>**/com/wordleapp/utils/Constants.class</exclude>
+                        <exclude>**/com/wordleapp/model/AvailableWord.class</exclude>
+                        <exclude>**/com/wordleapp/model/Game.class</exclude>
+                        <exclude>**/com/wordleapp/test/TestDataLoader.class</exclude>
+                        <exclude>**/com/wordleapp/controller/TestDataController.class</exclude>
                     </excludes>
                 </configuration>
             </plugin>

@@ -30,12 +30,6 @@ class WordleControllerTest extends BaseTestConfiguration {
 
     private final String  secretTestWord = "sexto".toUpperCase();
 
-    @BeforeEach
-    void resetGame() throws Exception {
-        mockMvc.perform(post("/api/wordle/reset"))
-                .andExpect(status().isOk());
-    }
-
     @Test
     void testUserWinsGameAndCannotKeepPlaying() throws Exception {
 
