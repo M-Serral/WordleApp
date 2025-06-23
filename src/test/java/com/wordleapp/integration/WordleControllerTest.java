@@ -2,7 +2,6 @@ package com.wordleapp.integration;
 
 import com.wordleapp.service.WordSelectorService;
 import com.wordleapp.testsupport.BaseTestConfiguration;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
